@@ -2,6 +2,7 @@
 page_type: sample
 languages:
   - csharp
+  - razor
 products:
   - aspnet-core
   - blazor
@@ -11,6 +12,9 @@ description: "Samples to accompany the official Microsoft Blazor documentation."
 ---
 # Samples to accompany the official Microsoft Blazor documentation
 
+Samples in this repository accompany the [official Microsoft Blazor documentation](https://docs.microsoft.com/aspnet/core/blazor/).
+
+<!--
 * [Overview](#overview)
 * [Prerequisites](#prerequisites)
 * [Setup](#setup)
@@ -24,40 +28,22 @@ description: "Samples to accompany the official Microsoft Blazor documentation."
 
 ## Overview
 
-
-
 ## Prerequisites
-
-
 
 ## Setup
 
-
-
 ## Run the samples
-
-
 
 ## Explore the samples
 
-
-
 ## About The code
-
-
 
 ## Deployment
 
-
-
 ## Additional resources
-
-
 
 ## Community help and support
 
-
-
 ## Contribute
 
-
+-->
