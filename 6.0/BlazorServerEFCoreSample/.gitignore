@@ -1,0 +1,4 @@
+# Don't check in the SQLite database
+*.db
+*.db-shm
+*.db-wal
