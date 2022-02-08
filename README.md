@@ -36,8 +36,7 @@ For more information, see [Use ASP.NET Core SignalR with Blazor](https://docs.mi
 
 ## Snippet sample apps for article code examples
 
-> [!WARNING]
-> Always follow an article's security guidance when implementing sample code.
+**WARNING**: Always follow an article's security guidance when implementing sample code.
 
 Snippet sample apps for Blazor Server and Blazor WebAssembly provide the code examples that appear in Blazor articles. Snippet sample apps compile and run. However, several of the examples aren't fully working in their current form because either of the following are true for the article's examples:
 
