@@ -51,6 +51,7 @@ dlldata.c
 *.pgd
 *.rsp
 *.sbr
+*.sln
 *.tlb
 *.tli
 *.tlh
