@@ -28,3 +28,11 @@ Add any other context about the issue here.
 
 **.NET Version**
 Output of `dotnet --info`.
+
+---
+#### Issue Details
+
+⚠ *Do not edit this section. It is required for issue processing.*
+
+* Content Source: [dotnet/blazor-samples](https://github.com/dotnet/blazor-samples)
+* GitHub Login: @guardrex
