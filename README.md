@@ -1,14 +1,14 @@
 ---
 page_type: sample
 languages:
-  - csharp
-  - razor
+- csharp
+- razor
 products:
-  - aspnet-core
-  - blazor
+- aspnet-core
+- blazor
 name: Blazor sample applications
-urlFragment: blazor-samples
 description: "Samples to accompany the official Microsoft Blazor documentation."
+urlFragment: blazor-samples
 ---
 # Samples to accompany the official Microsoft Blazor documentation
 
