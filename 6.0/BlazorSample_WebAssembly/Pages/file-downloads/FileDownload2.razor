@@ -10,8 +10,8 @@
 @code {
     private async Task DownloadFileFromURL()
     {
-        var fileName = "log.bin";
-        var fileURL = "https://localhost:5001/files/log.bin";
+        var fileName = "quote.txt";
+        var fileURL = "https://localhost:5001/files/quote.txt";
         await JS.InvokeVoidAsync("triggerFileDownload", fileName, fileURL);
     }
 }
