@@ -72,6 +72,6 @@
     private void OnDropdownChange(ChangeEventArgs e)
     {
         selectedType = e.Value?.ToString()?.Length > 0 ? 
-            Type.GetType($"{APP NAMESPACE}.Shared.{e.Value}") : null;
+            Type.GetType($"BlazorSample.Shared.{e.Value}") : null;
     }
 }
