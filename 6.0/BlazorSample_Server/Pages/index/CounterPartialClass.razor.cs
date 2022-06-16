@@ -1,4 +1,4 @@
-namespace BlazorSample.Pages
+namespace BlazorSample.Pages.index
 {
     public partial class CounterPartialClass
     {
