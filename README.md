@@ -3,7 +3,7 @@ description: "Samples to accompany the official Microsoft Blazor documentation."
 page_type: sample
 languages:
 - csharp
-- razor
+- cshtml
 name: "Blazor sample applications"
 products:
 - aspnet-core
