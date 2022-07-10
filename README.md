@@ -39,7 +39,7 @@ For more information, see [Use ASP.NET Core SignalR with Blazor](https://docs.mi
 
 **WARNING**: Always follow an article's security guidance when implementing sample code.
 
-Snippet sample apps for Blazor Server and Blazor WebAssembly provide the code examples that appear in Blazor articles. Snippet sample apps compile and run. However, several of the examples aren't fully working in their current form because either of the following are true for the article's examples:
+Snippet sample apps for Blazor Server and Blazor WebAssembly provide the code examples that appear in Blazor articles. Many of the components in the snippet sample apps compile and run if copied to a local test app. However, the entire snippet sample apps aren't buildable, and several of the examples aren't fully working because either of the following are true:
 
 * The example requires extra Razor, C#, or other code to run correctly that the article's example doesn't require in order to explain Blazor concepts.
 * The example requires additional packages to use additional API, sometimes third-party packages, an account (token or key) for an external service, or another app (for example, a separate running web API app to interact with over a network). Usually, the article associated with the example provides additional guidance on how to make the example work in a live test app.
