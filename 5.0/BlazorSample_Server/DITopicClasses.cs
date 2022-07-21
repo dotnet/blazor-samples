@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 public class Setting
 {
     public string SettingName { get; set; }
