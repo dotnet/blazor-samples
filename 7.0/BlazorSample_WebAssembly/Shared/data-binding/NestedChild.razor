@@ -7,7 +7,8 @@
         <button @onclick="ChangeValue">Change from Child</button>
     </p>
 
-    <NestedGrandchild @bind-GrandchildMessage="BoundValue" />
+    <NestedGrandchild @bind-GrandchildMessage:get="ChildMessage" 
+        @bind-GrandchildMessage:set="ChildMessageChanged" />
 </div>
 
 @code {
@@ -16,12 +17,6 @@
 
     [Parameter]
     public EventCallback<string> ChildMessageChanged { get; set; }
-
-    private string BoundValue
-    {
-        get => ChildMessage ?? string.Empty;
-        set => ChildMessageChanged.InvokeAsync(value);
-    }
 
     private async Task ChangeValue()
     {
