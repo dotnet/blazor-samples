@@ -132,5 +132,14 @@
             image.src = url;
         }
     </script>
+    <script>
+        window.assignDotNetHelper = (element, dotNetHelper) => {
+            element.dotNetHelper = dotNetHelper;
+        }
+
+        window.interopCall = async (element) => {
+            await element.dotNetHelper.invokeMethodAsync('UpdateMessage');
+        }
+    </script>
 </body>
 </html>
