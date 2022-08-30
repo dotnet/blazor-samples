@@ -13,7 +13,7 @@
 
 <p>
     Status:
-    @if (lastNotification.key is not null)
+    @if (lastNotification.key != null)
     {
         <span>@lastNotification.key = @lastNotification.value</span>
     }

@@ -19,7 +19,7 @@ public class TimerService : IDisposable
     {
         if (timer is null)
         {
-            timer = new();
+            timer = new Timer();
             timer.AutoReset = true;
             timer.Interval = 10000;
             timer.Elapsed += HandleTimer;
