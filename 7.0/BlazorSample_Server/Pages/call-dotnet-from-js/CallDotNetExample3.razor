@@ -25,9 +25,13 @@
     private string? result;
     private DotNetObjectReference<CallDotNetExample3>? objRef;
 
-    public async Task TriggerDotNetInstanceMethod()
+    protected override void OnInitialized()
     {
         objRef = DotNetObjectReference.Create(this);
+    }
+
+    public async Task TriggerDotNetInstanceMethod()
+    {
         result = await JS.InvokeAsync<string>("sayHello2", objRef, name);
     }
 
