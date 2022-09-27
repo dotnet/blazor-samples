@@ -1,4 +1,5 @@
 @page "/call-dotnet-example-5"
+@implements IDisposable
 @inject IJSRuntime JS
 
 <h1>Call .NET Example 5</h1>
@@ -22,10 +23,16 @@
 @code {
     private string? name;
     private string? result;
+    private DotNetObjectReference<HelloHelper>? objRef;
 
     public async Task TriggerDotNetInstanceMethod()
     {
-        result = await JS.InvokeAsync<string>("sayHello1", 
-            DotNetObjectReference.Create(new HelloHelper(name)));
+        objRef = DotNetObjectReference.Create(new HelloHelper(name));
+        result = await JS.InvokeAsync<string>("sayHello1", objRef);
+    }
+
+    public void Dispose()
+    {
+        objRef?.Dispose();
     }
 }
