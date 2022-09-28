@@ -136,6 +136,13 @@
             await element.dotNetHelper.invokeMethodAsync('UpdateMessage');
         }
     </script>
+    <script>
+        window.sayHello3 = (dotNetHelper) => {
+            var message = dotNetHelper.invokeMethodAsync('GetHelloMessage');
+            dotNetHelper.dispose();
+            return message;
+        };
+    </script>
 </body>
 
 </html>
