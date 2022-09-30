@@ -1,6 +1,6 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.SignalR.Client
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
 @implements IAsyncDisposable
 
 <PageTitle>Index</PageTitle>
@@ -37,7 +37,7 @@
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
+            .WithUrl(Navigation.ToAbsoluteUri("/chathub"))
             .Build();
 
         hubConnection.On<string, string>("ReceiveMessage", (user, message) =>

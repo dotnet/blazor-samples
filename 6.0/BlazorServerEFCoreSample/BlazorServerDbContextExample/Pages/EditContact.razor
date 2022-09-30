@@ -4,7 +4,7 @@
 @implements IDisposable
 
 @inject IDbContextFactory<ContactContext> DbFactory
-@inject NavigationManager Nav
+@inject NavigationManager Navigation
 @inject IPageHelper PageHelper
 @inject EditSuccess EditSuccessState
 
@@ -142,7 +142,7 @@ else
 
             EditSuccessState.Success = true;
             // go to view to see the record
-            Nav.NavigateTo($"/view/{Contact.Id}");
+            Navigation.NavigateTo($"/view/{Contact.Id}");
         }
         catch (DbUpdateConcurrencyException dbex)
         {
@@ -157,7 +157,7 @@ else
             if (dbValues is null)
             {
                 // deleted - show contact not found
-                Nav.NavigateTo($"/view/{Contact.Id}");
+                Navigation.NavigateTo($"/view/{Contact.Id}");
                 return;
             }
 
@@ -185,7 +185,7 @@ else
     private void Cancel()
     {
         Busy = true;
-        Nav.NavigateTo($"/{PageHelper.Page}");
+        Navigation.NavigateTo($"/{PageHelper.Page}");
     }
 
     /// <summary>

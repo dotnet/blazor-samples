@@ -5,7 +5,7 @@
 
 @inject IContactFilters Filters
 @inject IDbContextFactory<ContactContext> DbFactory
-@inject NavigationManager Nav
+@inject NavigationManager Navigation
 @inject GridQueryAdapter QueryAdapter
 
 <h1>Contacts</h1>
@@ -136,7 +136,7 @@
         // Ensure we're on the same, er, right page.
         if (_lastPage < 1)
         {
-            Nav.NavigateTo("/1");
+            Navigation.NavigateTo("/1");
             return;
         }
 
@@ -145,12 +145,12 @@
         {
             if (Page < 1)
             {
-                Nav.NavigateTo("/1");
+                Navigation.NavigateTo("/1");
                 return;
             }
             if (Page > Filters.PageHelper.PageCount)
             {
-                Nav.NavigateTo($"/{Filters.PageHelper.PageCount}");
+                Navigation.NavigateTo($"/{Filters.PageHelper.PageCount}");
                 return;
             }
         }
