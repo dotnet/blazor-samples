@@ -1,5 +1,4 @@
 @page "/call-dotnet-example-4"
-@implements IDisposable
 @inject IJSRuntime JS
 
 <h1>Call .NET Example 4</h1>
@@ -25,14 +24,13 @@
     private string result;
     private JsInteropClasses3 jsInteropClasses;
 
-    private async Task TriggerDotNetInstanceMethod()
+    protected override void OnInitialized()
     {
         jsInteropClasses = new JsInteropClasses3(JS);
-        result = await jsInteropClasses.CallHelloHelperGetHelloMessage(name);
     }
 
-    public void Dispose()
+    private async Task TriggerDotNetInstanceMethod()
     {
-        jsInteropClasses?.Dispose();
+        result = await jsInteropClasses.CallHelloHelperGetHelloMessage(name);
     }
 }

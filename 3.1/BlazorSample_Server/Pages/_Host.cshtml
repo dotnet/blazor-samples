@@ -71,8 +71,13 @@
         };
     </script>
     <script>
-        window.sayHello = (dotNetHelper) => {
+        window.sayHello1 = (dotNetHelper) => {
             return dotNetHelper.invokeMethodAsync('GetHelloMessage');
+        };
+    </script>
+    <script>
+        window.sayHello2 = (dotNetHelper, name) => {
+            return dotNetHelper.invokeMethodAsync('GetHelloMessage', name);
         };
     </script>
     <script>
