@@ -11,7 +11,7 @@ public class JsInteropClasses3
 
     public ValueTask<string> CallHelloHelperGetHelloMessage(string? name)
     {
-        return js.InvokeAsync<string>("sayHello3", 
-            DotNetObjectReference.Create(new HelloHelper(name)));
+        using var objRef = DotNetObjectReference.Create(new HelloHelper(name));
+        return await js.InvokeAsync<string>("sayHello1", objRef);
     }
 }

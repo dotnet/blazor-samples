@@ -58,8 +58,13 @@
         };
     </script>
     <script>
-        window.sayHello = (dotNetHelper) => {
+        window.sayHello1 = (dotNetHelper) => {
             return dotNetHelper.invokeMethodAsync('GetHelloMessage');
+        };
+    </script>
+    <script>
+        window.sayHello2 = (dotNetHelper, name) => {
+            return dotNetHelper.invokeMethodAsync('GetHelloMessage', name);
         };
     </script>
     <script>
@@ -77,13 +82,6 @@
             dotnetHelper.invokeMethodAsync('BlazorSample', 'UpdateMessageCaller3');
             dotnetHelper.dispose();
         }
-    </script>
-    <script>
-        window.sayHello3 = (dotNetHelper) => {
-            var message = dotNetHelper.invokeMethodAsync('GetHelloMessage');
-            dotNetHelper.dispose();
-            return message;
-        };
     </script>
 </body>
 
