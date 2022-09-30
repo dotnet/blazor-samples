@@ -1,6 +1,6 @@
 using Microsoft.JSInterop;
 
-public class JsInteropClasses2
+public class JsInteropClasses2 : IDisposable
 {
     private readonly IJSRuntime js;
 
