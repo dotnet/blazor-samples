@@ -1,7 +1,7 @@
 ﻿@page "/add"
 
 @inject IDbContextFactory<ContactContext> DbFactory
-@inject NavigationManager Nav
+@inject NavigationManager Navigation
 @inject IPageHelper PageHelper
 
 @if (Contact != null)
@@ -108,6 +108,6 @@
     /// </summary>
     private void Cancel()
     {
-        Nav.NavigateTo($"/{PageHelper.Page}");
+        Navigation.NavigateTo($"/{PageHelper.Page}");
     }
 }

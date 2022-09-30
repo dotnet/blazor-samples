@@ -2,7 +2,7 @@
 @using Microsoft.Extensions.Logging 
 @implements IDisposable
 @inject ILogger<Navigate> Logger
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
 
 <h1>Navigate in component code example</h1>
 
@@ -13,12 +13,12 @@
 @code {
     private void NavigateToCounterComponent()
     {
-        NavigationManager.NavigateTo("counter");
+        Navigation.NavigateTo("counter");
     }
 
     protected override void OnInitialized()
     {
-        NavigationManager.LocationChanged += HandleLocationChanged;
+        Navigation.LocationChanged += HandleLocationChanged;
     }
 
     private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
@@ -28,6 +28,6 @@
 
     public void Dispose()
     {
-        NavigationManager.LocationChanged -= HandleLocationChanged;
+        Navigation.LocationChanged -= HandleLocationChanged;
     }
 }
