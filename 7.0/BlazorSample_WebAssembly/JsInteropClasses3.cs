@@ -9,7 +9,7 @@ public class JsInteropClasses3
         this.js = js;
     }
 
-    public ValueTask<string> CallHelloHelperGetHelloMessage(string? name)
+    public async ValueTask<string> CallHelloHelperGetHelloMessage(string? name)
     {
         using var objRef = DotNetObjectReference.Create(new HelloHelper(name));
         return await js.InvokeAsync<string>("sayHello1", objRef);
