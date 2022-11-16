@@ -51,10 +51,10 @@ The primary purpose of the snippet sample apps is to supply code examples to doc
 * Some components create mock C# objects instead of using formal, correct code to create the objects. For example, a component that requires a list of `TodoItem` items might include an `@code` block as its first line (`@code{ private List<TodoItem> todos = new(); }`) to create a variable for use in the example ***that the article doesn't show to readers***. To implement these unfinished examples in a production app for users, finish the code and supply an `@code` block with formal, correct code to create the required objects. The purpose of using these mocked C# objects in the snippet sample apps is to make sure that the code compiles correctly for the documentation.
 * Some components only show a portion of their Razor markup in an article. This is accomplished by surrounding the code for display with snippet HTML comments (for example, `<!-- <snippet> -->...<!-- </snippet> -->`). These comments can be removed or ignored, as they have no purpose in an ordinary Blazor app outside of the documentation.
 
-Blazor snippet sample apps (ASP.NET Core 6.0):
+Blazor snippet sample apps (ASP.NET Core 7.0):
 
-* [Blazor Server: Browse on GitHub](https://github.com/dotnet/blazor-samples/tree/main/6.0/BlazorSample_Server)
-* [Blazor WebAssembly: Browse on GitHub](https://github.com/dotnet/blazor-samples/tree/main/6.0/BlazorSample_WebAssembly)
+* [Blazor Server: Browse on GitHub](https://github.com/dotnet/blazor-samples/tree/main/7.0/BlazorSample_Server)
+* [Blazor WebAssembly: Browse on GitHub](https://github.com/dotnet/blazor-samples/tree/main/7.0/BlazorSample_WebAssembly)
 
 ## Community help and support
 
