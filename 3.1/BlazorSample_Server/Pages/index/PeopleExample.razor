@@ -1,4 +1,4 @@
-﻿@page "/people"
+@page "/people-example"
 @using System.Timers
 @implements IDisposable
 
@@ -11,7 +11,7 @@
     private Timer timer = new Timer(3000);
 
     public List<Person> people =
-        new()
+        new List<Person>()
         {
             { new Person { Data = "Person 1" } },
             { new Person { Data = "Person 2" } },
@@ -41,6 +41,6 @@
 
     public class Person
     {
-        public string? Data { get; set; }
+        public string Data { get; set; }
     }
 }
