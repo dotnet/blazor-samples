@@ -69,13 +69,13 @@
             {
                 try
                 {
+                    files.Add(new() { Name = file.Name });
+
                     var fileContent = 
                         new StreamContent(file.OpenReadStream(maxFileSize));
 
                     fileContent.Headers.ContentType = 
                         new MediaTypeHeaderValue(file.ContentType);
-
-                    files.Add(new() { Name = file.Name });
 
                     content.Add(
                         content: fileContent,
