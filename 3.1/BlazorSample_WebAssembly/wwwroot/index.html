@@ -69,17 +69,17 @@
     </script>
     <script>
         window.updateMessageCaller1 = () => {
-            DotNet.invokeMethodAsync('BlazorSample', 'UpdateMessageCaller1');
+            DotNet.invokeMethodAsync('UpdateMessageCaller1');
         };
     </script>
     <script>
         window.updateMessageCaller2 = (name) => {
-            DotNet.invokeMethodAsync('BlazorSample', 'UpdateMessageCaller2', name);
+            DotNet.invokeMethodAsync('UpdateMessageCaller2', name);
         };
     </script>
     <script>
         window.updateMessageCaller3 = (dotnetHelper) => {
-            dotnetHelper.invokeMethodAsync('BlazorSample', 'UpdateMessageCaller3');
+            dotnetHelper.invokeMethodAsync('UpdateMessageCaller3');
             dotnetHelper.dispose();
         }
     </script>
