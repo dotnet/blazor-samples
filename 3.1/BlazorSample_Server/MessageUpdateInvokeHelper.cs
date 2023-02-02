@@ -10,7 +10,7 @@ public class MessageUpdateInvokeHelper
         this.action = action;
     }
 
-    [JSInvokable("BlazorSample")]
+    [JSInvokable]
     public void UpdateMessageCaller()
     {
         action.Invoke();
