@@ -1,12 +1,11 @@
-namespace BlazorSample.Pages.index
-{
-    public partial class CounterPartialClass
-    {
-        private int currentCount = 0;
+namespace BlazorSample.Pages.index;
 
-        private void IncrementCount()
-        {
-            currentCount++;
-        }
+public partial class CounterPartialClass
+{
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
     }
 }

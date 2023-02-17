@@ -1,7 +1,6 @@
-namespace BlazorSample.UIThemeClasses
+namespace BlazorSample.UIThemeClasses;
+
+public class ThemeInfo
 {
-    public class ThemeInfo
-    {
-        public string? ButtonClass { get; set; }
-    }
+    public string? ButtonClass { get; set; }
 }
