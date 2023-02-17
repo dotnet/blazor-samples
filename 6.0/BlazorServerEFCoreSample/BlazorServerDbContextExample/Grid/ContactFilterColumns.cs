@@ -1,15 +1,14 @@
-﻿namespace BlazorServerDbContextExample.Grid
+﻿namespace BlazorServerDbContextExample.Grid;
+
+/// <summary>
+/// Sort options.
+/// </summary>
+public enum ContactFilterColumns
 {
-    /// <summary>
-    /// Sort options.
-    /// </summary>
-    public enum ContactFilterColumns
-    {
-        Name,
-        Phone,
-        Street,
-        City,
-        State,
-        ZipCode
-    }
+    Name,
+    Phone,
+    Street,
+    City,
+    State,
+    ZipCode
 }

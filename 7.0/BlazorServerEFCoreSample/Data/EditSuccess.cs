@@ -1,13 +1,12 @@
-﻿namespace BlazorServerEFCoreSample.Data
+﻿namespace BlazorServerEFCoreSample.Data;
+
+/// <summary>
+/// Service to communicate success status between pages.
+/// </summary>
+public class EditSuccess
 {
     /// <summary>
-    /// Service to communicate success status between pages.
+    /// <c>true</c> when the last edit operation was successful.
     /// </summary>
-    public class EditSuccess
-    {
-        /// <summary>
-        /// <c>true</c> when the last edit operation was successful.
-        /// </summary>
-        public bool Success { get; set; }
-    }
+    public bool Success { get; set; }
 }
