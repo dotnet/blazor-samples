@@ -1,6 +1,6 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
-using System;
 
 public class JsInteropClasses1 : IDisposable
 {
