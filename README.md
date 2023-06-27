@@ -8,6 +8,7 @@ name: "Blazor sample applications"
 products:
 - aspnet-core
 - blazor
+- dotnet-core
 urlFragment: "blazor-samples"
 ---
 # Samples to accompany the official Microsoft Blazor documentation
