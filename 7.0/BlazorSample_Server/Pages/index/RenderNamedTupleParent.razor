@@ -1,0 +1,10 @@
+@page "/render-named-tuple-parent"
+
+<h1>Render Named Tuple Parent</h1>
+
+<RenderNamedTupleChild Data="@data" />
+
+@code {
+    private (int TheInteger, string TheString, bool TheBoolean) data = 
+        new(999, "I aim to misbehave.", true);
+}

@@ -71,7 +71,12 @@
 
     private void OnDropdownChange(ChangeEventArgs e)
     {
+        /*
+            IMPORTANT!
+            Change "BlazorSample.Shared.dynamiccomponent" to match 
+            your shared component's namespace in the Type.GetType() argument.
+        */
         selectedType = e.Value?.ToString()?.Length > 0 ? 
-            Type.GetType($"BlazorSample.Shared.{e.Value}") : null;
+            Type.GetType($"BlazorSample.Shared.dynamiccomponent.{e.Value}") : null;
     }
 }
