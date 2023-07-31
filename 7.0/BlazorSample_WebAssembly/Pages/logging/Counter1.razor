@@ -1,5 +1,5 @@
 @page "/counter-1"
-@inject ILogger<Counter> logger
+@inject ILogger<Counter> Logger
 
 <h1>Counter</h1>
 
@@ -12,7 +12,7 @@
 
     private void IncrementCount()
     {
-        logger.LogWarning("Someone has clicked me!");
+        Logger.LogWarning("Someone has clicked me!");
 
         currentCount++;
     }
