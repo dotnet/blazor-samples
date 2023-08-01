@@ -8,7 +8,7 @@ public sealed class CustomLoggerProvider : IDisposable, ILoggerProvider, ISuppor
     private CustomLoggerConfiguration config;
     private readonly ConcurrentDictionary<string, CustomLogger> loggers =
         new(StringComparer.OrdinalIgnoreCase);
-    private IExternalScopeProvider? scopeProvider;
+    private IExternalScopeProvider scopeProvider = default!;
 
     void ISupportExternalScope.SetScopeProvider(IExternalScopeProvider scopeProvider)
     {
