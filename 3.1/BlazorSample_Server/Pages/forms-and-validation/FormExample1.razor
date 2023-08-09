@@ -2,17 +2,17 @@
 @using Microsoft.Extensions.Logging
 @inject ILogger<FormExample1> Logger
 
-<EditForm Model="@exampleModel" OnValidSubmit="@HandleValidSubmit">
+<EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <InputText @bind-Value="exampleModel.Name" />
+    <InputText @bind-Value="model.Name" />
 
     <button type="submit">Submit</button>
 </EditForm>
 
 @code {
-    private ExampleModel exampleModel = new ExampleModel();
+    private Model model = new Model();
 
     private void HandleValidSubmit()
     {

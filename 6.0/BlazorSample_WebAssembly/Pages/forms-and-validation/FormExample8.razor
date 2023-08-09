@@ -6,18 +6,18 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <InputText @bind-Value="exampleModel.Name" />
+    <InputText @bind-Value="model.Name" />
 
     <button type="submit">Submit</button>
 </EditForm>
 
 @code {
-    private ExampleModel exampleModel = new();
+    private Model model = new();
     private EditContext? editContext;
 
     protected override void OnInitialized()
     {
-        editContext = new(exampleModel);
+        editContext = new(model);
         editContext.SetFieldCssClassProvider(new CustomFieldClassProvider());
     }
 
