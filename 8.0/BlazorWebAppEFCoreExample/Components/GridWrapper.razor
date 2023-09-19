@@ -1,0 +1,20 @@
+<CascadingValue Value="this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    // Renders whatever is inside the tags and cascades a copy of itself.
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    // Call when the filter has changed to refresh the Contact list.
+    [Parameter]
+    public EventCallback FilterChanged { get; set; }
+
+    // Call when a contact is requested to be deleted.
+    [Parameter]
+    public EventCallback<int> DeleteRequested { get; set; }
+
+    // The id of the Contact to be deleted.
+    public int DeleteRequestId { get; set; }
+}

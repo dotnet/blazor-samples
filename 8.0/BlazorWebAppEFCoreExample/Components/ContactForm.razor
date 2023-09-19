@@ -1,0 +1,123 @@
+﻿@using Microsoft.AspNetCore.Components.Forms;
+
+<h1>@Mode Contact</h1>
+
+<hr />
+@if (Contact is not null)
+{
+    <EditForm Model="@Contact"
+              OnInvalidSubmit="(async () => await HandleSubmitAsync(false))"
+              OnValidSubmit="(async () => await HandleSubmitAsync(true))">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <h2>🆔 Identification</h2>
+        <p>
+            <label>
+                First Name:
+                <InputText @bind-Value="Contact.FirstName" />
+                <ConcurrencyField Model="@Contact"
+                                  DbModel="@DbContact"
+                                  Property="obj => obj?.FirstName" />
+            </label>
+            <label>
+                Last Name (optional):
+                <InputText @bind-Value="Contact.LastName" />
+                <ConcurrencyField Model="@Contact"
+                                  DbModel="@DbContact"
+                                  Property="obj => obj?.LastName" />
+            </label>
+        </p>
+        <h2>📞 Phone</h2>
+        <p>
+            <label>
+                Phone (optional):
+                <InputText @bind-Value="Contact.Phone" />
+                <ConcurrencyField Model="@Contact"
+                                  DbModel="@DbContact"
+                                  Property="obj => obj?.Phone" />
+            </label>
+        </p>
+        <h2>🏠 Home Address</h2>
+        <p>
+            <label>
+                Street:
+                <InputText @bind-Value="Contact.Street" />
+                <ConcurrencyField Model="@Contact"
+                                  DbModel="@DbContact"
+                                  Property="obj => obj?.Street" />
+            </label>
+            <label>
+                City:
+                <InputText @bind-Value="Contact.City" />
+                <ConcurrencyField Model="@Contact"
+                                  DbModel="@DbContact"
+                                  Property="obj => obj?.City" />
+            </label>
+            <label>
+                State:
+                <InputText @bind-Value="Contact.State" />
+                <ConcurrencyField Model="@Contact"
+                                  DbModel="@DbContact"
+                                  Property="obj => obj?.State" />
+            </label>
+            <label>
+                ZipCode:
+                <InputText @bind-Value="Contact.ZipCode" />
+                <ConcurrencyField Model="@Contact"
+                                  DbModel="@DbContact"
+                                  Property="obj => obj?.ZipCode" />
+            </label>
+        </p>
+        <br />
+        <button disabled="@Busy" class="btn btn-warning"
+                @onclick="CancelAsync">
+            Cancel
+        </button>&nbsp;
+        <button disabled="@Busy" type="submit"
+                class="btn btn-primary">
+            Submit
+        </button>
+    </EditForm>
+}
+
+@code {
+    // Let parent handle result of validation.
+    [Parameter]
+    public EventCallback<bool> ValidationResult { get; set; }
+
+    // Let parent handle what to do on cancel.
+    [Parameter]
+    public EventCallback CancelRequest { get; set; }
+
+    // True if add mode.
+    [Parameter]
+    public bool IsAdd { get; set; }
+
+    // The Contact to upsert.
+    [Parameter]
+    public Contact? Contact { get; set; }
+
+    // The database version of Contact if a concurrency issue.
+    [Parameter]
+    public Contact? DbContact { get; set; }
+
+    // Prevent multiple asynchronous operations at the same time.
+    [Parameter]
+    public bool Busy { get; set; }
+
+    // Mode.
+    private string Mode => IsAdd ? "Add" : "Edit";
+
+    // Ask to cancel.
+    private Task CancelAsync()
+    {
+        return CancelRequest.InvokeAsync(null);
+    }
+
+    // Handle form submission request.
+    // isValid: True when field validation passed.
+    private Task HandleSubmitAsync(bool isValid)
+    {
+        return ValidationResult.InvokeAsync(isValid);
+    }
+}
