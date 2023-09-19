@@ -1,4 +1,4 @@
-﻿namespace BlazorWebAppEFCoreExample.Grid;
+﻿namespace BlazorWebAppEFCore.Grid;
 
 // Interface for filtering.
 public interface IContactFilters

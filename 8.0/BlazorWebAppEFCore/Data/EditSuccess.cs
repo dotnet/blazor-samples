@@ -1,4 +1,4 @@
-﻿namespace BlazorWebAppEFCoreExample.Data;
+﻿namespace BlazorWebAppEFCore.Data;
 
 // Service to communicate success status between pages.
 public class EditSuccess

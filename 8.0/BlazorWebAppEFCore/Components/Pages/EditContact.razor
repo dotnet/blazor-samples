@@ -1,8 +1,8 @@
 ﻿@page "/edit/{ContactId:int}"
 @attribute [RenderModeServer]
 @using Microsoft.EntityFrameworkCore;
-@using BlazorWebAppEFCoreExample.Grid
-@using BlazorWebAppEFCoreExample.Data
+@using BlazorWebAppEFCore.Grid
+@using BlazorWebAppEFCore.Data
 @implements IDisposable
 @inject IDbContextFactory<ContactContext> DbFactory
 @inject NavigationManager Navigation

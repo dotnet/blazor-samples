@@ -1,7 +1,7 @@
-using BlazorWebAppEFCoreExample.Components;
+using BlazorWebAppEFCore.Components;
 using Microsoft.EntityFrameworkCore;
-using BlazorWebAppEFCoreExample.Data;
-using BlazorWebAppEFCoreExample.Grid;
+using BlazorWebAppEFCore.Data;
+using BlazorWebAppEFCore.Grid;
 
 var builder = WebApplication.CreateBuilder(args);
 

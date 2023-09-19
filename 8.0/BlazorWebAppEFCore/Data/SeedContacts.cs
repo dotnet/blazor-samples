@@ -1,4 +1,4 @@
-﻿namespace BlazorWebAppEFCoreExample.Data;
+﻿namespace BlazorWebAppEFCore.Data;
 
 // Generates desired number of random contacts.
 public class SeedContacts
