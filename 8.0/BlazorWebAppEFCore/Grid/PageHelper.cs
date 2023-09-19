@@ -1,4 +1,4 @@
-﻿namespace BlazorWebAppEFCoreExample.Grid;
+﻿namespace BlazorWebAppEFCore.Grid;
 
 // Holds the state for paging.
 public class PageHelper : IPageHelper

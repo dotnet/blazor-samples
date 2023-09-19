@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlazorWebAppEFCoreExample.Data;
+namespace BlazorWebAppEFCore.Data;
 
 // Context for the contacts database.
 public class ContactContext : DbContext

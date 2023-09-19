@@ -1,4 +1,4 @@
-﻿namespace BlazorWebAppEFCoreExample.Grid;
+﻿namespace BlazorWebAppEFCore.Grid;
 
 // Sort options.
 public enum ContactFilterColumns

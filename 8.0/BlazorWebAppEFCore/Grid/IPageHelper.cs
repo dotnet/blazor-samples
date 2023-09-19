@@ -1,4 +1,4 @@
-﻿namespace BlazorWebAppEFCoreExample.Grid;
+﻿namespace BlazorWebAppEFCore.Grid;
 
 public interface IPageHelper
 {

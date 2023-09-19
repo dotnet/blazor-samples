@@ -1,4 +1,4 @@
-﻿namespace BlazorWebAppEFCoreExample.Grid;
+﻿namespace BlazorWebAppEFCore.Grid;
 
 // State of grid filters.
 public class GridControls : IContactFilters

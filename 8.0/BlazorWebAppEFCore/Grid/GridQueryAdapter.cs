@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using BlazorWebAppEFCoreExample.Data;
+using BlazorWebAppEFCore.Data;
 
-namespace BlazorWebAppEFCoreExample.Grid;
+namespace BlazorWebAppEFCore.Grid;
 
 // Creates the correct expressions to filter and sort.
 public class GridQueryAdapter

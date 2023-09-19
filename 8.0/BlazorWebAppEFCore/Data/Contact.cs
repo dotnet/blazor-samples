@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BlazorWebAppEFCoreExample.Data;
+namespace BlazorWebAppEFCore.Data;
 
 public class Contact
 {
