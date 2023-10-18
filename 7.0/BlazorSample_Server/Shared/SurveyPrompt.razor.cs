@@ -10,7 +10,7 @@ public partial class SurveyPrompt :
 
     [Parameter]
     public IObservable<ElementReference>? Parent { get; set; }
-    [Parameter]
+    [Inject]
     public IJSRuntime? JS {get;set;}
 
     protected override void OnParametersSet()
