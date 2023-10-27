@@ -11,6 +11,9 @@ namespace BlazorSample.Shared
         [Parameter]
         public IObservable<ElementReference> Parent { get; set; }
 
+        [Inject]
+        public IJSRuntime JS {get; set;}
+
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
