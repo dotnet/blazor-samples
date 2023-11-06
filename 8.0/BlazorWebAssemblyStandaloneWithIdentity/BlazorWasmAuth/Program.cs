@@ -28,12 +28,12 @@ builder.Services.AddScoped(
 
 // set base address for default host
 builder.Services.AddScoped(sp =>
-    new HttpClient { BaseAddress = new Uri(builder.Configuration["HostUrl"]!) });
+    new HttpClient { BaseAddress = new Uri(builder.Configuration["FrontendUrl"]!) });
 
 // configure client for auth interactions
 builder.Services.AddHttpClient(
     "Auth",
-    opt => opt.BaseAddress = new Uri(builder.Configuration["AuthUrl"]!))
+    opt => opt.BaseAddress = new Uri(builder.Configuration["BackendUrl"]!))
     .AddHttpMessageHandler<CookieHandler>();
 
 await builder.Build().RunAsync();
