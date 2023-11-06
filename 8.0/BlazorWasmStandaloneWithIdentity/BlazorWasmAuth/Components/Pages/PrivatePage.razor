@@ -1,0 +1,37 @@
+﻿@page "/private-page"
+@attribute [Authorize]
+@using System.Security.Claims
+
+<AuthorizeView>
+    <p>Hello, @context.User.Identity?.Name! You are authenticated, so you can see this page that shows your claims.</p>
+</AuthorizeView>
+
+<h2>Claims</h2>
+
+@if (claims.Count() > 0)
+{
+    <ul>
+        @foreach (var claim in claims)
+        {
+            <li><b>@claim.Type:</b> @claim.Value</li>
+        }
+    </ul>
+}
+
+@code {
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthState == null)
+        {
+            return;
+        }
+
+        var authState = await AuthState;
+        claims = authState.User.Claims;
+    }
+}

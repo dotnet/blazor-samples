@@ -22,7 +22,6 @@
                 </label>
                 <input required id="email" name="emailInput" placeholder="Enter your email address" type="email" @bind-value="email" />
             </div>
-
             <div>
                 <label for="password">
                     Password:
@@ -30,7 +29,7 @@
                 <input required id="password" name="passwordInput" placeholder="Enter your password" type="password" @bind-value="password" />
             </div>
             <div>
-                <button @onclick="DoLoginAsync">Login</button>
+                <button class="btn btn-primary" @onclick="DoLoginAsync">Login</button>
             </div>
         </div>
     </NotAuthorized>
@@ -51,6 +50,7 @@
         {
             errors = true;
             errorList = ["Email is required."];
+
             return;
         }
 
@@ -58,6 +58,7 @@
         {
             errors = true;
             errorList = ["Password is required."];
+
             return;
         }
 
