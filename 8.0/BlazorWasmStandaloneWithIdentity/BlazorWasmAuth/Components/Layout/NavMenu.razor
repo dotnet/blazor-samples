@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">BlazorWasmAuth</a>
+        <a class="navbar-brand" href="">Blazor WASM Auth</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -19,33 +19,19 @@
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
             </NavLink>
         </div>
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="requiresAuth">
-                        <span class="bi bi-lock-nav-menu" aria-hidden="true"></span>🔐 Requires Auth
-                    </NavLink>
-                </div>
-            </Authorized>
-        </AuthorizeView>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="weather">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
         </div>
         <AuthorizeView>
-            <NotAuthorized>
+            <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span>📝 Register
+                    <NavLink class="nav-link" href="private-page">
+                        <span class="bi bi-key" aria-hidden="true"></span> Private Page
                     </NavLink>
                 </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span>🗝️ Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
+            </Authorized>
         </AuthorizeView>
     </nav>
 </div>

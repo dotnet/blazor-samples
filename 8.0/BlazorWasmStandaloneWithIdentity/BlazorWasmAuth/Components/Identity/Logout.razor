@@ -1,12 +1,14 @@
 ﻿@page "/logout"
 @using BlazorWasmAuth.Identity
-@inject IAccountManagement AcctMgmt
+@inject IAccountManagement Acct
 
 <AuthorizeView @ref="authView">
     <Authorized>
         <div class="alert alert-info">Logging you out...</div>
     </Authorized>
-    <NotAuthorized><div class="alert alert-success">You are logged out. <a href="/login">Log in.</a></div></NotAuthorized>
+    <NotAuthorized>
+        <div class="alert alert-success">You are logged out. <a href="/login">Log in.</a></div>
+    </NotAuthorized>
 </AuthorizeView>
 
 @code {
@@ -14,10 +16,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (await AcctMgmt.CheckAuthenticatedAsync())
+        if (await Acct.CheckAuthenticatedAsync())
         {
-            await AcctMgmt.LogoutAsync();
+            await Acct.LogoutAsync();
         }
+
         await base.OnInitializedAsync();
     }
 }

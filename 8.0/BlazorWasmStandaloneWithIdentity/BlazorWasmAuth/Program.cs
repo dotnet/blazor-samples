@@ -1,8 +1,9 @@
-using BlazorWasmAuth.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using BlazorWasmAuth.Components;
 using BlazorWasmAuth.Identity;
-using Microsoft.AspNetCore.Components.Authorization;
+
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 

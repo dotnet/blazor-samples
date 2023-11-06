@@ -75,6 +75,7 @@ namespace BlazorWasmAuth.Identity
                 var problemDetails = JsonDocument.Parse(details);
                 var errors = new List<string>();
                 var errorList = problemDetails.RootElement.GetProperty("errors");
+
                 foreach (var errorEntry in errorList.EnumerateObject())
                 {
                     if (errorEntry.Value.ValueKind == JsonValueKind.String)
@@ -171,6 +172,7 @@ namespace BlazorWasmAuth.Identity
                 // user is authenticated,so let's build their authenticated identity
                 var userJson = await userResponse.Content.ReadAsStringAsync();
                 var userInfo = JsonSerializer.Deserialize<UserInfo>(userJson, jsonSerializerOptions);
+
                 if (userInfo != null)
                 {
                     // in our system name and email are the same
