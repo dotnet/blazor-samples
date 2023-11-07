@@ -8,7 +8,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="alert alert-success">You're already logged in as @context.User.Identity?.Name.</div>
+        <div class="alert alert-success">You're logged in as @context.User.Identity?.Name.</div>
     </Authorized>
     <NotAuthorized>
         @if (errors)
