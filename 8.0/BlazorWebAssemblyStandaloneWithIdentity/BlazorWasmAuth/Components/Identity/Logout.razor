@@ -2,6 +2,10 @@
 @using BlazorWasmAuth.Identity
 @inject IAccountManagement Acct
 
+<PageTitle>Logout</PageTitle>
+
+<h1>Logout</h1>
+
 <AuthorizeView @ref="authView">
     <Authorized>
         <div class="alert alert-info">Logging you out...</div>
