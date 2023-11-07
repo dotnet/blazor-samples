@@ -1,46 +1,31 @@
-# Blazor WebAssembly Standalone with ASP.NET Core Identity sample app
+# Standalone Blazor WebAssembly with ASP.NET Core Identity
 
 This sample app demonstrates how to use the built-in ASP.NET Core Identity capabilities from a standalone Blazor WebAssembly app.
 
+For more information, see [Secure ASP.NET Core Blazor WebAssembly with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity).
+
 ## Steps to run the sample
 
-1. Clone this repository.
+1. Clone this repository or download a ZIP archive of the repository. For more information, see [How to download a sample](https://learn.microsoft.com/aspnet/core/introduction-to-aspnet-core#how-to-download-a-sample).
 
-1. The default URLs for the two apps are:
+1. The default and fallback URLs for the two apps are:
 
-   * `Backend` app (`BackendUrl`): `https://localhost:7211`
-   * `BlazorWasmAuth` app (`FrontendUrl`): `https://localhost:7171`
+   * `Backend` app (`BackendUrl`): `https://localhost:7211` (fallback: `https://localhost:5001`)
+   * `BlazorWasmAuth` app (`FrontendUrl`): `https://localhost:7171` (fallback: `https://localhost:5002`)
    
-   If needed, update `appsettings.json` in both projects with a new `BackendUrl` for the `Backend` project and a new `FrontendUrl` for the `BlazorWasmAuth` project.
+   You can use the existing URLs or update them in the `appsettings.json` file of each project with new `BackendUrl` and `FrontendUrl` endpoints:
 
-   If `Backend` should run at `https://localhost:5001` and `BlazorWasmAuth` should run at `https://localhost:5002`, make the following changes.
-
-   Uupdate the `appsettings.json` file in `Backend` app to the following:
-
-    ```json
-    {
-      "BackendUrl": "https://localhost:5001",
-      "FrontEndUrl": "https://localhost:5002"
-    }
-    ```
-
-    Update the `wwwroot/appsettings.json` file in `BlazorWasmAuth` app to the following:
-
-    ```json
-    {
-      "BackendUrl": "https://localhost:5001",
-      "FrontendUrl": "https://localhost:5002"
-    }
-    ```
+   * `appsettings.json` file in the root of the `Backend` app.
+   * `wwwroot/appsettings.json` file in the `BlazorWasmAuth` app.
 
 1. Run the `Backend` and `BlazorWasmAuth` apps.
 
-1. Navigate to the `BlazorWasmAuth` app.
+1. Navigate to the `BlazorWasmAuth` app at the `FrontendUrl`.
 
-1. Register a new user in the `BlazorWasmAuth` app using the **Register** link in the upper-right corner of the app's UI.
+1. Register a new user using the **Register** link in the upper-right corner of the app's UI.
 
 1. Log in with the new user.
 
-1. Navigate to the private page that only authenticated users can reach. The link appears in the navigation sidebar after the user is authenticated.
+1. Navigate to the private page (`Components/Pages/PrivatePage.razor` at `/private-page`) that only authenticated users can reach. A link to the page appears in the navigation sidebar after the user is authenticated.
 
 1. Log out of the app.

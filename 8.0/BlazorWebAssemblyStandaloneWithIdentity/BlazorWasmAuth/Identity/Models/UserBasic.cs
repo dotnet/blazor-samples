@@ -1,7 +1,7 @@
 ﻿namespace BlazorWasmAuth.Identity.Models
 {
     /// <summary>
-    /// Basic user information to register and/or login.
+    /// Basic user information to register and login.
     /// </summary>
     public class UserBasic
     {
