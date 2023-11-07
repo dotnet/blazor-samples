@@ -2,12 +2,15 @@
 @using BlazorWasmAuth.Identity
 @inject IAccountManagement Acct
 
+<PageTitle>Login</PageTitle>
+
+<h1>Login</h1>
+
 <AuthorizeView>
     <Authorized>
-        <div class="alert alert-success">You are logged in as @context.User.Identity?.Name.</div>
+        <div class="alert alert-success">You're already logged in as @context.User.Identity?.Name.</div>
     </Authorized>
     <NotAuthorized>
-        <h1>Login</h1>
         @if (errors)
         {
             @foreach (var error in errorList)
