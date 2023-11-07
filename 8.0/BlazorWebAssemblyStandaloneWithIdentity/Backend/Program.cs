@@ -15,7 +15,7 @@ builder.Services.AddAuthorizationBuilder();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("AppDb"));
 
 // add identity and opt-in to endpoints
-builder.Services.AddIdentityCore<MyUser>()
+builder.Services.AddIdentityCore<AppUser>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints();
 
@@ -23,26 +23,26 @@ builder.Services.AddIdentityCore<MyUser>()
 builder.Services.AddCors(
     options => options.AddPolicy(
         "wasm",
-        policy => policy.WithOrigins([builder.Configuration["BackendUrl"], builder.Configuration["FrontendUrl"]])
+        policy => policy.WithOrigins([builder.Configuration["BackendUrl"] ?? "https://localhost:5001", 
+            builder.Configuration["FrontendUrl"] ?? "https://localhost:5002"])
             .AllowAnyMethod()
             .SetIsOriginAllowed(pol => true)
             .AllowAnyHeader()
             .AllowCredentials()));
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Learn more about configuring Swagger/OpenAPI at
+// https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // create routes for the identity endpoints
-app.MapIdentityApi<MyUser>();
+app.MapIdentityApi<AppUser>();
 
 // provide an end point to clear the cookie for logout
-app.MapPost("/Logout", async (
-           ClaimsPrincipal user,
-           SignInManager<MyUser> signInManager) =>
+app.MapPost("/Logout", async (ClaimsPrincipal user, SignInManager<AppUser> signInManager) =>
 {
     await signInManager.SignOutAsync();
     return TypedResults.Ok();
@@ -62,9 +62,9 @@ app.UseHttpsRedirection();
 app.Run();
 
 // identity user
-class MyUser : IdentityUser { }
+class AppUser : IdentityUser { }
 
 // identity database
-class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<MyUser>(options)
+class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options)
 {
 }
