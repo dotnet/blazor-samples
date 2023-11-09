@@ -6,7 +6,7 @@ using BlazorWebAppEFCore.Grid;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
-    .AddServerComponents();
+    .AddInteractiveServerComponents();
 
 // Register factory and configure the options
 #region snippet1
@@ -49,6 +49,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.MapRazorComponents<App>()
-    .AddServerRenderMode();
+    .AddInteractiveServerRenderMode();
 
 app.Run();
