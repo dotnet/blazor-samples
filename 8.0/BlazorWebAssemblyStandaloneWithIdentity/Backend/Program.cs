@@ -42,11 +42,17 @@ var app = builder.Build();
 app.MapIdentityApi<AppUser>();
 
 // provide an end point to clear the cookie for logout
-app.MapPost("/Logout", async (ClaimsPrincipal user, SignInManager<AppUser> signInManager) =>
+app.MapPost("/logout", async (
+    SignInManager<MyUser> signInManager,
+    [FromBody]object empty) =>
 {
-    await signInManager.SignOutAsync();
-    return TypedResults.Ok();
-});
+    if (empty is not null)
+    {
+        await signInManager.SignOutAsync();
+        return Results.Ok();
+    }
+    return Results.NotFound();
+}).RequireAuthorization();
 
 // activate the CORS policy
 app.UseCors("wasm");
