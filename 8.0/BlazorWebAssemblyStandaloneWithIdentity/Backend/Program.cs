@@ -1,6 +1,6 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,7 +43,7 @@ app.MapIdentityApi<AppUser>();
 
 // provide an end point to clear the cookie for logout
 app.MapPost("/logout", async (
-    SignInManager<MyUser> signInManager,
+    SignInManager<AppUser> signInManager,
     [FromBody]object empty) =>
 {
     if (empty is not null)
