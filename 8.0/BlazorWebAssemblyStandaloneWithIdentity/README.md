@@ -17,6 +17,13 @@ For more information, see [Secure ASP.NET Core Blazor WebAssembly with ASP.NET C
 
    * `appsettings.json` file in the root of the `Backend` app.
    * `wwwroot/appsettings.json` file in the `BlazorWasmAuth` app.
+  
+1. If you plan to run the apps using the .NET CLI with `dotnet run`, note that first launch profile in the launch settings file is used to run an app, which is the insecure `http` profile (HTTP protocol). To run the apps securely (HTTPS protocol), take ***either*** of the following approaches:
+
+   * Pass the launch profile option to the command when running the apps: `dotnet run -lp https`.
+   * In the launch settings files (`Properties/launchSettings.json`) ***of both projects***, rotate the `https` profiles to the top, placing them above the `http` profiles.
+  
+   If you use Visual Studio to run the apps, Visual Studio automatically uses the `https` launch profile. No action is required to run the apps securely when using Visual Studio.
 
 1. Run the `Backend` and `BlazorWasmAuth` apps.
 
