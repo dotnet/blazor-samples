@@ -1,8 +1,15 @@
 @page "/after-render"
-@using Microsoft.Extensions.Logging
 @inject ILogger<AfterRender> Logger 
 
-<button @onclick="LogInformation">Log information (and trigger a render)</button>
+<PageTitle>After Render</PageTitle>
+
+<h1>After Render Example</h1>
+
+<p>
+    <button @onclick="LogInformation">Log information (and trigger a render)</button>
+</p>
+
+<p>Study logged messages in the console.</p>
 
 @code {
     private string message = "Initial assigned message.";

@@ -1,21 +1,37 @@
 @page "/background-work"
-@using System.Threading
-@using Microsoft.Extensions.Logging
 @implements IDisposable
 @inject ILogger<BackgroundWork> Logger
 
-<button @onclick="LongRunningWork">Trigger long running work</button>
-<button @onclick="Dispose">Trigger Disposal</button>
+<PageTitle>Background Work</PageTitle>
+
+<h1>Background Work Example</h1>
+
+<p>
+    <button @onclick="LongRunningWork">Trigger long running work</button>
+    <button @onclick="Dispose">Trigger Disposal</button>
+</p>
+
+<p>Study logged messages in the console.</p>
+<p>
+    If you trigger disposal within 10 seconds of page load, the 
+    BackgroundResourceMethod isn't executed.
+</p>
+<p>
+    If disposal occurs after BackgroundResourceMethod is called but before action 
+    is taken on the Resource, an ObjectDisposedException is thrown by 
+    BackgroundResourceMethod, and the Resource isn't processed.
+</p>
 
 @code {
     private Resource resource = new();
     private CancellationTokenSource cts = new();
+    private IList<string> messages = [];
 
     protected async Task LongRunningWork()
     {
         Logger.LogInformation("Long running work started");
 
-        await Task.Delay(5000, cts.Token);
+        await Task.Delay(10000, cts.Token);
 
         cts.Token.ThrowIfCancellationRequested();
         resource.BackgroundResourceMethod(Logger);
@@ -24,8 +40,13 @@
     public void Dispose()
     {
         Logger.LogInformation("Executing Dispose");
-        cts.Cancel();
-        cts.Dispose();
+
+        if (!cts.IsCancellationRequested)
+        {
+            cts.Cancel();
+        }
+        
+        cts?.Dispose();
         resource?.Dispose();
     }
 

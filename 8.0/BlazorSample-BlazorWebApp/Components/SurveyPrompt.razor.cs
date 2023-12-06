@@ -1,7 +1,7 @@
-using System;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-namespace BlazorSample.Shared;
+
+namespace BlazorSample.Components;
 
 public partial class SurveyPrompt : 
     ComponentBase, IObserver<ElementReference>, IDisposable
