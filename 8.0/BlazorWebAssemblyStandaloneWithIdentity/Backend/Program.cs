@@ -42,17 +42,13 @@ var app = builder.Build();
 app.MapIdentityApi<AppUser>();
 
 // provide an end point to clear the cookie for logout
-app.MapPost("/logout", async (
-    SignInManager<AppUser> signInManager,
-    [FromBody]object empty) =>
+// NOTE: This logout code will be updated shortly.
+//       https://github.com/dotnet/blazor-samples/issues/132
+app.MapPost("/Logout", async (ClaimsPrincipal user, SignInManager<AppUser> signInManager) =>
 {
-    if (empty is not null)
-    {
-        await signInManager.SignOutAsync();
-        return Results.Ok();
-    }
-    return Results.NotFound();
-}).RequireAuthorization();
+    await signInManager.SignOutAsync();
+    return TypedResults.Ok();
+});
 
 // activate the CORS policy
 app.UseCors("wasm");
