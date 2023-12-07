@@ -11,6 +11,11 @@
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
     <HeadOutlet @rendermode="InteractiveServer" />
+    <style>
+        .red {
+            color: red
+        }
+    </style>
 </head>
 
 <body>
@@ -84,8 +89,8 @@
         };
     </script>
     <script>
-        window.updateMessageCaller3 = (dotnetHelper) => {
-            dotnetHelper.invokeMethodAsync('UpdateMessageCaller3');
+        window.updateMessageCaller = (dotnetHelper) => {
+            dotnetHelper.invokeMethodAsync('UpdateMessageCaller');
             dotnetHelper.dispose();
         }
     </script>

@@ -1,8 +1,9 @@
 @page "/form-2"
-@using Microsoft.Extensions.Logging
 @inject ILogger<Form2> Logger
 
-<h1>Starfleet Starship Database</h1>
+<PageTitle>Form 2</PageTitle>
+
+<h1>Form Example 2</h1>
 
 <h2>New Ship Entry Form</h2>
 
@@ -12,19 +13,19 @@
 
     <p>
         <label>
-            Identifier:
+            Identifier: 
             <InputText @bind-Value="starship.Identifier" />
         </label>
     </p>
     <p>
         <label>
-            Description (optional):
+            Description (optional): 
             <InputTextArea @bind-Value="starship.Description" />
         </label>
     </p>
     <p>
         <label>
-            Primary Classification:
+            Primary Classification: 
             <InputSelect @bind-Value="starship.Classification">
                 <option value="">Select classification ...</option>
                 <option value="Exploration">Exploration</option>
@@ -35,19 +36,19 @@
     </p>
     <p>
         <label>
-            Maximum Accommodation:
+            Maximum Accommodation: 
             <InputNumber @bind-Value="starship.MaximumAccommodation" />
         </label>
     </p>
     <p>
         <label>
-            Engineering Approval:
+            Engineering Approval: 
             <InputCheckbox @bind-Value="starship.IsValidatedDesign" />
         </label>
     </p>
     <p>
         <label>
-            Production Date:
+            Production Date: 
             <InputDate @bind-Value="starship.ProductionDate" />
         </label>
     </p>

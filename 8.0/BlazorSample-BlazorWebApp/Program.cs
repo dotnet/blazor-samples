@@ -1,5 +1,6 @@
 using BlazorSample;
 using BlazorSample.Components;
+using static BlazorSample.Components.Pages.TheSunmakers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<NotifierService>();
+builder.Services.AddScoped<IDataAccess, DataAccess>();
 
 var app = builder.Build();
 

@@ -1,6 +1,10 @@
 @page "/on-params-set"
 @page "/on-params-set/{StartDate:datetime}"
 
+<PageTitle>On Parameters Set</PageTitle>
+
+<h1>On Parameters Set Example</h1>
+
 <p>@message</p>
 
 @code {
@@ -15,11 +19,13 @@
         {
             StartDate = DateTime.Now;
 
-            message = $"No start date in URL. Default value applied (StartDate: {StartDate}).";
+            message = $"No start date in URL. Default value applied " +
+                "(StartDate: {StartDate}).";
         }
         else
         {
-            message = $"The start date in the URL was used (StartDate: {StartDate}).";
+            message = $"The start date in the URL was used " +
+                "(StartDate: {StartDate}).";
         }
     }
 }

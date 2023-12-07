@@ -1,6 +1,8 @@
 @page "/control-head-content"
 
-<h1>Control &lt;head&gt; content</h1>
+<PageTitle>@title</PageTitle>
+
+<h1>Control &lt;head&gt; Content Example</h1>
 
 <p>
     Title: @title
@@ -10,13 +12,11 @@
     Description: @description
 </p>
 
-<PageTitle>@title</PageTitle>
-
 <HeadContent>
     <meta name="description" content="@description">
 </HeadContent>
 
 @code {
-    private string description = "Description set by component";
-    private string title = "Title set by component";
+    private string description = "This description is set by the component.";
+    private string title = "Control <head> Content";
 }

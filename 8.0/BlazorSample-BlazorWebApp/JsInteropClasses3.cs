@@ -1,13 +1,10 @@
 using Microsoft.JSInterop;
 
-public class JsInteropClasses3
-{
-    private readonly IJSRuntime js;
+namespace BlazorSample;
 
-    public JsInteropClasses3(IJSRuntime js)
-    {
-        this.js = js;
-    }
+public class JsInteropClasses3(IJSRuntime js)
+{
+    private readonly IJSRuntime js = js;
 
     public async ValueTask<string> CallHelloHelperGetHelloMessage(string? name)
     {

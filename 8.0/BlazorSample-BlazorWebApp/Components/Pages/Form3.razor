@@ -1,6 +1,9 @@
 @page "/form-3"
-@using Microsoft.Extensions.Logging
 @inject ILogger<Form3> Logger
+
+<PageTitle>Form 3</PageTitle>
+
+<h1>Form Example 3</h1>
 
 <EditForm EditContext="@editContext" OnSubmit="@HandleSubmit">
     <DataAnnotationsValidator />
@@ -8,7 +11,7 @@
 
     <p>
         <label>
-            Identifier:
+            Identifier: 
             <InputText @bind-Value="starship.Identifier" />
         </label>
     </p>

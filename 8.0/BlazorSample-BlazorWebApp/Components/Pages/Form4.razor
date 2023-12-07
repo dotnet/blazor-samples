@@ -1,20 +1,27 @@
 @page "/form-4"
-@using Microsoft.Extensions.Logging
 @implements IDisposable
 @inject ILogger<Form4> Logger
+
+<PageTitle>Form 4</PageTitle>
+
+<h1>Form Example 4</h1>
 
 <h2>Ship Holodecks</h2>
 
 <EditForm EditContext="editContext" OnValidSubmit="@HandleValidSubmit">
-    <label>
-        Type 1:
-        <InputCheckbox @bind-Value="holodeck.Type1" />
-    </label>
+    <p>
+        <label>
+            Type 1: 
+            <InputCheckbox @bind-Value="holodeck.Type1" />
+        </label>
+    </p>
 
-    <label>
-        Type 2:
-        <InputCheckbox @bind-Value="holodeck.Type2" />
-    </label>
+    <p>
+        <label>
+            Type 2: 
+            <InputCheckbox @bind-Value="holodeck.Type2" />
+        </label>
+    </p>
 
     <button type="submit">Update</button>
 

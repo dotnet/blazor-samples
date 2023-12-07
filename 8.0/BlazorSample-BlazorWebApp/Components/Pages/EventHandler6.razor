@@ -1,7 +1,15 @@
 @page "/event-handler-6"
 
+<PageTitle>Event Handler 6</PageTitle>
+
+<h1>Event Handler Example 6</h1>
+
 <p>
-    <input value="@count" @onkeydown="KeyHandler" @onkeydown:preventDefault />
+    <label>
+        Count of '+' key presses: 
+        <input value="@count" @onkeydown="KeyHandler" @onkeydown:preventDefault />
+    </label>
+    
 </p>
 
 @code {

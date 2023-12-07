@@ -69,20 +69,15 @@ namespace BlazorServerTransientDisposable
             return collection.BuildServiceProvider();
         }
 
-        private ServiceDescriptor CreatePatchedFactoryDescriptor(
+        private static ServiceDescriptor CreatePatchedFactoryDescriptor(
             ServiceDescriptor original)
         {
             var newDescriptor = new ServiceDescriptor(
                 original.ServiceType,
                 (sp) =>
                 {
-                    var originalFactory = original.ImplementationFactory;
-
-                    if (originalFactory is null)
-                    {
-                        throw new InvalidOperationException(
-                            "originalFactory is null.");
-                    }
+                    var originalFactory = original.ImplementationFactory ?? 
+                        throw new InvalidOperationException("originalFactory is null.");
 
                     var originalResult = originalFactory(sp);
 
@@ -105,7 +100,7 @@ namespace BlazorServerTransientDisposable
             return newDescriptor;
         }
 
-        private ServiceDescriptor CreatePatchedDescriptor(
+        private static ServiceDescriptor CreatePatchedDescriptor(
             ServiceDescriptor original)
         {
             var newDescriptor = new ServiceDescriptor(

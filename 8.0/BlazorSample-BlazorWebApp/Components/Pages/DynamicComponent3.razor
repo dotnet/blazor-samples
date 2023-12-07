@@ -1,6 +1,8 @@
 @page "/dynamic-component-3"
 
-<h1><code>DynamicComponent</code> Component Example 3</h1>
+<PageTitle>Dynamic Component 3</PageTitle>
+
+<h1>Dynamic Component Example 3</h1>
 
 <p>
     <label>
@@ -109,11 +111,11 @@
     {
         /*
             IMPORTANT!
-            Change "BlazorSample.Components.dynamiccomponent" to match
+            Change "BlazorSample.Components" to match
             your shared component's namespace in the Type.GetType() argument.
         */
         selectedType = e.Value?.ToString()?.Length > 0 ?
-            Type.GetType($"BlazorSample.Components.dynamiccomponent.{e.Value}") : null;
+            Type.GetType($"BlazorSample.Components.{e.Value}") : null;
     }
 
     private void ShowDTMessage(MouseEventArgs e) =>

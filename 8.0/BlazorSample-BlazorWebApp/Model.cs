@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+namespace BlazorSample;
+
 public class Model
 {
     [Required]

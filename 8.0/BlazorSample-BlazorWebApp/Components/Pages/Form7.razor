@@ -1,12 +1,20 @@
 @page "/form-7"
-@using Microsoft.Extensions.Logging
 @inject ILogger<Form7> Logger
+
+<PageTitle>Form 7</PageTitle>
+
+<h1>Form Example 7</h1>
 
 <EditForm Model="@model" OnValidSubmit="@HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <CustomInputText @bind-Value="model.Name" />
+    <p>
+        <label>
+            Name: 
+            <CustomInputText @bind-Value="model.Name" />
+        </label>
+    </p>
 
     <button type="submit">Submit</button>
 </EditForm>

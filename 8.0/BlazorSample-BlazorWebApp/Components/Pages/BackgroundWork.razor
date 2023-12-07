@@ -10,16 +10,15 @@
     <button @onclick="LongRunningWork">Trigger long running work</button>
     <button @onclick="Dispose">Trigger Disposal</button>
 </p>
-
 <p>Study logged messages in the console.</p>
 <p>
     If you trigger disposal within 10 seconds of page load, the 
-    BackgroundResourceMethod isn't executed.
+    <code>BackgroundResourceMethod</code> isn't executed.
 </p>
 <p>
-    If disposal occurs after BackgroundResourceMethod is called but before action 
-    is taken on the Resource, an ObjectDisposedException is thrown by 
-    BackgroundResourceMethod, and the Resource isn't processed.
+    If disposal occurs after <code>BackgroundResourceMethod</code> is called but before action
+    is taken on the resource, an <code>ObjectDisposedException</code> is thrown by 
+    <code>BackgroundResourceMethod</code>, and the resource isn't processed.
 </p>
 
 @code {
