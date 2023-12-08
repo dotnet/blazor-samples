@@ -67,15 +67,19 @@ else
         {
             try
             {
-                loadedFiles.Add(file);
-
-                var trustedFileNameForFileStorage = Path.GetRandomFileName();
+                var trustedFileName = Path.GetRandomFileName();
                 var path = Path.Combine(Environment.ContentRootPath,
-                        Environment.EnvironmentName, "unsafe_uploads",
-                        trustedFileNameForFileStorage);
+                    Environment.EnvironmentName, "unsafe_uploads",
+                    trustedFileName);
 
                 await using FileStream fs = new(path, FileMode.Create);
                 await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+
+                loadedFiles.Add(file);
+
+                Logger.LogInformation(
+                    "Unsafe Filename: {UnsafeFilename} File saved: {Filename}",
+                    file.Name, trustedFileName);
             }
             catch (Exception ex)
             {

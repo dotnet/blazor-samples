@@ -5,6 +5,11 @@
 
 <h1>On Parameters Set Example</h1>
 
+<p>
+    Pass a datetime in the URI of the browser's address bar. 
+    For example, add /1-1-2024 to the address.
+</p>
+
 <p>@message</p>
 
 @code {
@@ -20,12 +25,12 @@
             StartDate = DateTime.Now;
 
             message = $"No start date in URL. Default value applied " +
-                "(StartDate: {StartDate}).";
+                $"(StartDate: {StartDate}).";
         }
         else
         {
             message = $"The start date in the URL was used " +
-                "(StartDate: {StartDate}).";
+                $"(StartDate: {StartDate}).";
         }
     }
 }

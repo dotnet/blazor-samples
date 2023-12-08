@@ -78,15 +78,16 @@ else
                 while ((bytesRead = await readStream.ReadAsync(buffer)) != 0)
                 {
                     totalRead += bytesRead;
-
                     await writeStream.WriteAsync(buffer, 0, bytesRead);
-
                     progressPercent = Decimal.Divide(totalRead, file.Size);
-
                     StateHasChanged();
                 }
 
                 loadedFiles.Add(file);
+
+                Logger.LogInformation(
+                    "Unsafe Filename: {UnsafeFilename} File saved: {Filename}",
+                    file.Name, trustedFileName);
             }
             catch (Exception ex)
             {

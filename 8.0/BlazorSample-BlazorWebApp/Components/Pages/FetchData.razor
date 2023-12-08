@@ -1,4 +1,4 @@
-@page "/fetchdata"
+@page "/fetch-data"
 @inject WeatherForecastService ForecastService
 
 <PageTitle>Weather Forecast</PageTitle>
@@ -14,7 +14,25 @@
 else
 {
     <table class="table">
-        <!-- forecast data in table element content -->
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
     </table>
 }
 
@@ -23,6 +41,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+        forecasts = await ForecastService.GetForecastAsync(
+            DateOnly.FromDateTime(DateTime.Now));
     }
 }

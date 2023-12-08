@@ -1,7 +1,7 @@
-@page "/product-details/{ProductId:int}"
+@page "/product-details/{ProductId:int?}"
 @using Microsoft.Extensions.Logging
 @inject ILogger<ProductDetails> Logger
-@inject IProductRepository ProductRepository
+@inject IProductRepository Product
 
 <PageTitle>Product Details</PageTitle>
 
@@ -9,7 +9,7 @@
 
 @if (details != null)
 {
-    <h1>@details.ProductName</h1>
+    <h2>@details.ProductName</h2>
     <p>@details.Description</p>
 }
 else if (loadFailed)
@@ -33,7 +33,7 @@ else
         try
         {
             loadFailed = false;
-            details = await ProductRepository.GetProductByIdAsync(ProductId);
+            details = await Product.GetProductByIdAsync(ProductId);
         }
         catch (Exception ex)
         {
@@ -48,8 +48,27 @@ else
         public string? Description { get; set; }
     }
 
+    /*
+     * Register the service in Program.cs:
+     * builder.Services.AddScoped<IProductRepository, ProductRepository>();
+    */
+
     public interface IProductRepository
     {
         public Task<ProductDetail> GetProductByIdAsync(int id);
+    }
+
+    public class ProductRepository : IProductRepository
+    {
+        public Task<ProductDetail> GetProductByIdAsync(int id)
+        {
+            return Task.FromResult(
+                new ProductDetail()
+                { 
+                    ProductName = "Flowbee®",
+                    Description = "The Revolutionary Haircutting System " +
+                        "You've Come to Love! https://flowbee.com/"
+                });
+        }
     }
 }

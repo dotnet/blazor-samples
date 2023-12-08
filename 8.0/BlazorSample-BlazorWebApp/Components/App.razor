@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="BlazorSample.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
-    <link href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css" rel="stylesheet" />
     <HeadOutlet @rendermode="InteractiveServer" />
     <style>
         .red {
@@ -133,6 +132,15 @@
         window.interopCall = async (element) => {
             await element.dotNetHelper.invokeMethodAsync('UpdateMessage');
         }
+    </script>
+    <script>
+        window.setElementText1 = (element, text) => element.innerText = text;
+    </script>
+    <script>
+        window.setElementText2 = (element, text) => {
+            element.innerText = text;
+            return text;
+        };
     </script>
 </body>
 

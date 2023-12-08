@@ -13,7 +13,7 @@
     private async Task DownloadFileFromURL()
     {
         var fileName = "quote.txt";
-        var fileURL = "https://localhost:5001/files/quote.txt";
+        var fileURL = "/files/quote.txt";
         await JS.InvokeVoidAsync("triggerFileDownload", fileName, fileURL);
     }
 }

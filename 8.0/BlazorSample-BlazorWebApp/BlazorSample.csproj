@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Development\unsafe_uploads\" />
+  </ItemGroup>
+
 </Project>
