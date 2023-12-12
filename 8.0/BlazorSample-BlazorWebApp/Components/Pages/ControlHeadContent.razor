@@ -1,0 +1,22 @@
+@page "/control-head-content"
+
+<PageTitle>@title</PageTitle>
+
+<h1>Control &lt;head&gt; Content Example</h1>
+
+<p>
+    Title: @title
+</p>
+
+<p>
+    Description: @description
+</p>
+
+<HeadContent>
+    <meta name="description" content="@description">
+</HeadContent>
+
+@code {
+    private string description = "This description is set by the component.";
+    private string title = "Control <head> Content";
+}

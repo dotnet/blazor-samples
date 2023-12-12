@@ -1,0 +1,17 @@
+@page "/route-parameter-2/{text?}"
+
+<PageTitle>Route Parameter 2</PageTitle>
+
+<h1>Route Parameter Example 2</h1>
+
+<p>Blazor is @Text!</p>
+
+@code {
+    [Parameter]
+    public string? Text { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Text = Text ?? "fantastic";
+    }
+}

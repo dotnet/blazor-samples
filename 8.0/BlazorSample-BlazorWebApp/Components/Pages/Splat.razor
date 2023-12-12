@@ -1,0 +1,30 @@
+﻿@page "/splat"
+
+<PageTitle>SPLAT!</PageTitle>
+
+<h1>Splat Parameters Example</h1>
+
+<input id="useIndividualParams"
+       maxlength="@maxlength"
+       placeholder="@placeholder"
+       required="@required"
+       size="@size" />
+
+<input id="useAttributesDict"
+       @attributes="InputAttributes" />
+
+@code {
+    private string maxlength = "10";
+    private string placeholder = "Input placeholder text";
+    private string required = "required";
+    private string size = "50";
+
+    private Dictionary<string, object> InputAttributes { get; set; } =
+        new()
+        {
+            { "maxlength", "10" },
+            { "placeholder", "Input placeholder text" },
+            { "required", "required" },
+            { "size", "50" }
+        };
+}

@@ -1,0 +1,41 @@
+@page "/call-dotnet-4"
+@inject IJSRuntime JS
+
+<PageTitle>Call .NET 4</PageTitle>
+
+<h1>Call .NET Example 4</h1>
+
+<p>
+    <label>
+        Name: <input @bind="name" />
+    </label>
+</p>
+
+<p>
+    <button @onclick="TriggerDotNetInstanceMethod">
+        Trigger .NET instance method
+    </button>
+</p>
+
+<p>
+    @result
+</p>
+
+@code {
+    private string? name;
+    private string? result;
+    private JsInteropClasses3? jsInteropClasses;
+
+    protected override void OnInitialized()
+    {
+        jsInteropClasses = new JsInteropClasses3(JS);
+    }
+
+    private async Task TriggerDotNetInstanceMethod()
+    {
+        if (jsInteropClasses is not null)
+        {
+            result = await jsInteropClasses.CallHelloHelperGetHelloMessage(name);
+        }
+    }
+}

@@ -1,0 +1,16 @@
+@page "/on-init"
+
+<PageTitle>On Initialized</PageTitle>
+
+<h1>On Initialized Example</h1>
+
+<p>@message</p>
+
+@code {
+    private string? message;
+
+    protected override void OnInitialized()
+    {
+        message = $"Initialized at {DateTime.Now}";
+    }
+}

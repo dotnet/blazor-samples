@@ -1,0 +1,32 @@
+@page "/built-content"
+
+<PageTitle>Built Content</PageTitle>
+
+<h1>Built Content Example</h1>
+
+<div>
+    @CustomRender
+</div>
+
+<button @onclick="RenderComponent">
+    Create three Pet Details components
+</button>
+
+@code {
+    private RenderFragment? CustomRender { get; set; }
+
+    private RenderFragment CreateComponent() => builder =>
+    {
+        for (var i = 0; i < 3; i++) 
+        {
+            builder.OpenComponent(0, typeof(PetDetails));
+            builder.AddAttribute(1, "PetDetailsQuote", "Someone's best friend!");
+            builder.CloseComponent();
+        }
+    };
+
+    private void RenderComponent()
+    {
+        CustomRender = CreateComponent();
+    }
+}

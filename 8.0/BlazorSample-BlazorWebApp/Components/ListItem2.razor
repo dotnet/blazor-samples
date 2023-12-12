@@ -1,0 +1,39 @@
+@inject IJSRuntime JS
+
+<li>
+    <span style="font-weight:bold;color:@color" @ref="elementRef" 
+        onclick="interopCall(this)">
+        @message
+    </span>
+    <span style="display:@display">
+        Not Updated Yet!
+    </span>
+</li>
+
+@code {
+    private DotNetObjectReference<ListItem2>? objRef;
+    private ElementReference elementRef;
+    private string display = "inline-block";
+    private string message = "Select one of these list items.";
+    private string color = "initial";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            objRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("assignDotNetHelper", elementRef, objRef);
+        }
+    }
+
+    [JSInvokable]
+    public void UpdateMessage()
+    {
+        message = "UpdateMessage Called!";
+        display = "none";
+        color = "MediumSeaGreen";
+        StateHasChanged();
+    }
+
+    public void Dispose() => objRef?.Dispose();
+}
