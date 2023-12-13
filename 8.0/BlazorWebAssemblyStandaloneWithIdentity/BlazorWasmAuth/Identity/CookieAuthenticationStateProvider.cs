@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components.Authorization;
 using BlazorWasmAuth.Identity.Models;
 
 namespace BlazorWasmAuth.Identity
@@ -33,7 +33,7 @@ namespace BlazorWasmAuth.Identity
         /// <summary>
         /// Default principal for anonymous (not authenticated) users.
         /// </summary>
-        private readonly ClaimsPrincipal Unauthenticated = 
+        private readonly ClaimsPrincipal Unauthenticated =
             new(new ClaimsIdentity());
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace BlazorWasmAuth.Identity
                 };
             }
             catch { }
-             
+
             // unknown error
             return new FormResult
             {
@@ -134,7 +134,7 @@ namespace BlazorWasmAuth.Identity
 
                     // success!
                     return new FormResult { Succeeded = true };
-                }                
+                }
             }
             catch { }
 
@@ -187,6 +187,30 @@ namespace BlazorWasmAuth.Identity
                         userInfo.Claims.Where(c => c.Key != ClaimTypes.Name && c.Key != ClaimTypes.Email)
                             .Select(c => new Claim(c.Key, c.Value)));
 
+                    // tap the roles endpoint for the user's roles
+                    var rolesResponse = await _httpClient.GetAsync("roles");
+
+                    // throw if request fails
+                    rolesResponse.EnsureSuccessStatusCode();
+
+                    // read the response into a string
+                    var rolesJson = await rolesResponse.Content.ReadAsStringAsync();
+
+                    // deserialize the roles string into an array
+                    var roles = JsonSerializer.Deserialize<RoleClaim[]>(rolesJson, jsonSerializerOptions);
+
+                    // if there are roles, add them to the claims collection
+                    if (roles?.Length > 0)
+                    {
+                        foreach (var role in roles)
+                        {
+                            if (!string.IsNullOrEmpty(role.Type) && !string.IsNullOrEmpty(role.Value))
+                            {
+                                claims.Add(new Claim(role.Type, role.Value, role.ValueType, role.Issuer, role.OriginalIssuer));
+                            }
+                        }
+                    }
+
                     // set the principal
                     var id = new ClaimsIdentity(claims, nameof(CookieAuthenticationStateProvider));
                     user = new ClaimsPrincipal(id);
@@ -209,6 +233,15 @@ namespace BlazorWasmAuth.Identity
         {
             await GetAuthenticationStateAsync();
             return _authenticated;
+        }
+
+        public class RoleClaim
+        {
+            public string? Issuer { get; set; }
+            public string? OriginalIssuer { get; set; }
+            public string? Type { get; set; }
+            public string? Value { get; set; }
+            public string? ValueType { get; set; }
         }
     }
 }
