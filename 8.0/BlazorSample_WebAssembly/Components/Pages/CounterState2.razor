@@ -1,0 +1,37 @@
+@page "/counter-state-2"
+@using System.Timers
+@implements IDisposable
+
+<PageTitle>Counter State 2</PageTitle>
+
+<h1>Counter State Example 2</h1>
+
+<p>
+    This counter demonstrates <code>Timer</code> disposal.
+</p>
+
+<p>
+    Current count: @currentCount
+</p>
+
+@code {
+    private int currentCount = 0;
+    private Timer timer = new(1000);
+
+    protected override void OnInitialized()
+    {
+        timer.Elapsed += (sender, eventArgs) => OnTimerCallback();
+        timer.Start();
+    }
+
+    private void OnTimerCallback()
+    {
+        _ = InvokeAsync(() =>
+        {
+            currentCount++;
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose() => timer.Dispose();
+}

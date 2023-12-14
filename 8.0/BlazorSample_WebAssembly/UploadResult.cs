@@ -1,3 +1,5 @@
+namespace BlazorSample;
+
 public class UploadResult
 {
     public bool Uploaded { get; set; }

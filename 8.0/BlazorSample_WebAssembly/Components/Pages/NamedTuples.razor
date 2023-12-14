@@ -1,0 +1,12 @@
+@page "/named-tuples"
+
+<PageTitle>Named Tuples</PageTitle>
+
+<h1>Named Tuples Example</h1>
+
+<NamedTupleChild Data="@data" />
+
+@code {
+    private (int TheInteger, string TheString, bool TheBoolean) data = 
+        new(999, "I aim to misbehave.", true);
+}

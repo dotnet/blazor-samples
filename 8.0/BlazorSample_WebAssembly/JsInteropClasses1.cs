@@ -1,13 +1,10 @@
 using Microsoft.JSInterop;
 
-public class JsInteropClasses1 : IDisposable
-{
-    private readonly IJSRuntime js;
+namespace BlazorSample;
 
-    public JsInteropClasses1(IJSRuntime js)
-    {
-        this.js = js;
-    }
+public class JsInteropClasses1(IJSRuntime js) : IDisposable
+{
+    private readonly IJSRuntime js = js;
 
     public async ValueTask TickerChanged(string symbol, decimal price)
     {
@@ -16,5 +13,6 @@ public class JsInteropClasses1 : IDisposable
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
     }
 }

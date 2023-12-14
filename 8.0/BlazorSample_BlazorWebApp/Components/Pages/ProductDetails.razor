@@ -1,5 +1,4 @@
 @page "/product-details/{ProductId:int?}"
-@using Microsoft.Extensions.Logging
 @inject ILogger<ProductDetails> Logger
 @inject IProductRepository Product
 
@@ -50,6 +49,7 @@ else
 
     /*
      * Register the service in Program.cs:
+     * using static BlazorSample.Components.Pages.ProductDetails;
      * builder.Services.AddScoped<IProductRepository, ProductRepository>();
     */
 
@@ -65,7 +65,7 @@ else
             return Task.FromResult(
                 new ProductDetail()
                 { 
-                    ProductName = "Flowbee®",
+                    ProductName = "Flowbee ",
                     Description = "The Revolutionary Haircutting System " +
                         "You've Come to Love! https://flowbee.com/"
                 });

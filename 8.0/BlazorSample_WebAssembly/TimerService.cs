@@ -1,17 +1,13 @@
-public class TimerService : IDisposable
+namespace BlazorSample;
+
+public class TimerService(NotifierService notifier, 
+    ILogger<TimerService> logger) : IDisposable
 {
     private int elapsedCount;
     private readonly static TimeSpan heartbeatTickRate = TimeSpan.FromSeconds(5);
-    private readonly ILogger<TimerService> logger;
-    private readonly NotifierService notifier;
+    private readonly ILogger<TimerService> logger = logger;
+    private readonly NotifierService notifier = notifier;
     private PeriodicTimer? timer;
-
-    public TimerService(NotifierService notifier,
-        ILogger<TimerService> logger)
-    {
-        this.notifier = notifier;
-        this.logger = logger;
-    }
 
     public async Task Start()
     {
@@ -26,7 +22,8 @@ public class TimerService : IDisposable
                 {
                     elapsedCount += 1;
                     await notifier.Update("elapsedCount", elapsedCount);
-                    logger.LogInformation($"elapsedCount: {elapsedCount}");
+                    logger.LogInformation("elapsedCount: {elapsedCount}", 
+                        elapsedCount);
                 }
             }
         }
@@ -35,5 +32,7 @@ public class TimerService : IDisposable
     public void Dispose()
     {
         timer?.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }

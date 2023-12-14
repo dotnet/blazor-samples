@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration.Memory;
+using BlazorSample;
 using BlazorSample.Components;
+using static BlazorSample.Components.Pages.ProductDetails;
+using static BlazorSample.Components.Pages.TheSunmakers;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -10,6 +13,9 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddSingleton<NotifierService>();
+builder.Services.AddSingleton<TimerService>();
+builder.Services.AddSingleton<IDataAccess, DataAccess>();
+builder.Services.AddSingleton<IProductRepository, ProductRepository>();
 
 #region snippet1
 var vehicleData = new Dictionary<string, string?>()

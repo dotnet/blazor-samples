@@ -1,0 +1,123 @@
+@page "/dynamic-component-3"
+
+<PageTitle>Dynamic Component 3</PageTitle>
+
+<h1>Dynamic Component Example 3</h1>
+
+<p>
+    <label>
+        Select your transport:
+        <select @onchange="OnDropdownChange">
+            <option value="">Select a value</option>
+            <option value="@nameof(RocketLab2)">Rocket Lab</option>
+            <option value="@nameof(SpaceX2)">SpaceX</option>
+            <option value="@nameof(UnitedLaunchAlliance2)">ULA</option>
+            <option value="@nameof(VirginGalactic2)">Virgin Galactic</option>
+        </select>
+    </label>
+</p>
+
+@if (selectedType is not null)
+{
+    <div class="border border-primary my-1 p-1">
+        <DynamicComponent Type="@selectedType"
+            Parameters="@Components[selectedType.Name].Parameters" />
+    </div>
+}
+
+<p>
+    @message
+</p>
+
+@code {
+    private Type? selectedType;
+    private string? message;
+
+    private Dictionary<string, ComponentMetadata> Components
+    {
+        get
+        {
+            return new Dictionary<string, ComponentMetadata>()
+            {
+                {
+                    "RocketLab2",
+                    new ComponentMetadata
+                    {
+                        Name = "Rocket Lab",
+                        Parameters =
+                            new()
+                            {
+                                {
+                                    "OnClickCallback",
+                                    EventCallback.Factory.Create<MouseEventArgs>(
+                                        this, ShowDTMessage)
+                                }
+                            }
+                    }
+                },
+                {
+                    "VirginGalactic2",
+                    new ComponentMetadata
+                    {
+                        Name = "Virgin Galactic",
+                        Parameters =
+                            new()
+                            {
+                                {
+                                    "OnClickCallback",
+                                    EventCallback.Factory.Create<MouseEventArgs>(
+                                        this, ShowDTMessage)
+                                }
+                            }
+                    }
+                },
+                {
+                    "UnitedLaunchAlliance2",
+                    new ComponentMetadata
+                    {
+                        Name = "ULA",
+                        Parameters =
+                            new()
+                            {
+                                {
+                                    "OnClickCallback",
+                                    EventCallback.Factory.Create<MouseEventArgs>(
+                                        this, ShowDTMessage)
+                                }
+                            }
+                    }
+                },
+                {
+                    "SpaceX2",
+                    new ComponentMetadata
+                    {
+                        Name = "SpaceX",
+                        Parameters =
+                            new()
+                            {
+                                {
+                                    "OnClickCallback",
+                                    EventCallback.Factory.Create<MouseEventArgs>(
+                                        this, ShowDTMessage)
+                                }
+                            }
+                    }
+                }
+            };
+        }
+    }
+
+    private void OnDropdownChange(ChangeEventArgs e)
+    {
+        /*
+            IMPORTANT!
+            Change "BlazorSample.Components" to match
+            your shared component's namespace in the Type.GetType() argument.
+        */
+        selectedType = e.Value?.ToString()?.Length > 0 ?
+            Type.GetType($"BlazorSample.Components.{e.Value}") : null;
+    }
+
+    private void ShowDTMessage(MouseEventArgs e) =>
+        message = $"The current DT is: {DateTime.Now}.";
+}

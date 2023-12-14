@@ -1,0 +1,40 @@
+@page "/event-handler-1"
+
+<PageTitle>Event Handler 1</PageTitle>
+
+<h1>Event Handler Example 1</h1>
+
+<h2>@currentHeading</h2>
+
+<p>
+    <label>
+        New title
+        <input @bind="newHeading" />
+    </label>
+    <button @onclick="UpdateHeading">
+        Update heading
+    </button>
+</p>
+
+<p>
+    <label>
+        <input type="checkbox" @onchange="CheckChanged" />
+        @checkedMessage
+    </label>
+</p>
+
+@code {
+    private string currentHeading = "Initial heading";
+    private string? newHeading;
+    private string checkedMessage = "Not changed yet";
+
+    private void UpdateHeading()
+    {
+        currentHeading = $"{newHeading}!!!";
+    }
+
+    private void CheckChanged()
+    {
+        checkedMessage = $"Last changed at {DateTime.Now}";
+    }
+}
