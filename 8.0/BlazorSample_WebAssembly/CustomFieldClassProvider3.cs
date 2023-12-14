@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components.Forms;
 
+namespace BlazorSample;
+
 public class CustomFieldClassProvider3 : FieldCssClassProvider
 {
     public override string GetFieldCssClass(EditContext editContext,

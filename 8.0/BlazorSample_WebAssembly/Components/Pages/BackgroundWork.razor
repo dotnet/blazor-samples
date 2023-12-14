@@ -1,0 +1,73 @@
+@page "/background-work"
+@implements IDisposable
+@inject ILogger<BackgroundWork> Logger
+
+<PageTitle>Background Work</PageTitle>
+
+<h1>Background Work Example</h1>
+
+<p>
+    <button @onclick="LongRunningWork">Trigger long running work</button>
+    <button @onclick="Dispose">Trigger Disposal</button>
+</p>
+<p>Study logged messages in the console.</p>
+<p>
+    If you trigger disposal within 10 seconds of page load, the 
+    <code>BackgroundResourceMethod</code> isn't executed.
+</p>
+<p>
+    If disposal occurs after <code>BackgroundResourceMethod</code> is called but before action
+    is taken on the resource, an <code>ObjectDisposedException</code> is thrown by 
+    <code>BackgroundResourceMethod</code>, and the resource isn't processed.
+</p>
+
+@code {
+    private Resource resource = new();
+    private CancellationTokenSource cts = new();
+    private IList<string> messages = [];
+
+    protected async Task LongRunningWork()
+    {
+        Logger.LogInformation("Long running work started");
+
+        await Task.Delay(10000, cts.Token);
+
+        cts.Token.ThrowIfCancellationRequested();
+        resource.BackgroundResourceMethod(Logger);
+    }
+
+    public void Dispose()
+    {
+        Logger.LogInformation("Executing Dispose");
+
+        if (!cts.IsCancellationRequested)
+        {
+            cts.Cancel();
+        }
+        
+        cts?.Dispose();
+        resource?.Dispose();
+    }
+
+    private class Resource : IDisposable
+    {
+        private bool disposed;
+
+        public void BackgroundResourceMethod(ILogger<BackgroundWork> logger)
+        {
+            logger.LogInformation("BackgroundResourceMethod: Start method");
+
+            if (disposed)
+            {
+                logger.LogInformation("BackgroundResourceMethod: Disposed");
+                throw new ObjectDisposedException(nameof(Resource));
+            }
+
+            // Take action on the Resource
+
+            logger.LogInformation("BackgroundResourceMethod: Action on Resource");
+        }
+
+        public void Dispose() => disposed = true;
+    }
+}

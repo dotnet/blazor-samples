@@ -1,3 +1,5 @@
+namespace BlazorSample;
+
 public class Setting
 {
     public string? SettingName { get; set; }

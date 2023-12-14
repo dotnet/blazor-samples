@@ -1,9 +1,0 @@
-@page "/render-tuple-parent"
-
-<h1>Render Tuple Parent</h1>
-
-<RenderTupleChild Data="@data" />
-
-@code {
-    private (int, string, bool) data = new(999, "I aim to misbehave.", true);
-}

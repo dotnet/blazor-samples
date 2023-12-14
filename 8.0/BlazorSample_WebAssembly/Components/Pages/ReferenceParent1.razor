@@ -1,0 +1,15 @@
+﻿@page "/reference-parent-1"
+
+<PageTitle>Reference Parent 1</PageTitle>
+
+<h1>Reference Parent Example 1</h1>
+
+<button @onclick="@(() => childComponent?.ChildMethod(5))">
+    Call <code>ReferenceChild.ChildMethod</code> with an argument of 5
+</button>
+
+<ReferenceChild @ref="childComponent" />
+
+@code {
+    private ReferenceChild? childComponent;
+}

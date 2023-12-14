@@ -1,0 +1,31 @@
+@page "/control-render"
+
+<PageTitle>Control Render</PageTitle>
+
+<h1>Control Render Example</h1>
+
+<label>
+    <input type="checkbox" @bind="shouldRender" />
+    Should Render?
+</label>
+
+<p>Current count: @currentCount</p>
+
+<p>
+    <button @onclick="IncrementCount">Click me</button>
+</p>
+
+@code {
+    private int currentCount = 0;
+    private bool shouldRender = true;
+
+    protected override bool ShouldRender()
+    {
+        return shouldRender;
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

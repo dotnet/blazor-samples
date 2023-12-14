@@ -1,13 +1,10 @@
 using Microsoft.JSInterop;
 
-public class HelloHelper
-{
-    public HelloHelper(string? name)
-    {
-        Name = name ?? "No Name";
-    }
+namespace BlazorSample;
 
-    public string? Name { get; set; }
+public class HelloHelper(string? name)
+{
+    public string? Name { get; set; } = name ?? "No Name";
 
     [JSInvokable]
     public string GetHelloMessage() => $"Hello, {Name}!";

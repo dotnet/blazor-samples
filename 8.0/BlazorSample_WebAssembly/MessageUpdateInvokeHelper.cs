@@ -1,13 +1,10 @@
 using Microsoft.JSInterop;
 
-public class MessageUpdateInvokeHelper
-{
-    private Action action;
+namespace BlazorSample;
 
-    public MessageUpdateInvokeHelper(Action action)
-    {
-        this.action = action;
-    }
+public class MessageUpdateInvokeHelper(Action action)
+{
+    private readonly Action action = action;
 
     [JSInvokable]
     public void UpdateMessageCaller()

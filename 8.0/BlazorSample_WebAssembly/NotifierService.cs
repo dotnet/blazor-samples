@@ -1,4 +1,6 @@
-﻿public class NotifierService
+﻿namespace BlazorSample;
+
+public class NotifierService
 {
     public async Task Update(string key, int value)
     {
