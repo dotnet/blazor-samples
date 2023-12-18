@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorSample.Components.Pages;
+namespace BlazorSample.Pages;
 
 public partial class CallJs7 : 
     ComponentBase, IObservable<ElementReference>, IDisposable

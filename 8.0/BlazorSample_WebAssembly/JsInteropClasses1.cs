@@ -13,6 +13,8 @@ public class JsInteropClasses1(IJSRuntime js) : IDisposable
 
     public void Dispose()
     {
+        // The following prevents derived types that introduce a
+        // finalizer from needing to re-implement IDisposable.
         GC.SuppressFinalize(this);
     }
 }
