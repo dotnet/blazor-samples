@@ -33,6 +33,8 @@ public class TimerService(NotifierService notifier,
     {
         timer?.Dispose();
 
+        // The following prevents derived types that introduce a
+        // finalizer from needing to re-implement IDisposable.
         GC.SuppressFinalize(this);
     }
 }

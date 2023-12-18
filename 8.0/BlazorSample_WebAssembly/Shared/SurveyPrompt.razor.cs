@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace BlazorSample.Components;
+namespace BlazorSample.Shared;
 
 public partial class SurveyPrompt : 
     ComponentBase, IObserver<ElementReference>, IDisposable
@@ -32,10 +32,10 @@ public partial class SurveyPrompt :
         subscription = null;
     }
 
-    public void  OnNext(ElementReference value)
+    public void OnNext(ElementReference value)
     {
-        _ = (JS?.InvokeAsync<object>(
-            "setElementClass", [value, "red"]));
+        JS?.InvokeAsync<object>(
+            "setElementClass", [value, "red"]);
     }
 
     public void Dispose()

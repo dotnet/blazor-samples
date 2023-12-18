@@ -2,9 +2,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration.Memory;
 using BlazorSample;
-using BlazorSample.Components;
-using static BlazorSample.Components.Pages.ProductDetails;
-using static BlazorSample.Components.Pages.TheSunmakers;
+using static BlazorSample.Pages.ProductDetails;
+using static BlazorSample.Pages.TheSunmakers;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
