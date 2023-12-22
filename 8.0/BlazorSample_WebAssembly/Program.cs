@@ -16,7 +16,6 @@ builder.Services.AddSingleton<TimerService>();
 builder.Services.AddSingleton<IDataAccess, DataAccess>();
 builder.Services.AddSingleton<IProductRepository, ProductRepository>();
 
-#region snippet1
 var vehicleData = new Dictionary<string, string?>()
 {
     { "color", "blue" },
@@ -30,6 +29,5 @@ var vehicleData = new Dictionary<string, string?>()
 var memoryConfig = new MemoryConfigurationSource { InitialData = vehicleData };
 
 builder.Configuration.Add(memoryConfig);
-#endregion
 
 await builder.Build().RunAsync();
