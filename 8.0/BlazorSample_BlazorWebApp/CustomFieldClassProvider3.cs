@@ -7,7 +7,7 @@ public class CustomFieldClassProvider3 : FieldCssClassProvider
     public override string GetFieldCssClass(EditContext editContext,
         in FieldIdentifier fieldIdentifier)
     {
-        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+        var isValid = editContext.IsValid(fieldIdentifier);
 
         if (fieldIdentifier.FieldName == "Name")
         {
