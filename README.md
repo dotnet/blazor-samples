@@ -24,8 +24,9 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 * Blazor Server with EF Core: [ASP.NET Core Blazor Server with Entity Framework Core (EFCore)](https://docs.microsoft.com/aspnet/core/blazor/blazor-server-ef-core)
 * Blazor with SignalR: [Use ASP.NET Core SignalR with Blazor](https://docs.microsoft.com/aspnet/core/blazor/tutorials/signalr-blazor)
 * Blazor WebAssembly scopes-enabled logging: [ASP.NET Core Blazor logging: Client-side log scopes](https://docs.microsoft.com/aspnet/core/blazor/fundamentals/logging#client-side-log-scopes)
-* Blazor Web App with OIDC and Aspire: [Blazor Web App with OIDC and Aspire](https://docs.microsoft.com/aspnet/core/blazor/security/server/blazor-web-app-with-oidc-and-aspire)
-* Blazor WebAssembly with ASP.NET Core Identity: [Blazor WebAssembly with ASP.NET Core Identity](https://docs.microsoft.com/aspnet/core/tutorials/signalr-blazor)
+* Blazor WebAssembly with ASP.NET Core Identity: [Blazor WebAssembly with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity)
+
+<!-- * Blazor Web App with OIDC and Aspire: [Blazor Web App with OIDC and Aspire](https://docs.microsoft.com/aspnet/core/blazor/security/server/blazor-web-app-with-oidc-and-aspire) -->
 
 ## Snippet sample apps for article code examples
 
