@@ -15,6 +15,9 @@ builder.Services.AddScoped<TimerService>();
 builder.Services.AddScoped<IDataAccess, DataAccess>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddHttpClient();
+builder.Services.AddCascadingValue(sp => new Dalek { Units = 123 });
+builder.Services.AddCascadingValue("AlphaGroup", sp => new Dalek { Units = 456 });
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 

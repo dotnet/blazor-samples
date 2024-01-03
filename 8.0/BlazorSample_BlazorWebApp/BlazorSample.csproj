@@ -10,4 +10,8 @@
     <Folder Include="Development\unsafe_uploads\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.0" />
+  </ItemGroup>
+
 </Project>

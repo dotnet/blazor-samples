@@ -1,0 +1,27 @@
+﻿@page "/prerendered-counter-1"
+@rendermode @(new InteractiveServerRenderMode(prerender: true))
+@inject ILogger<PrerenderedCounter1> Logger
+
+<PageTitle>Prerendered Counter 1</PageTitle>
+
+<h1>Prerendered Counter 1</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount;
+    private Random r = new Random();
+
+    protected override void OnInitialized()
+    {
+        currentCount = r.Next(100);
+        Logger.LogInformation("currentCount set to {Count}", currentCount);
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

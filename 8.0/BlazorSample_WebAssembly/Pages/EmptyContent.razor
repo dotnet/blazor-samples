@@ -1,0 +1,24 @@
+﻿@page "/empty-content"
+
+<PageTitle>Empty Content</PageTitle>
+
+<h1>Empty Content Example</h1>
+
+<Virtualize Items="@stringList">
+    <ItemContent>
+        <p>
+            @context
+        </p>
+    </ItemContent>
+    <EmptyContent>
+        <p>
+            There are no strings to display.
+        </p>
+    </EmptyContent>
+</Virtualize>
+
+@code {
+    private List<string>? stringList;
+
+    protected override void OnInitialized() => stringList ??= new();
+}
