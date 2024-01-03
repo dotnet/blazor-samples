@@ -15,6 +15,8 @@ builder.Services.AddSingleton<NotifierService>();
 builder.Services.AddSingleton<TimerService>();
 builder.Services.AddSingleton<IDataAccess, DataAccess>();
 builder.Services.AddSingleton<IProductRepository, ProductRepository>();
+builder.Services.AddCascadingValue(sp => new Dalek { Units = 123 });
+builder.Services.AddCascadingValue("AlphaGroup", sp => new Dalek { Units = 456 });
 
 var vehicleData = new Dictionary<string, string?>()
 {
