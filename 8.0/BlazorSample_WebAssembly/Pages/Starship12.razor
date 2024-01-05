@@ -1,0 +1,31 @@
+﻿@page "/starship-12"
+@inject SaladChef SaladChef
+
+<EditForm Model="@this" autocomplete="off" FormName="Starship12">
+    <DataAnnotationsValidator />
+    <div>
+        <label>
+            Salad topper (@saladToppers):
+            <input @bind="SaladIngredient" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+    <ul>
+        @foreach (var message in context.GetValidationMessages())
+        {
+            <li class="validation-message">@message</li>
+        }
+    </ul>
+</EditForm>
+
+@code {
+    private string? saladToppers;
+
+    [SaladChefValidator]
+    public string? SaladIngredient { get; set; }
+
+    protected override void OnInitialized() =>
+        saladToppers ??= string.Join(", ", SaladChef.SaladToppers);
+}
