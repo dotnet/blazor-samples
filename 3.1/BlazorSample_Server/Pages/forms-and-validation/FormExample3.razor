@@ -9,7 +9,7 @@
     <p>
         <label>
             Identifier:
-            <InputText @bind-Value="starship.Identifier" />
+            <InputText @bind-Value="starship.Id" />
         </label>
     </p>
 
@@ -26,7 +26,7 @@
     private Starship starship = 
         new Starship()
         {
-            Identifier = "NCC-1701",
+            Id = "NCC-1701",
             Classification = "Exploration",
             MaximumAccommodation = 150,
             IsValidatedDesign = true,
