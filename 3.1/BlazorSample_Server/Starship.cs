@@ -5,7 +5,7 @@ public class Starship
 {
     [Required]
     [StringLength(16, ErrorMessage = "Identifier too long (16 character limit).")]
-    public string Identifier { get; set; }
+    public string Id { get; set; }
 
     public string Description { get; set; }
 
