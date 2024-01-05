@@ -1,0 +1,43 @@
+﻿@page "/starship-13"
+@using System.ComponentModel.DataAnnotations
+@inject ILogger<Starship13> Logger
+
+<EditForm EditContext="@editContext" OnValidSubmit="@Submit" FormName="Starship13">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>
+            Identifier:
+            <InputText @bind-Value="Model!.Id" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+    private EditContext? editContext;
+
+    [SupplyParameterFromForm]
+    public Starship? Model { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Model ??= new();
+        editContext = new(Model);
+        editContext.SetFieldCssClassProvider(new CustomFieldClassProvider());
+    }
+
+    private void Submit()
+    {
+        Logger.LogInformation("Submit called: Processing the form");
+    }
+
+    public class Starship
+    {
+        [Required]
+        [StringLength(10, ErrorMessage = "Id is too long.")]
+        public string? Id { get; set; }
+    }
+}

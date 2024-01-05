@@ -1,0 +1,62 @@
+﻿@page "/starship-14"
+@implements IDisposable
+@inject ILogger<Starship14> Logger
+
+<EditForm EditContext="@editContext" OnValidSubmit="@Submit" FormName="Starship14">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>
+            Identifier:
+            <InputText @bind-Value="Model!.Id" />
+        </label>
+    </div>
+    <div>
+        <button type="submit" disabled="@formInvalid">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+    private bool formInvalid = false;
+    private EditContext? editContext;
+
+    [SupplyParameterFromForm]
+    private Starship? Model { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Model ??=
+            new()
+                {
+                    Id = "NCC-1701",
+                    Classification = "Exploration",
+                    MaximumAccommodation = 150,
+                    IsValidatedDesign = true,
+                    ProductionDate = new DateTime(2245, 4, 11)
+                };
+        editContext = new(Model);
+        editContext.OnFieldChanged += HandleFieldChanged;
+    }
+
+    private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        if (editContext is not null)
+        {
+            formInvalid = !editContext.Validate();
+            StateHasChanged();
+        }
+    }
+
+    private void Submit()
+    {
+        Logger.LogInformation("Submit called: Processing the form");
+    }
+
+    public void Dispose()
+    {
+        if (editContext is not null)
+        {
+            editContext.OnFieldChanged -= HandleFieldChanged;
+        }
+    }
+}

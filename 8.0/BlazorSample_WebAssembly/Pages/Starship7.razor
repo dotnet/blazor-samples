@@ -1,0 +1,28 @@
+﻿@page "/starship-7"
+@inject ILogger<Starship7> Logger
+
+<EditForm Model="@Model" OnSubmit="@Submit" FormName="Starship7">
+    <div>
+        <label>
+            Identifier: 
+            <InputText @bind-Value="Model!.Id" />
+        </label>
+    </div>
+    <StarshipSubform @bind-Value="Model!.Details" />
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm]
+    public Ship? Model { get; set; }
+
+    protected override void OnInitialized() => Model ??= new();
+
+    private void Submit()
+    {
+        Logger.LogInformation("Id = {Id} Desc = {Description} Length = {Length}",
+            Model?.Id, Model?.Details?.Description, Model?.Details?.Length);
+    }
+}

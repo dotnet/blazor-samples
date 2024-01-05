@@ -1,0 +1,75 @@
+﻿@page "/starship-8"
+@implements IDisposable
+@inject ILogger<Starship8> Logger
+
+<h2>Holodeck Configuration</h2>
+
+<EditForm EditContext="editContext" OnValidSubmit="@Submit" FormName="Starship8">
+    <div>
+        <label>
+            <InputCheckbox @bind-Value="Model!.Subsystem1" />
+            Safety Subsystem
+        </label>
+    </div>
+    <div>
+        <label>
+            <InputCheckbox @bind-Value="Model!.Subsystem2" />
+            Emergency Shutdown Subsystem
+        </label>
+    </div>
+    <div>
+        <ValidationMessage For="() => Model!.Options" />
+    </div>
+    <div>
+        <button type="submit">Update</button>
+    </div>
+</EditForm>
+
+@code {
+    private EditContext? editContext;
+
+    [SupplyParameterFromForm]
+    public Holodeck? Model { get; set; }
+
+    private ValidationMessageStore? messageStore;
+
+    protected override void OnInitialized()
+    {
+        Model ??= new();
+        editContext = new(Model);
+        editContext.OnValidationRequested += HandleValidationRequested;
+        messageStore = new(editContext);
+    }
+
+    private void HandleValidationRequested(object? sender,
+        ValidationRequestedEventArgs args)
+    {
+        messageStore?.Clear();
+
+        // Custom validation logic
+        if (!Model!.Options)
+        {
+            messageStore?.Add(() => Model.Options, "Select at least one.");
+        }
+    }
+
+    private void Submit()
+    {
+        Logger.LogInformation("Submit called: Processing the form");
+    }
+
+    public class Holodeck
+    {
+        public bool Subsystem1 { get; set; }
+        public bool Subsystem2 { get; set; }
+        public bool Options => Subsystem1 || Subsystem2;
+    }
+
+    public void Dispose()
+    {
+        if (editContext is not null)
+        {
+            editContext.OnValidationRequested -= HandleValidationRequested;
+        }
+    }
+}

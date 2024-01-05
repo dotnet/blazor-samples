@@ -18,6 +18,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddCascadingValue(sp => new Dalek { Units = 123 });
 builder.Services.AddCascadingValue("AlphaGroup", sp => new Dalek { Units = 456 });
 builder.Services.AddMemoryCache();
+builder.Services.AddTransient<SaladChef>();
 
 var app = builder.Build();
 

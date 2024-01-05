@@ -1,0 +1,55 @@
+﻿@page "/starship-6"
+@inject ILogger<Starship6> Logger
+
+<EditForm Model="@Model1" OnSubmit="@Submit1" FormName="Holodeck1">
+    <div>
+        <label>
+            Identifier:
+            <InputText @bind-Value="Model1!.Id" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+<EditForm Model="@Model2" OnSubmit="@Submit2" FormName="Holodeck2">
+    <div>
+        <label>
+            Identifier:
+            <InputText @bind-Value="Model2!.Id" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm(FormName = "Holodeck1")]
+    public Holodeck? Model1 { get; set; }
+
+    [SupplyParameterFromForm(FormName = "Holodeck2")]
+    public Holodeck? Model2 { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Model1 ??= new();
+        Model2 ??= new();
+    }
+
+    private void Submit1()
+    {
+        Logger.LogInformation("Submit1: Id = {Id}", Model1?.Id);
+    }
+
+    private void Submit2()
+    {
+        Logger.LogInformation("Submit2: Id = {Id}", Model2?.Id);
+    }
+
+    public class Holodeck
+    {
+        public string? Id { get; set; }
+    }
+}

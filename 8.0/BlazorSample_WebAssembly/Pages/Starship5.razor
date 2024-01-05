@@ -1,0 +1,58 @@
+﻿@page "/starship-5"
+@using System.ComponentModel.DataAnnotations
+@inject ILogger<Starship5> Logger
+
+<h1>Bind Multiple <code>InputSelect</code> Example</h1>
+
+<EditForm EditContext="@editContext" OnValidSubmit="@Submit" FormName="Starship5">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>
+            Select classifications (Minimum: 2, Maximum: 3):
+            <InputSelect @bind-Value="Model!.SelectedClassification">
+                <option value="@Classification.Exploration">Exploration</option>
+                <option value="@Classification.Diplomacy">Diplomacy</option>
+                <option value="@Classification.Defense">Defense</option>
+                <option value="@Classification.Research">Research</option>
+            </InputSelect>
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+@if (Model?.SelectedClassification?.Length > 0)
+{
+    <div>@string.Join(", ", Model.SelectedClassification)</div>
+}
+
+@code {
+    private EditContext? editContext;
+
+    [SupplyParameterFromForm]
+    private Starship? Model { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Model = new();
+        editContext = new(Model);
+    }
+
+    private void Submit()
+    {
+        Logger.LogInformation("Submit called: Processing the form");
+    }
+
+    private class Starship
+    {
+        [Required]
+        [MinLength(2, ErrorMessage = "Select at least two classifications.")]
+        [MaxLength(3, ErrorMessage = "Select no more than three classifications.")]
+        public Classification[]? SelectedClassification { get; set; } =
+            new[] { Classification.None };
+    }
+
+    private enum Classification { None, Exploration, Diplomacy, Defense, Research }
+}
