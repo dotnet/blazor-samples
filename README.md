@@ -34,7 +34,7 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 
 Prior to the release of .NET 8, snippet sample apps for Blazor Server and Blazor WebAssembly provide the code examples that appear in Blazor articles. Many of the components in the snippet sample apps compile and run if copied to a local test app. However, the entire snippet sample apps aren't meant to be runnable demonstration sample apps, and not all of the components are completely functional. The purpose of the snippet sample apps prior to .NET 8's release is merely to supply code examples to documentation.
 
-For the release of .NET 8 (and later releases), the sample apps for Blazor Web Apps and Blazor WebAssembly both supply snippets to articles and are fully working demonstration sample apps. All of the components in these apps function normally.
+For the release of .NET 8 (and later releases), the sample apps for Blazor Web App and Blazor WebAssembly both supply snippets to articles and are fully working demonstration sample apps. All of the components in these apps function normally.
 
 Blazor snippet sample apps
 
