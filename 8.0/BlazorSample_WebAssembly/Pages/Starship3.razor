@@ -27,13 +27,16 @@
                 <option value="">
                     Select classification ...
                 </option>
-                <option value="@(Model!.Classification == "Exploration")">
+                <option checked="@(Model!.Classification == "Exploration")" 
+                    value="Exploration">
                     Exploration
                 </option>
-                <option value="@(Model!.Classification == "Diplomacy")">
+                <option checked="@(Model!.Classification == "Diplomacy")" 
+                    value="Diplomacy">
                     Diplomacy
                 </option>
-                <option value="@(Model!.Classification == "Defense")">
+                <option checked="@(Model!.Classification == "Defense")" 
+                    value="Defense">
                     Defense
                 </option>
             </InputSelect>
