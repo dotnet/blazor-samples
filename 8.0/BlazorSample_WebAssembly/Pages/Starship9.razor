@@ -12,10 +12,18 @@
         <label>
             Primary Classification:
             <InputSelect @bind-Value="Model!.Classification">
-                <option value="">Select classification ...</option>
-                <option value="Exploration">Exploration</option>
-                <option value="Diplomacy">Diplomacy</option>
-                <option value="Defense">Defense</option>
+                <option value="">
+                    Select classification ...
+                </option>
+                <option value="@(Model!.Classification == "Exploration")">
+                    Exploration
+                </option>
+                <option value="@(Model!.Classification == "Diplomacy")">
+                    Diplomacy
+                </option>
+                <option value="@(Model!.Classification == "Defense")">
+                    Defense
+                </option>
             </InputSelect>
         </label>
     </div>
