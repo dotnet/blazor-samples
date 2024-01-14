@@ -1,5 +1,6 @@
 ﻿@page "/prerendered-counter-2"
 @implements IDisposable
+@rendermode @(new InteractiveServerRenderMode(prerender: true))
 @inject ILogger<PrerenderedCounter2> Logger
 @inject PersistentComponentState ApplicationState
 
