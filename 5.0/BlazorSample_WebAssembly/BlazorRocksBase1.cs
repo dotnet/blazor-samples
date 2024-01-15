@@ -2,7 +2,7 @@
 
 namespace BlazorSample;
 
-public class BlazorRocksBase : ComponentBase
+public class BlazorRocksBase1 : ComponentBase
 {
     public string BlazorRocksText { get; set; } =
         "Blazor rocks the browser!";
