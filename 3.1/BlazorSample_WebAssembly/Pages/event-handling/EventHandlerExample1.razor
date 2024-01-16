@@ -1,12 +1,8 @@
-@page "/event-handler-example-1"
+@page "/event-handler-1"
 
-<h1>@currentHeading</h1>
+<h1>@headingValue</h1>
 
 <p>
-    <label>
-        New title
-        <input @bind="newHeading" />
-    </label>
     <button @onclick="UpdateHeading">
         Update heading
     </button>
@@ -20,13 +16,12 @@
 </p>
 
 @code {
-    private string currentHeading = "Initial heading";
-    private string newHeading;
+    private string headingValue = "Initial heading";
     private string checkedMessage = "Not changed yet";
 
     private void UpdateHeading()
     {
-        currentHeading = $"{newHeading}!!!";
+        headingValue = $"New heading ({DateTime.Now})";
     }
 
     private void CheckChanged()

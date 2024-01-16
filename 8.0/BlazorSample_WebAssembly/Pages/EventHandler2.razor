@@ -4,26 +4,21 @@
 
 <h1>Event Handler Example 2</h1>
 
-<h2>@currentHeading</h2>
+<h2>@headingValue</h2>
 
 <p>
-    <label>
-        New title
-        <input @bind="newHeading" />
-    </label>
     <button @onclick="UpdateHeading">
         Update heading
     </button>
 </p>
 
 @code {
-    private string currentHeading = "Initial heading";
-    private string? newHeading;
+    private string headingValue = "Initial heading";
 
     private async Task UpdateHeading()
     {
         await Task.Delay(2000);
 
-        currentHeading = $"{newHeading}!!!";
+        headingValue = $"New heading ({DateTime.Now})";
     }
 }

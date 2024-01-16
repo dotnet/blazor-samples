@@ -4,13 +4,9 @@
 
 <h1>Event Handler Example 1</h1>
 
-<h2>@currentHeading</h2>
+<h2>@headingValue</h2>
 
 <p>
-    <label>
-        New title
-        <input @bind="newHeading" />
-    </label>
     <button @onclick="UpdateHeading">
         Update heading
     </button>
@@ -24,13 +20,12 @@
 </p>
 
 @code {
-    private string currentHeading = "Initial heading";
-    private string? newHeading;
+    private string headingValue = "Initial heading";
     private string checkedMessage = "Not changed yet";
 
     private void UpdateHeading()
     {
-        currentHeading = $"{newHeading}!!!";
+        headingValue = $"New heading ({DateTime.Now})";
     }
 
     private void CheckChanged()
