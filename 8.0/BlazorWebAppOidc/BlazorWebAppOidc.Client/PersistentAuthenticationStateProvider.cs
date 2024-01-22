@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace BlazorWebOidc.Client;
+namespace BlazorWebAppOidc.Client;
 
 // This is a client-side AuthenticationStateProvider that determines the user's authentication state by
 // looking for data persisted in the page when it was rendered on the server. This authentication state will

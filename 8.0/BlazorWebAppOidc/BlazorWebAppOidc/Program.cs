@@ -1,9 +1,9 @@
-using BlazorWebOidc;
-using BlazorWebOidc.Client.Weather;
-using BlazorWebOidc.Components;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Yarp.ReverseProxy.Transforms;
+using BlazorWebAppOidc;
+using BlazorWebAppOidc.Client.Weather;
+using BlazorWebAppOidc.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -121,7 +121,7 @@ app.MapDefaultEndpoints();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(BlazorWebOidc.Client._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(BlazorWebAppOidc.Client._Imports).Assembly);
 
 app.MapForwarder("/weatherforecast", "https://weatherapi", transformBuilder =>
 {
