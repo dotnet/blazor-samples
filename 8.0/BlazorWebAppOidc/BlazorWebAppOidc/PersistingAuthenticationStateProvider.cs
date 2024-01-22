@@ -1,9 +1,9 @@
-using BlazorWebOidc.Client;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
+using BlazorWebAppOidc.Client;
 
-namespace BlazorWebOidc;
+namespace BlazorWebAppOidc;
 
 // This is a server-side AuthenticationStateProvider that uses PersistentComponentState to flow the
 // authentication state to the client which is then fixed for the lifetime of the WebAssembly application.
