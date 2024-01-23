@@ -1,8 +1,14 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
+using Yarp.ReverseProxy.Transforms;
 using BlazorWebAppOidc;
+using BlazorWebAppOidc.Client.Weather;
 using BlazorWebAppOidc.Components;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add service defaults & Aspire components.
+builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services.AddAuthentication("MicrosoftOidc")
@@ -20,8 +26,9 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         oidcOptions.Scope.Add("profile");
 
         // All the remaining options are being set to non-default values.
+        // Save the access and refresh tokens in the cookie, so we can authenticate requests to the "weatherapi" service.
         // The offline_access scope is required for the refresh token.
-        oidcOptions.SaveTokens = false;
+        oidcOptions.SaveTokens = true;
         oidcOptions.Scope.Add("offline_access");
         // The "Weather.Get" scope is configured in the Azure or Entra portal under "Expose an API".
         // This is necessary for MinimalApiJwt to be able to validate the access token with AddBearerJwt.
@@ -39,13 +46,13 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // so ClientSecret will be read from "Authentication:Schemes:MicrosoftOidc:ClientSecret" configuration.
         //oidcOptions.ClientSecret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
-        // This configures the OIDC handler to do authorization code flow only. Implicit grants and hybrid flows are unnecessary
+        // This configures the OIDC handeler to do authorization code flow only. Implicit grants and hybrid flows are unnecessary
         // in this mode. You do not need to check either box for the authorization endpoint to return access tokens or ID tokens.
         // The OIDC handler will automatically request the appropriate tokens using the code returned from the authorization endpoint.
         oidcOptions.ResponseType = "code";
 
         // Many OIDC servers use "name" and "role" rather than the SOAP/WS-Fed defaults in ClaimTypes.
-        // If you do not use ClaimTypes, mapping inbound claims to ASP.NET Core's ClaimTypes isn't necessary.
+        // If you do not use ClaimTypes, mapping inbound claims to ASP.NET Core's ClaimTypes is not necessary.
         oidcOptions.MapInboundClaims = false;
         oidcOptions.TokenValidationParameters.NameClaimType = "name";
         oidcOptions.TokenValidationParameters.RoleClaimType = "role";
@@ -83,7 +90,12 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
 
+builder.Services.AddHttpForwarderWithServiceDiscovery();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient<IWeatherForecaster, ServerWeatherForecaster>(httpClient =>
+{
+    httpClient.BaseAddress = new("https://weatherapi");
+});
 
 var app = builder.Build();
 
@@ -104,34 +116,22 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-}).RequireAuthorization();
+app.MapDefaultEndpoints();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BlazorWebAppOidc.Client._Imports).Assembly);
 
+app.MapForwarder("/weatherforecast", "https://weatherapi", transformBuilder =>
+{
+    transformBuilder.AddRequestTransform(async transformContext =>
+    {
+        var accessToken = await transformContext.HttpContext.GetTokenAsync("access_token");
+        transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
+    });
+}).RequireAuthorization();
+
 app.MapGroup("/authentication").MapLoginAndLogout();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
