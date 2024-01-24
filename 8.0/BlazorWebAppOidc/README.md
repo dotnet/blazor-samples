@@ -44,8 +44,8 @@ oidcOptions.ResponseType = "code";
 ### Visual Studio
 
 1. Open the `BlazorWebAppOidc` solution file in Visual Studio.
-1. Select the `Aspire/Aspire.AppHost` project in **Solution Explorer** and start the app with either Visual Studio's Run button or by selecting **Start Debugging** from the **Debug** menu.
+1. Select the `BlazorWebAppOidc` project in **Solution Explorer** and start the app with either Visual Studio's Run button or by selecting **Start Debugging** from the **Debug** menu.
 
 ### .NET CLI
 
-In a command shell, navigate to `Aspire/Aspire.AppHost` and use the `dotnet run` command to run the sample. The `BlazorWebAppOidc` and `MinimalApiJwt` projects are also started by the command.
+In a command shell, navigate to the `BlazorWebAppOidc` project folder and use the `dotnet run` command to run the sample.
