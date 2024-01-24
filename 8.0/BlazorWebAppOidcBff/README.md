@@ -51,4 +51,4 @@ oidcOptions.ResponseType = "code";
 
 ### .NET CLI
 
-In a command shell, navigate to `Aspire/Aspire.AppHost` and use the `dotnet run` command to run the sample. The `BlazorWebAppOidc` and `MinimalApiJwt` projects are also started by the command.
+In a command shell, navigate to the `Aspire/Aspire.AppHost` project folder and use the `dotnet run` command to run the sample. The `BlazorWebAppOidc` and `MinimalApiJwt` projects are also started by the command.
