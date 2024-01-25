@@ -12,69 +12,137 @@ builder.AddServiceDefaults();
 
 // Add services to the container.
 builder.Services.AddAuthentication("MicrosoftOidc")
-    // For Microsoft Entra and Azure AD B2C, you can use AddMicrosoftIdentityWebApp from Microsoft.Identity.Web
-    // which will add both the OIDC and Cookie authentication handlers with the appropriate defaults.
-    // This is here to demonstrate how to configure the OIDC handler manually.
     .AddOpenIdConnect("MicrosoftOidc", oidcOptions =>
     {
-        // The OIDC handler needs to use a SignInScheme that is capable of persisting user credentials across requests.
-        // The following line is just for demonstration purposes. The default SignInScheme is already "Cookies".
-        oidcOptions.SignInScheme = "Cookies";
-        // The "openid" and "profile" scopes are also configured by default because they are required for the OIDC handler to work,
-        // but these may need to be readded if scopes are included in the "Authentication:Schemes:MicrosoftOidc:Scope" configuration.
-        oidcOptions.Scope.Add("openid");
-        oidcOptions.Scope.Add("profile");
+        // For the following OIDC settings, any line that's commented out
+        // represents a DEFAULT setting. If you adopt the default, you can
+        // remove the line if you wish.
 
-        // All the remaining options are being set to non-default values.
-        // Save the access and refresh tokens in the cookie, so we can authenticate requests to the "weatherapi" service.
-        // The offline_access scope is required for the refresh token.
+        // ........................................................................
+        // The OIDC handler must use a sign-in scheme capable of persisting 
+        // user credentials across requests. The default SignInScheme is "Cookies".
+
+        //oidcOptions.SignInScheme = "Cookies";
+        // ........................................................................
+
+        // ........................................................................
+        // The "openid" and "profile" scopes are required for the OIDC handler 
+        // and included by default. You should enable these scopes here if scopes 
+        // are provided by "Authentication:Schemes:MicrosoftOidc:Scope" 
+        // configuration because configuration may overwrite the scopes collection.
+
+        //oidcOptions.Scope.Add("openid");
+        //oidcOptions.Scope.Add("profile");
+        // ........................................................................
+
+        // ........................................................................
+        // SaveTokens is set to true to save the access and refresh tokens in the 
+        // cookie, so the app can authenticate requests for weather data.
+
         oidcOptions.SaveTokens = true;
+        // ........................................................................
+
+        // ........................................................................
+        // The following paths must match the redirect and post logout redirect 
+        // paths configured when registering the application with the OIDC provider. 
+        // For Microsoft Entra ID, this is accomplished through the "Authentication" 
+        // blade of the application's registration in the Azure portal. Both the
+        // signin and signout paths must be registered as Redirect URIs. The default 
+        // values are "/signin-oidc" and "/signout-callback-oidc".
+        // Microsoft Identity currently only redirects back to the 
+        // SignedOutCallbackPath if authority is 
+        // https://login.microsoftonline.com/{TENANT ID}/v2.0/ as it is above. 
+        // You can use the "common" authority instead, and logout redirects back to 
+        // the Blazor app. For more information, see 
+        // https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/5783
+
+        //oidcOptions.CallbackPath = new PathString("/signin-oidc");
+        //oidcOptions.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
+        // ........................................................................
+        
+        // ........................................................................
+        // The RemoteSignOutPath is the "Front-channel logout URL" for remote single 
+        // sign-out. The default value is "/signout-oidc".
+
+        //oidcOptions.RemoteSignOutPath = new PathString("/signout-oidc");
+        // ........................................................................
+
+        // ........................................................................
+        // The "offline_access" scope is required for the refresh token.
+
         oidcOptions.Scope.Add("offline_access");
-        // The "Weather.Get" scope is configured in the Azure or Entra portal under "Expose an API".
-        // This is necessary for MinimalApiJwt to be able to validate the access token with AddBearerJwt.
-        oidcOptions.Scope.Add("https://{directory-name}.onmicrosoft.com/{client-id}/Weather.Get");
+        // ........................................................................
 
-        // The "common" authority should be used for multi-tenant applications. You can also use the common
-        // authority for single-tenant applications, but that requires a custom IssuerValidator as shown in the comments below.
-        //oidcOptions.Authority = "https://login.microsoftonline.com/common/v2.0/";
-        oidcOptions.Authority = "https://login.microsoftonline.com/{tenant-id}/v2.0/";
-        oidcOptions.ClientId = "{client-id}";
+        // ........................................................................
+        // The "Weather.Get" scope is configured in the Azure or Entra portal under 
+        // "Expose an API". This is necessary for backend web API (MinimalApiJwt)
+        // to validate the access token with AddBearerJwt.
 
-        // ClientSecret should not be compiled into the application assembly or checked into source control.
-        // Instead consider user-secrets, Azure KeyVault and/or environment variables. Authentication scheme configuration
-        // is automatically read from builder.Configuration["Authentication:Schemes:{SchemeName}:{PropertyName}"],
-        // so ClientSecret will be read from "Authentication:Schemes:MicrosoftOidc:ClientSecret" configuration.
-        //oidcOptions.ClientSecret = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+        oidcOptions.Scope.Add("https://{DIRECTORY NAME}.onmicrosoft.com/{CLIENT ID}/Weather.Get");
+        // ........................................................................
 
-        // This configures the OIDC handeler to do authorization code flow only. Implicit grants and hybrid flows are unnecessary
-        // in this mode. You do not need to check either box for the authorization endpoint to return access tokens or ID tokens.
-        // The OIDC handler will automatically request the appropriate tokens using the code returned from the authorization endpoint.
+        // ........................................................................
+        // The following example Authority is configured for Microsoft Entra ID
+        // and a single-tenant application registration. Set the {TENANT ID} 
+        // placeholder to the Tenant ID. The "common" Authority 
+        // https://login.microsoftonline.com/common/v2.0/ should be used 
+        // for multi-tenant apps. You can also use the "common" Authority for 
+        // single-tenant apps, but it requires a custom IssuerValidator as shown 
+        // in the comments below. 
+
+        oidcOptions.Authority = "https://login.microsoftonline.com/{TENANT ID}/v2.0/";
+        // ........................................................................
+
+        // ........................................................................
+        // Set the Client ID for the app. Set the {CLIENT ID} placeholder to
+        // the Client ID.
+
+        oidcOptions.ClientId = "{CLIENT ID}";
+        // ........................................................................
+        
+        // ........................................................................
+        // ClientSecret shouldn't be compiled into the application assembly or 
+        // checked into source control. Instead adopt User Secrets, Azure KeyVault, 
+        // or an environment variable to supply the value. Authentication scheme 
+        // configuration is automatically read from 
+        // "Authentication:Schemes:{SchemeName}:{PropertyName}", so ClientSecret is 
+        // for OIDC configuration is automatically read from 
+        // "Authentication:Schemes:MicrosoftOidc:ClientSecret" configuration.
+
+        //oidcOptions.ClientSecret = "{PREFER NOT SETTING THIS HERE}";
+        // ........................................................................
+
+        // ........................................................................
+        // Setting ResponseType to "code" configures the OIDC handler to use 
+        // authorization code flow. Implicit grants and hybrid flows are unnecessary
+        // in this mode. In a Microsoft Entra ID app registration, you don't need to 
+        // select either box for the authorization endpoint to return access tokens 
+        // or ID tokens. The OIDC handler automatically requests the appropriate 
+        // tokens using the code returned from the authorization endpoint.
+
         oidcOptions.ResponseType = "code";
+        // ........................................................................
 
-        // Many OIDC servers use "name" and "role" rather than the SOAP/WS-Fed defaults in ClaimTypes.
-        // If you do not use ClaimTypes, mapping inbound claims to ASP.NET Core's ClaimTypes is not necessary.
+        // ........................................................................
+        // Many OIDC servers use "name" and "role" rather than the SOAP/WS-Fed 
+        // defaults in ClaimTypes. If you don't use ClaimTypes, mapping inbound 
+        // claims to ASP.NET Core's ClaimTypes isn't necessary.
+
         oidcOptions.MapInboundClaims = false;
         oidcOptions.TokenValidationParameters.NameClaimType = "name";
         oidcOptions.TokenValidationParameters.RoleClaimType = "role";
+        // ........................................................................
 
-        // These paths must match the redirect and post logout redirect paths configured when registering the application
-        // with the OIDC provider. On Azure, this is done through the "Authentication" blade of the application. Both the
-        // signin and signout paths must be registered as redirect URIs. The default values are "/signin-oidc" and
-        // "/signout-callback-oidc" which could be used instead.
-        oidcOptions.CallbackPath = "/signin-microsoft";
-        // Microsoft Identity currently only redirects back to the SignedOutCallbackPath if authority is
-        // https://login.microsoftonline.com/{tenant-id}/v2.0/ as it is above. You can use the "common"
-        // authority instead, and logout will redirect back to the blazor app.
-        // See https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/5783
-        oidcOptions.SignedOutCallbackPath = "/signout-callback-microsoft";
-        // This is the "Front-channel logout URL" for remote single sign-out. The default value is "/signout-oidc".
-        oidcOptions.RemoteSignOutPath = "/signout-remote-microsoft";
+        // ........................................................................
+        // Many OIDC providers work with the default issuer validator, but the
+        // configuration must account for the issuer parameterized with "{TENANT ID}" 
+        // returned by the "common" endpoint's /.well-known/openid-configuration
+        // For more information, see
+        // https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/1731
 
-        // Many OIDC provider work with the default issuer validator, but we need to account for the issuer parameterized
-        // with "{tenant-id}" returned by https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration
-        // See https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/issues/1731
         //var microsoftIssuerValidator = AadIssuerValidator.GetAadIssuerValidator(oidcOptions.Authority);
         //oidcOptions.TokenValidationParameters.IssuerValidator = microsoftIssuerValidator.Validate;
+        // ........................................................................
     })
     .AddCookie("Cookies");
 
