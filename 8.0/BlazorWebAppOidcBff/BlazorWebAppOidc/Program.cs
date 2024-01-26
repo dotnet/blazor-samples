@@ -20,9 +20,9 @@ builder.Services.AddAuthentication("MicrosoftOidc")
 
         // ........................................................................
         // The OIDC handler must use a sign-in scheme capable of persisting 
-        // user credentials across requests. The default SignInScheme is "Cookies".
+        // user credentials across requests.
 
-        //oidcOptions.SignInScheme = "Cookies";
+        oidcOptions.SignInScheme = "Cookies";
         // ........................................................................
 
         // ........................................................................
