@@ -1,9 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Yarp.ReverseProxy.Transforms;
 using BlazorWebAppOidc;
 using BlazorWebAppOidc.Client.Weather;
 using BlazorWebAppOidc.Components;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +25,7 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // The OIDC handler must use a sign-in scheme capable of persisting 
         // user credentials across requests.
 
-        oidcOptions.SignInScheme = "Cookies";
+        oidcOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         // ........................................................................
 
         // ........................................................................
@@ -31,8 +34,7 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // are provided by "Authentication:Schemes:MicrosoftOidc:Scope" 
         // configuration because configuration may overwrite the scopes collection.
 
-        //oidcOptions.Scope.Add("openid");
-        //oidcOptions.Scope.Add("profile");
+        //oidcOptions.Scope.Add(OpenIdConnectScope.OpenIdProfile);
         // ........................................................................
 
         // ........................................................................
@@ -70,7 +72,7 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // ........................................................................
         // The "offline_access" scope is required for the refresh token.
 
-        oidcOptions.Scope.Add("offline_access");
+        oidcOptions.Scope.Add(OpenIdConnectScope.OfflineAccess);
         // ........................................................................
 
         // ........................................................................
@@ -120,7 +122,7 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // or ID tokens. The OIDC handler automatically requests the appropriate 
         // tokens using the code returned from the authorization endpoint.
 
-        oidcOptions.ResponseType = "code";
+        oidcOptions.ResponseType = OpenIdConnectResponseType.Code;
         // ........................................................................
 
         // ........................................................................
@@ -129,7 +131,7 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // claims to ASP.NET Core's ClaimTypes isn't necessary.
 
         oidcOptions.MapInboundClaims = false;
-        oidcOptions.TokenValidationParameters.NameClaimType = "name";
+        oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
         oidcOptions.TokenValidationParameters.RoleClaimType = "role";
         // ........................................................................
 
