@@ -49,7 +49,7 @@ app.MapIdentityApi<AppUser>();
 // This prevents a malicious site from logging the user out.
 // Furthermore, the endpoint is protected by authorization to prevent anonymous access.
 // The client simply needs to pass an empty object {} in the body of the request.
-app.MapPost("/Logout", async (SignInManager<AppUser> signInManager, [FromBody]object empty) =>
+app.MapPost("/Logout", async (SignInManager<AppUser> signInManager, [FromBody] object empty) =>
 {
     if (empty != null)
     {
