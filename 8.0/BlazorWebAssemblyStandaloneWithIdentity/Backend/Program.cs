@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,13 +40,21 @@ var app = builder.Build();
 app.MapIdentityApi<AppUser>();
 
 // provide an end point to clear the cookie for logout
-// NOTE: This logout code will be updated shortly.
-//       https://github.com/dotnet/blazor-samples/issues/132
-app.MapPost("/Logout", async (ClaimsPrincipal user, SignInManager<AppUser> signInManager) =>
+// The request checks for an empty body to prevent CSRF attacks. By requiring something
+// in the body, the request must be made from JavaScript, which is the only way to
+// access the cookie. It can't be accessed by a form-based post.
+// This prevents a malicious site from logging the user out.
+// Furthermore, the endpoint is protected by authorization to prevent anonymous access.
+// The client simply needs to pass an empty object {} in the body of the request.
+app.MapPost("/Logout", async (SignInManager<AppUser> signInManager, [FromBody] object empty) =>
 {
-    await signInManager.SignOutAsync();
-    return TypedResults.Ok();
-});
+    if (empty != null)
+    {
+        await signInManager.SignOutAsync();
+        return Results.Ok();
+    }
+    return Results.Unauthorized();
+}).RequireAuthorization();
 
 // activate the CORS policy
 app.UseCors("wasm");

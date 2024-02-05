@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Net.Http.Json;
 using BlazorWasmAuth.Identity.Models;
+using System.Text;
 
 namespace BlazorWasmAuth.Identity
 {
@@ -201,7 +202,9 @@ namespace BlazorWasmAuth.Identity
 
         public async Task LogoutAsync()
         {
-            await _httpClient.PostAsync("Logout", null);
+            const string Empty = "{}";
+            var emptyContent = new StringContent(Empty, Encoding.UTF8, "application/json");
+            await _httpClient.PostAsync("Logout", emptyContent);
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
 
