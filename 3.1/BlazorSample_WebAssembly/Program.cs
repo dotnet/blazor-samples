@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using BlazorSample.Services;
 
 namespace BlazorSample
 {
@@ -16,10 +17,12 @@ namespace BlazorSample
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
+            builder.DetectIncorrectUsageOfTransients();
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddSingleton<NotifierService>();
+            builder.Services.AddTransient<TransientDisposableService>();
 
             #region snippet1
             var vehicleData = new Dictionary<string, string>()
@@ -37,7 +40,9 @@ namespace BlazorSample
             builder.Configuration.Add(memoryConfig);
             #endregion
 
-            await builder.Build().RunAsync();
+            var host = builder.Build();
+            host.EnableTransientDisposableDetection();
+            await host.RunAsync();
         }
     }
 }

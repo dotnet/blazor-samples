@@ -31,6 +31,9 @@ namespace BlazorSample
             services.AddSingleton<WeatherForecastService>();
             services.AddScoped<NotifierService>();
             services.AddHttpClient();
+            services.AddTransient<TransientDependency>();
+            services.AddTransient<ITransitiveTransientDisposableDependency, 
+                TransitiveTransientDisposableDependency>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

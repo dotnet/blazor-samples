@@ -10,6 +10,10 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<NotifierService>();
 builder.Services.AddHttpClient();
+builder.DetectIncorrectUsageOfTransients();
+builder.Services.AddTransient<TransientDependency>();
+builder.Services.AddTransient<ITransitiveTransientDisposableDependency, 
+    TransitiveTransientDisposableDependency>();
 
 var app = builder.Build();
 
