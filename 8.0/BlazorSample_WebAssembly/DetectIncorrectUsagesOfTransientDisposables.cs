@@ -123,7 +123,7 @@ namespace BlazorWebAssemblyTransientDisposable
                     return ActivatorUtilities.CreateInstance(sp,
                         original.ImplementationType);
                 },
-				original.Lifetime);
+                original.Lifetime);
 
             return newDescriptor;
         }
