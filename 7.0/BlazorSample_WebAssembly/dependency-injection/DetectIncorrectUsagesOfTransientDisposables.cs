@@ -97,7 +97,7 @@ namespace BlazorWebAssemblyTransientDisposable
 
                     return originalResult;
                 },
-                original.Lifetime);
+                ServiceLifetime.Transient);
 
             return newDescriptor;
         }
