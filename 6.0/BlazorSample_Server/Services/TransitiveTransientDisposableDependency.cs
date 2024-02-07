@@ -12,13 +12,4 @@ public interface ITransitiveTransientDisposableDependency
 
 public class TransientDependency
 {
-    private readonly ITransitiveTransientDisposableDependency
-        transitiveTransientDisposableDependency;
-
-    public TransientDependency(ITransitiveTransientDisposableDependency
-        transitiveTransientDisposableDependency)
-    {
-        this.transitiveTransientDisposableDependency =
-            transitiveTransientDisposableDependency;
-    }
 }

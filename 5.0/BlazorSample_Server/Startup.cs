@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BlazorSample.Data;
-using BlazorSample.Services;
 
 namespace BlazorSample
 {
@@ -32,9 +31,6 @@ namespace BlazorSample
             services.AddSingleton<WeatherForecastService>();
             services.AddScoped<NotifierService>();
             services.AddHttpClient();
-            services.AddTransient<TransientDependency>();
-            services.AddTransient<ITransitiveTransientDisposableDependency, 
-                TransitiveTransientDisposableDependency>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
