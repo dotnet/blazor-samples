@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BlazorSample.Data;
+using BlazorSample.Services;
 
 namespace BlazorSample
 {
