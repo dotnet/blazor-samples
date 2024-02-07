@@ -127,7 +127,7 @@ namespace BlazorServerTransientDisposable
                     return ActivatorUtilities.CreateInstance(sp, 
                         original.ImplementationType);
                 },
-				original.Lifetime);
+                original.Lifetime);
     
             return newDescriptor;
         }
