@@ -1,12 +1,12 @@
 ﻿@page "/parameter-parent-2"
 
-<ParameterChild Title="@title" />
+<ParameterChild Title="title" />
 
 <ParameterChild Title="@GetTitle()" />
 
-<ParameterChild Title="@DateTime.Now.ToLongDateString()" />
+<ParameterChild Title="DateTime.Now.ToLongDateString()" />
 
-<ParameterChild Title="@panelData.Title" />
+<ParameterChild Title="panelData.Title" />
 
 @code {
     private string title = "From Parent field";

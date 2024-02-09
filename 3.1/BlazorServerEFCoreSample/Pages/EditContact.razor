@@ -14,8 +14,8 @@
 }
 else
 {
-    <ContactForm Busy="@Busy" Contact="@Contact"
-                 DbContact="@DbContact"
+    <ContactForm Busy="Busy" Contact="Contact"
+                 DbContact="DbContact"
                  IsAdd="false"
                  CancelRequest="Cancel"
                  ValidationResult="@(async (success) => await ValidationResultAsync(success))" />

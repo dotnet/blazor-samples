@@ -7,8 +7,8 @@
 
 @if (Contact is not null)
 {
-    <ContactForm Busy="@Busy" 
-                 Contact="@Contact" 
+    <ContactForm Busy="Busy" 
+                 Contact="Contact" 
                  IsAdd="true"
                  CancelRequest="Cancel"
                  ValidationResult="@(async (success) => await ValidationResultAsync(success))" />
