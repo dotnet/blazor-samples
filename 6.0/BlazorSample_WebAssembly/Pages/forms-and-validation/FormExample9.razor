@@ -3,7 +3,7 @@
 @implements IDisposable
 @inject ILogger<FormExample9> Logger
 
-<EditForm EditContext="@editContext" OnValidSubmit="@HandleValidSubmit">
+<EditForm EditContext="editContext" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
