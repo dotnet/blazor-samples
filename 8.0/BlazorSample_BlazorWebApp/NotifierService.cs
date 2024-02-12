@@ -10,5 +10,14 @@ public class NotifierService
         }
     }
 
-    public event Func<string, int, Task>? Notify;
+	public async Task DispatchException(Exception ex)
+	{
+		if (NotifyException != null)
+		{
+			await NotifyException.Invoke(ex);
+		}
+	}
+
+	public event Func<string, int, Task>? Notify;
+	public event Func<Exception, Task>? NotifyException;
 }

@@ -20,9 +20,20 @@ public class TimerService(NotifierService notifier,
             {
                 while (await timer.WaitForNextTickAsync())
                 {
-                    elapsedCount += 1;
-                    await notifier.Update("elapsedCount", elapsedCount);
-                    logger.LogInformation("ElapsedCount {Count}", elapsedCount);
+					try
+					{
+						elapsedCount += 1;
+						if (elapsedCount == 2)
+						{
+							throw new Exception("I threw an exception! Somebody help me!");
+						}
+						await notifier.Update("elapsedCount", elapsedCount);
+						logger.LogInformation("ElapsedCount {Count}", elapsedCount);
+					}
+					catch (Exception ex)
+					{
+						await notifier.DispatchException(ex);
+					}
                 }
             }
         }
