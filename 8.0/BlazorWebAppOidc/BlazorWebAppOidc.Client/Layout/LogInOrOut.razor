@@ -34,7 +34,7 @@
     {
         var currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
 
-        var matchingAuthComponentCount = System.Reflection.Assembly.GetExecutingAssembly()
+        var requiresAuthentication = System.Reflection.Assembly.GetExecutingAssembly()
             .ExportedTypes
             .Where(t => t.IsSubclassOf(typeof(ComponentBase)))
             .Where(c => c.GetCustomAttributes(inherit: true)
@@ -45,9 +45,9 @@
                     .OfType<RouteAttribute>()
                     .Where(d => d.Template == $"/{currentUrl}")
                     .Count() > 0)
-            .Count();
+            .Any();
 
-        if (matchingAuthComponentCount > 0)
+        if (requiresAuthentication)
         {
             currentUrl = NavigationManager.BaseUri;
         }
