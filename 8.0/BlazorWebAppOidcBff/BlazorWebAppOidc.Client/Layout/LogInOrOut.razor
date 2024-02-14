@@ -39,12 +39,11 @@
             .Where(t => t.IsSubclassOf(typeof(ComponentBase)))
             .Where(c => c.GetCustomAttributes(inherit: true)
                     .OfType<AuthorizeAttribute>()
-                    .ToArray()
-                    .Count() > 0 &&
+                    .Any() &&
                     c.GetCustomAttributes(inherit: true)
                     .OfType<RouteAttribute>()
                     .Where(d => d.Template == $"/{currentUrl}")
-                    .Count() > 0)
+                    .Any())
             .Any();
 
         if (requiresAuthentication)
