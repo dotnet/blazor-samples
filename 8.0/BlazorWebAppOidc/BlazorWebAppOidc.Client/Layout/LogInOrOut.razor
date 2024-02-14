@@ -32,7 +32,26 @@
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        var currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+
+        var matchingAuthComponentCount = System.Reflection.Assembly.GetExecutingAssembly()
+            .ExportedTypes
+            .Where(t => t.IsSubclassOf(typeof(ComponentBase)))
+            .Where(c => c.GetCustomAttributes(inherit: true)
+                    .OfType<AuthorizeAttribute>()
+                    .ToArray()
+                    .Count() > 0 &&
+                    c.GetCustomAttributes(inherit: true)
+                    .OfType<RouteAttribute>()
+                    .Where(d => d.Template == $"/{currentUrl}")
+                    .Count() > 0)
+            .Count();
+
+        if (matchingAuthComponentCount > 0)
+        {
+            currentUrl = NavigationManager.BaseUri;
+        }
+
         StateHasChanged();
     }
 
