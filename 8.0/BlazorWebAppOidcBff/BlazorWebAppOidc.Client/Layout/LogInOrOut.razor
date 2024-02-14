@@ -38,12 +38,12 @@
             .ExportedTypes
             .Where(t => t.IsSubclassOf(typeof(ComponentBase)))
             .Where(c => c.GetCustomAttributes(inherit: true)
-                    .OfType<AuthorizeAttribute>()
-                    .Any() &&
-                    c.GetCustomAttributes(inherit: true)
-                    .OfType<RouteAttribute>()
-                    .Where(d => d.Template == $"/{currentUrl}")
-                    .Any())
+                         .OfType<AuthorizeAttribute>()
+                         .Any() &&
+                        c.GetCustomAttributes(inherit: true)
+                         .OfType<RouteAttribute>()
+                         .Where(d => d.Template == $"/{currentUrl}")
+                         .Any())
             .Any();
 
         if (requiresAuthentication)
