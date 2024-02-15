@@ -1,8 +1,10 @@
+using System.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Backend;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDataba
 
 // add identity and opt-in to endpoints
 builder.Services.AddIdentityCore<AppUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints();
 
@@ -35,6 +38,12 @@ builder.Services.AddCors(
 builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
+
+if (builder.Environment.IsDevelopment())
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    await SeedData.InitializeAsync(scope.ServiceProvider);
+}
 
 // create routes for the identity endpoints
 app.MapIdentityApi<AppUser>();
@@ -60,10 +69,36 @@ app.MapPost("/Logout", async (SignInManager<AppUser> signInManager, [FromBody] o
 app.UseCors("wasm");
 
 app.UseHttpsRedirection();
+
+app.MapGet("/roles", (ClaimsPrincipal user) =>
+{
+    if (user.Identity is not null && user.Identity.IsAuthenticated)
+    {
+        var identity = (ClaimsIdentity)user.Identity;
+        var roles = identity.FindAll(identity.RoleClaimType)
+            .Select(c => 
+                new
+                {
+                    c.Issuer, 
+                    c.OriginalIssuer, 
+                    c.Type, 
+                    c.Value, 
+                    c.ValueType
+                });
+
+        return TypedResults.Json(roles);
+    }
+
+    return Results.Unauthorized();
+});
+
 app.Run();
 
 // identity user
-class AppUser : IdentityUser { }
+class AppUser : IdentityUser
+{
+    public IEnumerable<IdentityRole>? Roles { get; set; }
+}
 
 // identity database
 class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options)
