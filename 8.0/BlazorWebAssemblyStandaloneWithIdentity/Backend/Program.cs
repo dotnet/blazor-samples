@@ -90,7 +90,7 @@ app.MapGet("/roles", (ClaimsPrincipal user) =>
     }
 
     return Results.Unauthorized();
-});
+}).RequireAuthorization();
 
 app.Run();
 
