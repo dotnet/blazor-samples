@@ -30,10 +30,10 @@ public class SeedData
 
         var user = new AppUser
         {
-            Email = "bob@contoso.com",
-            NormalizedEmail = "BOB@CONTOSO.COM",
-            UserName = "bob@contoso.com",
-            NormalizedUserName = "BOB@CONTOSO.COM",
+            Email = "leela@contoso.com",
+            NormalizedEmail = "LEELA@CONTOSO.COM",
+            UserName = "leela@contoso.com",
+            NormalizedUserName = "LEELA@CONTOSO.COM",
             EmailConfirmed = true,
             SecurityStamp = Guid.NewGuid().ToString("D")
         };
