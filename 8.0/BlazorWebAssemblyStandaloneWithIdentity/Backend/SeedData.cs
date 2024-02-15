@@ -6,7 +6,7 @@ namespace Backend;
 
 public class SeedData
 {
-    public static async void Initialize(IServiceProvider serviceProvider)
+    public static async Task InitializeAsync(IServiceProvider serviceProvider)
     {
         using var context = new AppDbContext(serviceProvider.GetRequiredService<DbContextOptions<AppDbContext>>());
 
@@ -23,7 +23,6 @@ public class SeedData
             if (!await roleManager.RoleExistsAsync(role))
             {
                 await roleManager.CreateAsync(new IdentityRole(role));
-
             }
         }
 

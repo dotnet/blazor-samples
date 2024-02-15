@@ -41,14 +41,11 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-#if DEBUG
-using (var scope = app.Services.CreateScope())
+if (builder.Environment.IsDevelopment())
 {
-    var services = scope.ServiceProvider;
-
-    SeedData.Initialize(services);
+    await using var scope = app.Services.CreateAsyncScope();
+    await SeedData.InitializeAsync(scope.ServiceProvider);
 }
-#endif
 
 // create routes for the identity endpoints
 app.MapIdentityApi<AppUser>();
