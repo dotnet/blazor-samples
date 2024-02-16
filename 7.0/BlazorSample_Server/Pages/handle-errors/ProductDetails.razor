@@ -29,6 +29,10 @@ else
         try
         {
             loadFailed = false;
+
+            // Reset details to null to display the loading indicator
+            details = null;
+
             details = await ProductRepository.GetProductByIdAsync(ProductId);
         }
         catch (Exception ex)
