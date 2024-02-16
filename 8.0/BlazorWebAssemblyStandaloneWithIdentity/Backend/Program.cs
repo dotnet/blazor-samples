@@ -8,22 +8,22 @@ using Backend;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// cookie authentication
+// Establish cookie authentication
 builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddIdentityCookies();
 
-// configure authorization
+// Configure authorization
 builder.Services.AddAuthorizationBuilder();
 
-// add the database (in memory for the sample)
+// Add the database (in memory for the sample)
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("AppDb"));
 
-// add identity and opt-in to endpoints
+// Add identity and opt-in to endpoints
 builder.Services.AddIdentityCore<AppUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints();
 
-// add CORS policy for Wasm client
+// Add a CORS policy for the client
 builder.Services.AddCors(
     options => options.AddPolicy(
         "wasm",
@@ -34,25 +34,35 @@ builder.Services.AddCors(
             .AllowAnyHeader()
             .AllowCredentials()));
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddEndpointsApiExplorer();
+
+// Add NSwag services
+builder.Services.AddOpenApiDocument();
 
 var app = builder.Build();
 
 if (builder.Environment.IsDevelopment())
 {
+    // Seed the database
     await using var scope = app.Services.CreateAsyncScope();
     await SeedData.InitializeAsync(scope.ServiceProvider);
+
+    // Add OpenAPI/Swagger generator and the Swagger UI
+    app.UseOpenApi();
+    app.UseSwaggerUi();
 }
 
-// create routes for the identity endpoints
+// Create routes for the identity endpoints
 app.MapIdentityApi<AppUser>();
 
-// provide an end point to clear the cookie for logout
+// Provide an end point to clear the cookie for logout
+//
 // The request checks for an empty body to prevent CSRF attacks. By requiring something
 // in the body, the request must be made from JavaScript, which is the only way to
-// access the cookie. It can't be accessed by a form-based post.
-// This prevents a malicious site from logging the user out.
+// access the cookie. It can't be accessed by a form-based post. This prevents a
+// malicious site from logging the user out.
+//
 // Furthermore, the endpoint is protected by authorization to prevent anonymous access.
 // The client simply needs to pass an empty object {} in the body of the request.
 app.MapPost("/Logout", async (SignInManager<AppUser> signInManager, [FromBody] object empty) =>
@@ -65,7 +75,7 @@ app.MapPost("/Logout", async (SignInManager<AppUser> signInManager, [FromBody] o
     return Results.Unauthorized();
 }).RequireAuthorization();
 
-// activate the CORS policy
+// Activate the CORS policy
 app.UseCors("wasm");
 
 app.UseHttpsRedirection();
@@ -94,13 +104,13 @@ app.MapGet("/roles", (ClaimsPrincipal user) =>
 
 app.Run();
 
-// identity user
+// Identity user
 class AppUser : IdentityUser
 {
     public IEnumerable<IdentityRole>? Roles { get; set; }
 }
 
-// identity database
+// Identity database
 class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options)
 {
 }
