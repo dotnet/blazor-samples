@@ -1,4 +1,6 @@
-﻿namespace BlazorSample.Services;
+﻿using System;
+
+namespace BlazorSample.Services;
 
 public class TransientDisposableService : IDisposable
 {
