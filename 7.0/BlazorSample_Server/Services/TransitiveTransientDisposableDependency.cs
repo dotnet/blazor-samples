@@ -1,4 +1,4 @@
-namespace BlazorSample;
+namespace BlazorSample.Services;
 
 public class TransitiveTransientDisposableDependency
     : ITransitiveTransientDisposableDependency, IDisposable

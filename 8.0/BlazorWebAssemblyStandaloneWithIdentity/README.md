@@ -29,10 +29,10 @@ For more information, see [Secure ASP.NET Core Blazor WebAssembly with ASP.NET C
 
 1. Navigate to the `BlazorWasmAuth` app at the `FrontendUrl`.
 
-1. Register a new user using the **Register** link in the upper-right corner of the app's UI.
+1. Register a new user using the **Register** link in the upper-right corner of the app's UI or use the preregistered test user, `leela@contoso.com`, with the password `Passw0rd!`. Leela has `Administrator` and `Manager` roles and can access the private manager page but not the private editor page of the app.
 
-1. Log in with the new user.
+1. Log in with the user.
 
-1. Navigate to the private page (`Components/Pages/PrivatePage.razor` at `/private-page`) that only authenticated users can reach. A link to the page appears in the navigation sidebar after the user is authenticated.
+1. Navigate to the private page (`Components/Pages/PrivatePage.razor` at `/private-page`) that only authenticated users can reach. A link to the page appears in the navigation sidebar after the user is authenticated. Navigate to the private manager and editor pages to explore how the user's roles influence the pages that they can visit.
 
 1. Log out of the app.

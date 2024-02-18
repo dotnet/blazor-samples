@@ -4,7 +4,7 @@
 <hr />
 @if (Contact is not null)
 {
-    <EditForm Model="@Contact"
+    <EditForm Model="Contact"
               OnInvalidSubmit="(async () => await HandleSubmitAsync(false))"
               OnValidSubmit="(async () => await HandleSubmitAsync(true))">
         <DataAnnotationsValidator />
@@ -14,15 +14,15 @@
             <label>
                 First Name:
                 <InputText @bind-Value="Contact.FirstName" />
-                <ConcurrencyField Model="@Contact"
-                                  DbModel="@DbContact"
+                <ConcurrencyField Model="Contact"
+                                  DbModel="DbContact"
                                   Property="obj => obj?.FirstName" />
             </label>
             <label>
                 Last Name (optional):
                 <InputText @bind-Value="Contact.LastName" />
-                <ConcurrencyField Model="@Contact"
-                                  DbModel="@DbContact"
+                <ConcurrencyField Model="Contact"
+                                  DbModel="DbContact"
                                   Property="obj => obj?.LastName" />
             </label>
         </p>
@@ -31,8 +31,8 @@
             <label>
                 Phone (optional):
                 <InputText @bind-Value="Contact.Phone" />
-                <ConcurrencyField Model="@Contact"
-                                  DbModel="@DbContact"
+                <ConcurrencyField Model="Contact"
+                                  DbModel="DbContact"
                                   Property="obj => obj?.Phone" />
             </label>
         </p>
@@ -41,29 +41,29 @@
             <label>
                 Street:
                 <InputText @bind-Value="Contact.Street" />
-                <ConcurrencyField Model="@Contact"
-                                  DbModel="@DbContact"
+                <ConcurrencyField Model="Contact"
+                                  DbModel="DbContact"
                                   Property="obj => obj?.Street" />
             </label>
             <label>
                 City:
                 <InputText @bind-Value="Contact.City" />
-                <ConcurrencyField Model="@Contact"
-                                  DbModel="@DbContact"
+                <ConcurrencyField Model="Contact"
+                                  DbModel="DbContact"
                                   Property="obj => obj?.City" />
             </label>
             <label>
                 State:
                 <InputText @bind-Value="Contact.State" />
-                <ConcurrencyField Model="@Contact"
-                                  DbModel="@DbContact"
+                <ConcurrencyField Model="Contact"
+                                  DbModel="DbContact"
                                   Property="obj => obj?.State" />
             </label>
             <label>
                 ZipCode:
                 <InputText @bind-Value="Contact.ZipCode" />
-                <ConcurrencyField Model="@Contact"
-                                  DbModel="@DbContact"
+                <ConcurrencyField Model="Contact"
+                                  DbModel="DbContact"
                                   Property="obj => obj?.ZipCode" />
             </label>
         </p>

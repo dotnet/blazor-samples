@@ -100,7 +100,7 @@ namespace BlazorServerTransientDisposable
 
                     return originalResult;
                 },
-                original.Lifetime);
+                ServiceLifetime.Transient);
 
             return newDescriptor;
         }

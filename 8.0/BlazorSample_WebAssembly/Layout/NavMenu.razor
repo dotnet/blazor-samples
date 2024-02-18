@@ -22,10 +22,20 @@
         @foreach (var name in GetRoutableComponents())
         {
             <div class="nav-item px-3">
-                <NavLink class="nav-link"
-                         href="@Regex.Replace(name, @"(\B[A-Z]|\d+)", "-$1").ToLower()">
-                    @Regex.Replace(name, @"(\B[A-Z]|\d+)", " $1")
-                </NavLink>
+                @if (name == "RouteParameter1")
+                {
+                    <NavLink class="nav-link"
+                             href="route-parameter-1/amazing">
+                        @Regex.Replace(name, @"(\B[A-Z]|\d+)", " $1")
+                    </NavLink>
+                }
+                else if (name != "TransientService")
+                {
+                    <NavLink class="nav-link"
+                             href="@Regex.Replace(name, @"(\B[A-Z]|\d+)", "-$1").ToLower()">
+                        @Regex.Replace(name, @"(\B[A-Z]|\d+)", " $1")
+                    </NavLink>
+                }
             </div>
         }
 

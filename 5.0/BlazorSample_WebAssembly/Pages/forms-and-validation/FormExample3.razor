@@ -2,7 +2,7 @@
 @using Microsoft.Extensions.Logging
 @inject ILogger<FormExample3> Logger
 
-<EditForm EditContext="@editContext" OnSubmit="@HandleSubmit">
+<EditForm EditContext="editContext" OnSubmit="HandleSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
 

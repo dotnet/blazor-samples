@@ -154,6 +154,8 @@ builder.Services.ConfigureCookieOidcRefresh("Cookies", "MicrosoftOidc");
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddCascadingAuthenticationState();
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();

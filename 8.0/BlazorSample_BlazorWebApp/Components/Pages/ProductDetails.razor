@@ -9,7 +9,11 @@
 @if (details != null)
 {
     <h2>@details.ProductName</h2>
-    <p>@details.Description</p>
+    <p>
+        @details.Description
+        <a href="@details.Url">Company Link</a>
+    </p>
+    
 }
 else if (loadFailed)
 {
@@ -32,6 +36,10 @@ else
         try
         {
             loadFailed = false;
+
+            // Reset details to null to display the loading indicator
+            details = null;
+
             details = await Product.GetProductByIdAsync(ProductId);
         }
         catch (Exception ex)
@@ -45,12 +53,13 @@ else
     {
         public string? ProductName { get; set; }
         public string? Description { get; set; }
+        public string? Url { get; set; }
     }
 
     /*
-     * Register the service in Program.cs:
-     * using static BlazorSample.Components.Pages.ProductDetails;
-     * builder.Services.AddScoped<IProductRepository, ProductRepository>();
+    * Register the service in Program.cs:
+    * using static BlazorSample.Components.Pages.ProductDetails;
+    * builder.Services.AddScoped<IProductRepository, ProductRepository>();
     */
 
     public interface IProductRepository
@@ -64,10 +73,10 @@ else
         {
             return Task.FromResult(
                 new ProductDetail()
-                { 
+                {
                     ProductName = "Flowbee ",
-                    Description = "The Revolutionary Haircutting System " +
-                        "You've Come to Love! https://flowbee.com/"
+                    Description = "The Revolutionary Haircutting System You've Come to Love!",
+                    Url = "https://flowbee.com/"
                 });
         }
     }

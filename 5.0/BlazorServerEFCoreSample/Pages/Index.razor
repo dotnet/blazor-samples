@@ -83,7 +83,7 @@
         {
             @foreach (var contact in Contacts)
             {
-                <ContactRow @key=contact CurrentContact="@contact"
+                <ContactRow @key=contact CurrentContact="contact"
                             DeleteContact="DeleteContactAsync" />
             }
         }
