@@ -1,0 +1,29 @@
+﻿@page "/reference-parent"
+
+<div>
+    <button @onclick="@(() => childComponent1!.ChildMethod(5))">
+        Call <code>ReferenceChild.ChildMethod</code> (first instance) 
+        with an argument of 5
+    </button>
+
+    <ReferenceChild @ref="childComponent1" />
+</div>
+
+<div>
+    <button @onclick="CallChildMethod">
+        Call <code>ReferenceChild.ChildMethod</code> (second instance) 
+        with an argument of 5
+    </button>
+
+    <ReferenceChild @ref="childComponent2" />
+</div>
+
+@code {
+    private ReferenceChild? childComponent1;
+    private ReferenceChild? childComponent2;
+
+    private void CallChildMethod()
+    {
+        childComponent2!.ChildMethod(5);
+    }
+}
