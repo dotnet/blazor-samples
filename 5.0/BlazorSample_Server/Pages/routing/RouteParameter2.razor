@@ -6,7 +6,7 @@
     [Parameter]
     public string Text { get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
         Text = Text ?? "fantastic";
     }
