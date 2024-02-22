@@ -1,4 +1,4 @@
-﻿@page "/prerendered-counter-2"
+@page "/prerendered-counter-2"
 @implements IDisposable
 @inject ILogger<PrerenderedCounter2> Logger
 @inject PersistentComponentState ApplicationState
@@ -13,7 +13,6 @@
 
 @code {
     private int currentCount;
-    private Random r = new Random();
     private PersistingComponentStateSubscription persistingSubscription;
 
     protected override void OnInitialized()
@@ -24,7 +23,7 @@
         if (!ApplicationState.TryTakeFromJson<int>(
             "count", out var restoredCount))
         {
-            currentCount = r.Next(100);
+            currentCount = Random.Shared.Next(100);
             Logger.LogInformation("currentCount set to {Count}", currentCount);
         }
         else
