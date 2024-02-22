@@ -1,4 +1,4 @@
-﻿using System.Net.Http.Json;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -228,7 +228,7 @@ namespace BlazorWasmAuth.Identity
         {
             const string Empty = "{}";
             var emptyContent = new StringContent(Empty, Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync("Logout", emptyContent);
+            await _httpClient.PostAsync("logout", emptyContent);
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
 
