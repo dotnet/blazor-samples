@@ -1,4 +1,4 @@
-﻿@page "/prerendered-counter-1"
+@page "/prerendered-counter-1"
 @rendermode @(new InteractiveServerRenderMode(prerender: true))
 @inject ILogger<PrerenderedCounter1> Logger
 
@@ -12,11 +12,10 @@
 
 @code {
     private int currentCount;
-    private Random r = new Random();
 
     protected override void OnInitialized()
     {
-        currentCount = r.Next(100);
+        currentCount = Random.Shared.Next(100);
         Logger.LogInformation("currentCount set to {Count}", currentCount);
     }
 

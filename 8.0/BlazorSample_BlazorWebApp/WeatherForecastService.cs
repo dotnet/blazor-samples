@@ -22,15 +22,13 @@ public class WeatherForecastService(IMemoryCache memoryCache)
                     TimeSpan.FromSeconds(30)
             });
 
-            var rng = new Random();
-
             await Task.Delay(TimeSpan.FromSeconds(10));
 
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = startDate.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = summaries[rng.Next(summaries.Length)]
+                TemperatureC = Random.Shared.Next(-20, 55),
+                Summary = summaries[Random.Shared.Next(summaries.Length)]
             }).ToArray();
         });
     }
