@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using BlazorWebAppOidc.Shared.Weather;
 
 namespace BlazorWebAppOidc.Client.Weather;
 

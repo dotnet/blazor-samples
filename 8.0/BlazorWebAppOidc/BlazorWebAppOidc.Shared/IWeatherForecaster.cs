@@ -1,5 +1,4 @@
-
-namespace BlazorWebAppOidc.Client.Weather;
+namespace BlazorWebAppOidc.Shared.Weather;
 
 public interface IWeatherForecaster
 {
