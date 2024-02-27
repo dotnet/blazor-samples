@@ -10,25 +10,25 @@
 </div>
 
 @code {
-	[Parameter]
-	public bool Expanded { get; set; }
+    [Parameter]
+    public bool Expanded { get; set; }
 
-	[Parameter]
-	public EventCallback<bool> ExpandedChanged { get; set; }
+    [Parameter]
+    public EventCallback<bool> ExpandedChanged { get; set; }
 
-	[Parameter]
-	public RenderFragment? ChildContent { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
 
-	private bool expanded;
+    private bool expanded;
 
-	protected override void OnParametersSet()
-	{
-		expanded = Expanded;
-	}
+    protected override void OnParametersSet()
+    {
+        expanded = Expanded;
+    }
 
-	private async void Toggle()
-	{
-		expanded = !expanded;
-		await ExpandedChanged.InvokeAsync(expanded);
+    private async void Toggle()
+    {
+    	    expanded = !expanded;
+    	    await ExpandedChanged.InvokeAsync(expanded);
     }
 }
