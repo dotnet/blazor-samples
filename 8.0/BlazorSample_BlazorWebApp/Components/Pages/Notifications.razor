@@ -44,7 +44,7 @@
 
     private void StartTimer()
     {
-        _= Task.Run(Timer.Start);
+        _ = Task.Run(Timer.Start);
     }
 
     public void Dispose() => Notifier.Notify -= OnNotify;
