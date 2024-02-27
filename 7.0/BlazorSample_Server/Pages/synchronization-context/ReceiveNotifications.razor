@@ -40,9 +40,9 @@
         });
     }
 
-    private async Task StartTimer()
+    private void StartTimer()
     {
-        await Timer.Start();
+        _ = Task.Run(Timer.Start);
     }
 
     public void Dispose()
