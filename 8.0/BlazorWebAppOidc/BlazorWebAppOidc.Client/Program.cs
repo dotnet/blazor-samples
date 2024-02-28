@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BlazorWebAppOidc.Client;
 using BlazorWebAppOidc.Client.Weather;
-using BlazorWebAppOidc.Shared.Weather;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 

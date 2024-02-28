@@ -14,8 +14,4 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BlazorWebAppOidc.Shared\BlazorWebAppOidc.Shared.csproj" />
-  </ItemGroup>
-
 </Project>

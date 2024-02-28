@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWebAppOidc", "BlazorW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWebAppOidc.Client", "BlazorWebAppOidc.Client\BlazorWebAppOidc.Client.csproj", "{7B3838A1-D145-479C-9B79-6D2CD1775B71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppOidc.Shared", "BlazorWebAppOidc.Shared\BlazorWebAppOidc.Shared.csproj", "{69EB0C8E-17A5-4A8C-BFFF-8865DD95C96E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{7B3838A1-D145-479C-9B79-6D2CD1775B71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B3838A1-D145-479C-9B79-6D2CD1775B71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B3838A1-D145-479C-9B79-6D2CD1775B71}.Release|Any CPU.Build.0 = Release|Any CPU
-		{69EB0C8E-17A5-4A8C-BFFF-8865DD95C96E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{69EB0C8E-17A5-4A8C-BFFF-8865DD95C96E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{69EB0C8E-17A5-4A8C-BFFF-8865DD95C96E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{69EB0C8E-17A5-4A8C-BFFF-8865DD95C96E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

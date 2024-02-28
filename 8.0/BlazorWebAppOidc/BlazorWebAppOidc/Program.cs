@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using BlazorWebAppOidc.Weather;
-using BlazorWebAppOidc.Shared.Weather;
+using BlazorWebAppOidc.Client.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -179,7 +179,7 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
+app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
 {
     return WeatherForecaster.GetWeatherForecastAsync();
 }).RequireAuthorization();

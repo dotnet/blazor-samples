@@ -1,4 +1,4 @@
-using BlazorWebAppOidc.Shared.Weather;
+using BlazorWebAppOidc.Client.Weather;
 
 namespace BlazorWebAppOidc.Weather;
 
