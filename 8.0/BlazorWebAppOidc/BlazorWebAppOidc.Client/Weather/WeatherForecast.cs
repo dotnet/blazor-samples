@@ -1,6 +1,6 @@
 namespace BlazorWebAppOidc.Client.Weather;
 
-public class WeatherForecast(DateOnly date, int temperatureC, string summary)
+public sealed class WeatherForecast(DateOnly date, int temperatureC, string summary)
 {
     public DateOnly Date { get; set; } = date;
     public int TemperatureC { get; set; } = temperatureC;
