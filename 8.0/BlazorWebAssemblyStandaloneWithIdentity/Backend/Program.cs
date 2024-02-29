@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend;
+using System.Diagnostics.Metrics;
+using System.Threading.Channels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +46,6 @@ builder.Services.AddCors(
         policy => policy.WithOrigins([builder.Configuration["BackendUrl"] ?? "https://localhost:5001", 
             builder.Configuration["FrontendUrl"] ?? "https://localhost:5002"])
             .AllowAnyMethod()
-            .SetIsOriginAllowed(pol => true)
             .AllowAnyHeader()
             .AllowCredentials()));
 
@@ -72,6 +73,13 @@ app.MapIdentityApi<AppUser>();
 
 // Activate the CORS policy
 app.UseCors("wasm");
+
+// Enable authentication and authorization after CORS Middleware
+// processing (UseCors) in case the Authorization Middleware tries
+// to initiate a challenge before the CORS Middleware has a chance
+// to set the appropriate headers.
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Provide an end point to clear the cookie for logout
 //
