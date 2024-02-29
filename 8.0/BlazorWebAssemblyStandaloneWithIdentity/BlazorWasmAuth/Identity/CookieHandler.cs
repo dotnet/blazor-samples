@@ -1,4 +1,4 @@
-﻿
+
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 
 namespace BlazorWasmAuth.Identity
@@ -18,6 +18,7 @@ namespace BlazorWasmAuth.Identity
         {
             // include cookies!
             request.SetBrowserRequestCredentials(BrowserRequestCredentials.Include);
+            request.Headers.Add("X-Requested-With", ["XMLHttpRequest"]);
 
             return base.SendAsync(request, cancellationToken);
         }

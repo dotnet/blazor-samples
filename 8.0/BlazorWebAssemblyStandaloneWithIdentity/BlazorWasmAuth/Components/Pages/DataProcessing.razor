@@ -1,0 +1,61 @@
+@page "/data-processing"
+@inject IHttpClientFactory ClientFactory
+
+<PageTitle>Data Processing</PageTitle>
+
+<h1>Data Processing</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <p>Hello, @context.User.Identity?.Name! You're authenticated, so processing data will succeed.</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>Hello! You're <em>NOT</em> authenticated, so processing data will fail.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+<EditForm Model="Model" OnSubmit="Submit" FormName="ProcessData">
+    <div>
+        <label>
+            Message:
+            <InputText @bind-Value="Model!.Message" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+<div>
+    @result
+</div>
+
+@code {
+    private string? result;
+
+    [SupplyParameterFromForm]
+    public FormModel? Model { get; set; }
+
+    protected override void OnInitialized() => Model ??= new();
+
+    private async Task Submit()
+    {
+        var client = ClientFactory.CreateClient("Auth");
+
+        var response = await client.PostAsJsonAsync<FormModel>("data-processing", Model!);
+
+        if (response.IsSuccessStatusCode)
+        {
+            result = $"The data was processed by the server! The server indicates that the message is {await response.Content.ReadAsStringAsync()} long.";
+        }
+        else
+        {
+            result = $"The server responded with an unsuccessful status code ({response.StatusCode}).";
+        }
+    }
+
+    public class FormModel
+    {
+        public string Message { get; set; } = string.Empty;
+    }
+}
