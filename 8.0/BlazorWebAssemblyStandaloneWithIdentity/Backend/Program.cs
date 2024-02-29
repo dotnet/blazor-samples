@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend;
-using System.Diagnostics.Metrics;
-using System.Threading.Channels;
 
 var builder = WebApplication.CreateBuilder(args);
 
