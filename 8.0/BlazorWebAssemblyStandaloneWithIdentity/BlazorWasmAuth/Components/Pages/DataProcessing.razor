@@ -42,17 +42,15 @@
     {
         var client = ClientFactory.CreateClient("Auth");
 
-        try
+        var response = await client.PostAsJsonAsync<FormModel>("data-processing", Model!);
+
+        if (response.IsSuccessStatusCode)
         {
-            var response = await client.PostAsJsonAsync<FormModel>("data-processing", Model!);
-
-            response.EnsureSuccessStatusCode();
-
-            result = $"The data was processed by the server! The server indicates that the message is {response.Content.ReadAsStringAsync().Result} long.";
+            result = $"The data was processed by the server! The server indicates that the message is {await response.Content.ReadAsStringAsync()} long.";
         }
-        catch (HttpRequestException ex)
+        else
         {
-            result = "The server didn't respond with a 200 (Success) status code.";
+            result = $"The server responded with an unsuccessful {response.StatusCode} status code.";
         }
     }
 
