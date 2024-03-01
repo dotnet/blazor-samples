@@ -1,6 +1,3 @@
 @Backend_HostAddress = https://localhost:7171
 
-GET {{Backend_HostAddress}}/weatherforecast/
-Accept: application/json
-
 ###
