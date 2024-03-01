@@ -1,4 +1,4 @@
-# Standalone Blazor WebAssembly Todo List sample app
+# Standalone Blazor WebAssembly Call web API sample app
 
 This sample app demonstrates how to call a web API running on a backend server app.
 
