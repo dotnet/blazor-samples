@@ -13,4 +13,8 @@
     <PackageReference Include="NSwag.AspNetCore" Version="14.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>
