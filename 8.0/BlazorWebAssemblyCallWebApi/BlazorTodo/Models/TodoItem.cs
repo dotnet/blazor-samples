@@ -1,4 +1,4 @@
-namespace BlazorWasm.Models;
+namespace BlazorTodo.Models;
 
 public sealed class TodoItem
 {

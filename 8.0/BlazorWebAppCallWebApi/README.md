@@ -1,4 +1,4 @@
-# Standalone Blazor WebAssembly Call web API sample app
+# Blazor Web App Call web API sample app
 
 This sample app demonstrates how to call a web API running on a backend server app.
 
@@ -16,7 +16,7 @@ For more information, see [Call a web API from ASP.NET Core Blazor](https://lear
    You can use the existing URLs or update them in the `appsettings.json` file of each project with new `BackendUrl` and `FrontendUrl` endpoints:
 
    * `appsettings.json` file in the root of the `Backend` app.
-   * `wwwroot/appsettings.json` file in the `BlazorTodo` app.
+   * `BlazorTodo/appsettings.json` file in the `BlazorTodo` app.
   
 1. If you plan to run the apps using the .NET CLI with `dotnet run`, note that first launch profile in the launch settings file is used to run an app, which is the insecure `http` profile (HTTP protocol). To run the apps securely (HTTPS protocol), take ***either*** of the following approaches:
 
@@ -29,4 +29,4 @@ For more information, see [Call a web API from ASP.NET Core Blazor](https://lear
 
 1. Navigate to the `BlazorTodo` app at the `FrontendUrl`.
 
-1. Navigate to the Call web API page (`Components/Pages/CallWebApi.razor` at `/call-web-api`).
+1. Navigate to the Call web API page (`BlazorTodo.Client/Pages/CallWebApi.razor` at `/call-web-api`).

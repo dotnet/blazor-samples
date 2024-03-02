@@ -1,11 +1,12 @@
-@page "/call-web-api"
-@using BlazorWasm.Models
+@page "/call-web-api-auto"
+@rendermode InteractiveAuto
+@using BlazorTodo.Models
 @inject IConfiguration Config
 @inject HttpClient Http
 
-<PageTitle>Call web API</PageTitle>
+<PageTitle>Call web API (Auto)</PageTitle>
 
-<h1>Call web API Example</h1>
+<h1>Call web API Example (Auto)</h1>
 
 @if (todoItems == null)
 {
