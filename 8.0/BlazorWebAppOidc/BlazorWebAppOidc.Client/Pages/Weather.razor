@@ -47,23 +47,21 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        persistingSubscription =
-            ApplicationState.RegisterOnPersisting(PersistWeatherData);
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
 
-        if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>(
-            "weatherData", out var restoredWeatherData))
+        if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>("data", out var restoredData))
         {
             forecasts = await WeatherForecaster.GetWeatherForecastAsync();
         }
         else
         {
-            forecasts = restoredWeatherData!;
+            forecasts = restoredData!;
         }
     }
 
-    private Task PersistWeatherData()
+    private Task PersistData()
     {
-        ApplicationState.PersistAsJson("weatherData", forecasts);
+        ApplicationState.PersistAsJson("data", forecasts);
 
         return Task.CompletedTask;
     }

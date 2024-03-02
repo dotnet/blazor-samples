@@ -1,6 +1,8 @@
 @page "/call-web-api-ssr"
 @rendermode InteractiveServer
 @using BlazorTodo.Models
+@implements IDisposable
+@inject PersistentComponentState ApplicationState
 @inject IConfiguration Config
 @inject HttpClient Http
 
@@ -85,17 +87,34 @@ else
     private string? serviceEndpoint;
     private TodoItem[]? todoItems;
     private bool getCompletedItems;
+    private PersistingComponentStateSubscription persistingSubscription;
 
     protected override async Task OnInitializedAsync()
     {
         serviceEndpoint = $"{Config.GetValue<string>("BackendUrl")}/todoitems";
-        await GetTodoItems();
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (!ApplicationState.TryTakeFromJson<TodoItem[]>("data", out var restoredData))
+        {
+            await GetTodoItems();
+        }
+        else
+        {
+            todoItems = restoredData!;
+        }
     }
 
     private async Task GetTodoItems()
     {
         var requestUri = getCompletedItems ? $"{serviceEndpoint}/complete" : serviceEndpoint;
-        todoItems = await Http.GetFromJsonAsync<TodoItem[]>(requestUri);
+        todoItems = await Http.GetFromJsonAsync<TodoItem[]>(requestUri) ?? Array.Empty<TodoItem>();
+    }
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson("data", todoItems);
+
+        return Task.CompletedTask;
     }
 
     private void EditItem(long id)
@@ -134,5 +153,10 @@ else
         await Http.DeleteAsync($"{serviceEndpoint}/{id}");
         await GetTodoItems();
         editRowStyle = "none";
+    }
+
+    void IDisposable.Dispose()
+    {
+        persistingSubscription.Dispose();
     }
 }
