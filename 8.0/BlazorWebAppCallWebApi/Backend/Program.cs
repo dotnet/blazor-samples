@@ -99,6 +99,7 @@ static async Task<IResult> DeleteTodo(long id, TodoContext db)
     {
         db.TodoItems.Remove(todo);
         await db.SaveChangesAsync();
+
         return TypedResults.NoContent();
     }
 

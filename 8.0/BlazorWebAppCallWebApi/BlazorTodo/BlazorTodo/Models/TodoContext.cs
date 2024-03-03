@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using BlazorTodo.Client.Models;
 
-namespace Backend.Models;
+namespace BlazorTodo.Models;
 
 public class TodoContext : DbContext
 {

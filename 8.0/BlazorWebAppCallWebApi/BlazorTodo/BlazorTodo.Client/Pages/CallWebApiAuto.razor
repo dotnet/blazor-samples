@@ -1,14 +1,14 @@
 @page "/call-web-api-auto"
 @rendermode InteractiveAuto
-@using BlazorTodo.Models
+@using BlazorTodo.Client.Models
+@using BlazorTodo.Client.Services
 @implements IDisposable
 @inject PersistentComponentState ApplicationState
-@inject IConfiguration Config
-@inject HttpClient Http
+@inject ITodoService TodoService
 
-<PageTitle>Call web API (Auto)</PageTitle>
+<PageTitle>Call Internal web API (Auto)</PageTitle>
 
-<h1>Call web API Example (Auto)</h1>
+<h1>Call Internal web API Example (Auto)</h1>
 
 @if (todoItems == null)
 {
@@ -84,14 +84,12 @@ else
     private TodoItem editItem = new();
     private string editRowStyle = "none";
     private string? newItemName;
-    private string? serviceEndpoint;
     private TodoItem[]? todoItems;
     private bool getCompletedItems;
     private PersistingComponentStateSubscription persistingSubscription;
 
     protected override async Task OnInitializedAsync()
     {
-        serviceEndpoint = $"{Config.GetValue<string>("BackendUrl")}/todoitems";
         persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
 
         if (!ApplicationState.TryTakeFromJson<TodoItem[]>("data", out var restoredData))
@@ -106,8 +104,7 @@ else
 
     private async Task GetTodoItems()
     {
-        var requestUri = getCompletedItems ? $"{serviceEndpoint}/complete" : serviceEndpoint;
-        todoItems = await Http.GetFromJsonAsync<TodoItem[]>(requestUri) ?? Array.Empty<TodoItem>();
+        todoItems = await TodoService.GetTodosAsync(getCompletedItems) ?? Array.Empty<TodoItem>();
     }
 
     private Task PersistData()
@@ -131,7 +128,7 @@ else
         if (!string.IsNullOrEmpty(newItemName))
         {
             var addItem = new TodoItem { Name = newItemName, IsComplete = false };
-            await Http.PostAsJsonAsync(serviceEndpoint, addItem);
+            await TodoService.PostTodoAsync(addItem);
             newItemName = string.Empty;
             await GetTodoItems();
             editRowStyle = "none";
@@ -142,7 +139,7 @@ else
     {
         if (editItem is not null)
         {
-            await Http.PutAsJsonAsync($"{serviceEndpoint}/{editItem.Id}", editItem);
+            await TodoService.PutTodoAsync(editItem.Id, editItem);
         }
         await GetTodoItems();
         editRowStyle = "none";
@@ -150,7 +147,7 @@ else
 
     private async Task DeleteItem(long id)
     {
-        await Http.DeleteAsync($"{serviceEndpoint}/{id}");
+        await TodoService.DeleteTodoAsync(id);
         await GetTodoItems();
         editRowStyle = "none";
     }
