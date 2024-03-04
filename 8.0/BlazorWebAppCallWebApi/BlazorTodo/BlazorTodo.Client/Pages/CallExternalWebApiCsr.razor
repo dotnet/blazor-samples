@@ -107,7 +107,7 @@ else
     private async Task GetTodoItems()
     {
         var requestUri = getCompletedItems ? $"{serviceEndpoint}/complete" : serviceEndpoint;
-        todoItems = await Http.GetFromJsonAsync<TodoItem[]>(requestUri) ?? Array.Empty<TodoItem>();
+        todoItems = await Http.GetFromJsonAsync<TodoItem[]>(requestUri) ?? [];
     }
 
     private Task PersistData()

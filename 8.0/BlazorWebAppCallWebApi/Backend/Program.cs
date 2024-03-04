@@ -10,8 +10,7 @@ builder.Services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoL
 // Add a CORS policy for the client
 // Add .AllowCredentials() for apps that use an Identity Provider for authn/z
 builder.Services.AddCors(
-    options => options.AddPolicy(
-        "wasm",
+    options => options.AddDefaultPolicy(
         policy => policy.WithOrigins([builder.Configuration["BackendUrl"] ?? "https://localhost:5001", 
             builder.Configuration["FrontendUrl"] ?? "https://localhost:5002"])
             .AllowAnyMethod()
@@ -37,7 +36,7 @@ if (builder.Environment.IsDevelopment())
 }
 
 // Activate the CORS policy
-app.UseCors("wasm");
+app.UseCors();
 
 app.UseHttpsRedirection();
 

@@ -104,7 +104,7 @@ else
 
     private async Task GetTodoItems()
     {
-        todoItems = await TodoService.GetTodosAsync(getCompletedItems) ?? Array.Empty<TodoItem>();
+        todoItems = await TodoService.GetTodosAsync(getCompletedItems) ?? [];
     }
 
     private Task PersistData()

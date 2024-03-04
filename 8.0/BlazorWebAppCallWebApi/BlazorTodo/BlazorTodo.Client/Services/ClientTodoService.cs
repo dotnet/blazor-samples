@@ -4,17 +4,16 @@ using System.Net.Http.Json;
 
 namespace BlazorTodo.Client.Services;
 
-public class ClientTodoService(IConfiguration config) : ITodoService
+public class ClientTodoService(IConfiguration config, HttpClient httpClient) : ITodoService
 {
     private readonly string serviceEndpoint = $"{config.GetValue<string>("FrontendUrl")}/todoitems";
 
-    [Inject]
-    private HttpClient? Http { get; set; }
+    private HttpClient Http { get; set; } = httpClient;
 
     public async Task<TodoItem[]> GetTodosAsync(bool completedItems)
     {
         var requestUri = completedItems ? $"{serviceEndpoint}/complete" : serviceEndpoint;
-        return Http is not null ? await Http.GetFromJsonAsync<TodoItem[]>(requestUri) ?? [] : [];
+        return await Http.GetFromJsonAsync<TodoItem[]>(requestUri) ?? [];
     }
 
     public async Task PostTodoAsync(TodoItem todo)
