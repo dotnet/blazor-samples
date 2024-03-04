@@ -49,7 +49,7 @@ else
     {
         persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
 
-        if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>("data", out var restoredData))
+        if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>(nameof(forecasts), out var restoredData))
         {
             forecasts = await WeatherForecaster.GetWeatherForecastAsync();
         }
@@ -61,7 +61,7 @@ else
 
     private Task PersistData()
     {
-        ApplicationState.PersistAsJson("data", forecasts);
+        ApplicationState.PersistAsJson(nameof(forecasts), forecasts);
 
         return Task.CompletedTask;
     }
