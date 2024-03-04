@@ -94,7 +94,7 @@ else
         serviceEndpoint = $"{Config.GetValue<string>("BackendUrl")}/todoitems";
         persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
 
-        if (!ApplicationState.TryTakeFromJson<TodoItem[]>("data", out var restoredData))
+        if (!ApplicationState.TryTakeFromJson<TodoItem[]>(nameof(todoItems), out var restoredData))
         {
             await GetTodoItems();
         }
@@ -112,7 +112,7 @@ else
 
     private Task PersistData()
     {
-        ApplicationState.PersistAsJson("data", todoItems);
+        ApplicationState.PersistAsJson(nameof(todoItems), todoItems);
 
         return Task.CompletedTask;
     }

@@ -92,7 +92,7 @@ else
     {
         persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
 
-        if (!ApplicationState.TryTakeFromJson<Movie[]>("data", out var restoredData))
+        if (!ApplicationState.TryTakeFromJson<Movie[]>(nameof(movies), out var restoredData))
         {
             await GetMovies();
         }
@@ -109,7 +109,7 @@ else
 
     private Task PersistData()
     {
-        ApplicationState.PersistAsJson("data", movies);
+        ApplicationState.PersistAsJson(nameof(movies), movies);
 
         return Task.CompletedTask;
     }
