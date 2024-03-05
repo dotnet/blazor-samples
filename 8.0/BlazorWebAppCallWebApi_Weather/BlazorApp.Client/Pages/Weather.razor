@@ -1,10 +1,11 @@
 @page "/weather"
-@using Microsoft.AspNetCore.Authorization
-@using BlazorWebAppOidc.Client.Weather
-@attribute [Authorize]
+@rendermode InteractiveAuto
+@using BlazorApp.Client.Models
+@using BlazorApp.Client.Services
+@attribute [StreamRendering]
 @implements IDisposable
-@inject PersistentComponentState ApplicationState
-@inject IWeatherForecaster WeatherForecaster
+@inject PersistentComponentState PersistentComponentState
+@inject IWeatherService WeatherService
 
 <PageTitle>Weather</PageTitle>
 
@@ -42,26 +43,22 @@ else
 }
 
 @code {
-    private IEnumerable<WeatherForecast>? forecasts;
+    private WeatherForecast[]? forecasts;
     private PersistingComponentStateSubscription persistingSubscription;
 
     protected override async Task OnInitializedAsync()
     {
-        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+        persistingSubscription = PersistentComponentState.RegisterOnPersisting(PersistData);
 
-        if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>(nameof(forecasts), out var restoredData))
+        if (!PersistentComponentState.TryTakeFromJson<WeatherForecast[]>(nameof(forecasts), out forecasts))
         {
-            forecasts = await WeatherForecaster.GetWeatherForecastAsync();
-        }
-        else
-        {
-            forecasts = restoredData!;
+            forecasts = await WeatherService.GetWeather();
         }
     }
 
     private Task PersistData()
     {
-        ApplicationState.PersistAsJson(nameof(forecasts), forecasts);
+        PersistentComponentState.PersistAsJson(nameof(forecasts), forecasts);
 
         return Task.CompletedTask;
     }
