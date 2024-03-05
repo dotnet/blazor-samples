@@ -155,8 +155,5 @@ else
         editRowStyle = "none";
     }
 
-    void IDisposable.Dispose()
-    {
-        persistingSubscription.Dispose();
-    }
+    void IDisposable.Dispose() => persistingSubscription.Dispose();
 }
