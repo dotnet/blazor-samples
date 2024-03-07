@@ -195,7 +195,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BlazorWebAppOidc.Client._Imports).Assembly);
 
-app.MapForwarder("/weatherforecast", "https://weatherapi", transformBuilder =>
+app.MapForwarder("/weather-forecast", "https://weatherapi", transformBuilder =>
 {
     transformBuilder.AddRequestTransform(async transformContext =>
     {
