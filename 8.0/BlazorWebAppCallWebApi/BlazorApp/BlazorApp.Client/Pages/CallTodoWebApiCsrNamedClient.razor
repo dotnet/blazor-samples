@@ -1,0 +1,60 @@
+@page "/call-todo-web-api-csr-named-client"
+@rendermode InteractiveWebAssembly
+@using BlazorApp.Client.Models
+@implements IDisposable
+@inject PersistentComponentState ApplicationState
+@inject IHttpClientFactory ClientFactory
+@inject IConfiguration Config
+
+<PageTitle>Call Todo web API (CSR, Named Client)</PageTitle>
+
+<h1>Call Todo web API Example (CSR, Named Client)</h1>
+
+@if (todoItems == null)
+{
+    <p>No Todo Items found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in todoItems)
+        {
+            <li>
+                @item.Name 
+                @if (item.IsComplete)
+                {
+                    <span style="padding-left:5px">✔</span>
+                }
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private TodoItem[]? todoItems;
+    private PersistingComponentStateSubscription persistingSubscription;
+
+    protected override async Task OnInitializedAsync()
+    {
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (!ApplicationState.TryTakeFromJson<TodoItem[]>(nameof(todoItems), out var restoredData))
+        {
+            var client = ClientFactory.CreateClient("WebAPI");
+            todoItems = await client.GetFromJsonAsync<TodoItem[]>("todoitems") ?? [];
+        }
+        else
+        {
+            todoItems = restoredData!;
+        }
+    }
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson(nameof(todoItems), todoItems);
+
+        return Task.CompletedTask;
+    }
+
+    void IDisposable.Dispose() => persistingSubscription.Dispose();
+}

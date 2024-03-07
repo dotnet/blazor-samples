@@ -6,16 +6,27 @@ using BlazorApp.Models;
 using BlazorApp.Client.Models;
 using BlazorApp.Client.Services;
 using BlazorApp.Services;
+using Microsoft.AspNetCore.Hosting;
+using BlazorApp.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
 // Add HttpClient for making external web API calls to the Backend server API
 builder.Services.AddHttpClient();
+
+// For prerendering purposes, register a named HttpClient for the app's
+// named client component example.
+builder.Services.AddHttpClient("WebAPI", client =>
+    client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5001"));
+
+// For prerendering purposes, register the client app's typed HttpClient
+// for the app's typed client component example.
+builder.Services.AddHttpClient<TodoHttpClient>();
 
 // Add Todo service for components adopting SSR
 builder.Services.AddScoped<IMovieService, ServerMovieService>();
@@ -40,7 +51,7 @@ builder.Services.AddOpenApiDocument();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
