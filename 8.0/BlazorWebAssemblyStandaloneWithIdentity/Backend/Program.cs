@@ -11,6 +11,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Establish cookie authentication
 builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme).AddIdentityCookies();
 
+// Configure app cookie
+//
+// The default values, which are appropriate for hosting the Backend and
+// BlazorWasmAuth apps on the same domain, are Lax and SameAsRequest. 
+// For more information on these settings, see:
+// https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#cross-domain-hosting-same-site-configuration
+/*
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
+*/
+
 // Configure authorization
 builder.Services.AddAuthorizationBuilder();
 
@@ -30,7 +44,6 @@ builder.Services.AddCors(
         policy => policy.WithOrigins([builder.Configuration["BackendUrl"] ?? "https://localhost:5001", 
             builder.Configuration["FrontendUrl"] ?? "https://localhost:5002"])
             .AllowAnyMethod()
-            .SetIsOriginAllowed(pol => true)
             .AllowAnyHeader()
             .AllowCredentials()));
 
@@ -56,27 +69,31 @@ if (builder.Environment.IsDevelopment())
 // Create routes for the identity endpoints
 app.MapIdentityApi<AppUser>();
 
-// Provide an end point to clear the cookie for logout
-//
-// The request checks for an empty body to prevent CSRF attacks. By requiring something
-// in the body, the request must be made from JavaScript, which is the only way to
-// access the cookie. It can't be accessed by a form-based post. This prevents a
-// malicious site from logging the user out.
-//
-// Furthermore, the endpoint is protected by authorization to prevent anonymous access.
-// The client simply needs to pass an empty object {} in the body of the request.
-app.MapPost("/Logout", async (SignInManager<AppUser> signInManager, [FromBody] object empty) =>
-{
-    if (empty != null)
-    {
-        await signInManager.SignOutAsync();
-        return Results.Ok();
-    }
-    return Results.Unauthorized();
-}).RequireAuthorization();
-
 // Activate the CORS policy
 app.UseCors("wasm");
+
+// Enable authentication and authorization after CORS Middleware
+// processing (UseCors) in case the Authorization Middleware tries
+// to initiate a challenge before the CORS Middleware has a chance
+// to set the appropriate headers.
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Provide an end point to clear the cookie for logout
+//
+// For more information on the logout endpoint and antiforgery, see:
+// https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity#antiforgery-support
+app.MapPost("/logout", async (SignInManager<AppUser> signInManager, [FromBody] object empty) =>
+{
+    if (empty is not null)
+    {
+        await signInManager.SignOutAsync();
+
+        return Results.Ok();
+    }
+
+    return Results.Unauthorized();
+}).RequireAuthorization();
 
 app.UseHttpsRedirection();
 
@@ -102,6 +119,10 @@ app.MapGet("/roles", (ClaimsPrincipal user) =>
     return Results.Unauthorized();
 }).RequireAuthorization();
 
+app.MapPost("/data-processing", ([FromBody] FormModel model) =>
+    Results.Text($"{model.Message.Length} characters"))
+        .RequireAuthorization();
+
 app.Run();
 
 // Identity user
@@ -113,4 +134,10 @@ class AppUser : IdentityUser
 // Identity database
 class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options)
 {
+}
+
+// Example form model
+class FormModel
+{
+    public string Message { get; set; } = string.Empty;
 }

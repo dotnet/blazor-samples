@@ -9,6 +9,7 @@ _site/
 # User-specific files
 *.suo
 *.user
+!*.slnLaunch.user
 *.userosscache
 *.sln.docstates
 .vscode/
@@ -56,7 +57,6 @@ dlldata.c
 *.pgd
 *.rsp
 *.sbr
-*.sln
 *.tlb
 *.tli
 *.tlh

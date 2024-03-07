@@ -21,7 +21,7 @@
             ApplicationState.RegisterOnPersisting(PersistCount);
 
         if (!ApplicationState.TryTakeFromJson<int>(
-            "count", out var restoredCount))
+            nameof(currentCount), out var restoredCount))
         {
             currentCount = Random.Shared.Next(100);
             Logger.LogInformation("currentCount set to {Count}", currentCount);
@@ -35,7 +35,7 @@
 
     private Task PersistCount()
     {
-        ApplicationState.PersistAsJson("count", currentCount);
+        ApplicationState.PersistAsJson(nameof(currentCount), currentCount);
 
         return Task.CompletedTask;
     }

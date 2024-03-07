@@ -1,4 +1,4 @@
-﻿@page "/login"
+@page "/login"
 @using BlazorWasmAuth.Identity
 @inject IAccountManagement Acct
 
@@ -65,7 +65,7 @@
             return;
         }
 
-        var result = await Acct.LoginAsync(email!, password!);
+        var result = await Acct.LoginAsync(email, password);
 
         if (result.Succeeded)
         {

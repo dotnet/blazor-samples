@@ -4,6 +4,9 @@ using BlazorWebAppOidc.Components;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using BlazorWebAppOidc.Weather;
+using BlazorWebAppOidc.Client.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -148,6 +151,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
 
+builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
@@ -174,17 +179,9 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    return WeatherForecaster.GetWeatherForecastAsync();
 }).RequireAuthorization();
 
 app.MapRazorComponents<App>()
@@ -195,8 +192,3 @@ app.MapRazorComponents<App>()
 app.MapGroup("/authentication").MapLoginAndLogout();
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

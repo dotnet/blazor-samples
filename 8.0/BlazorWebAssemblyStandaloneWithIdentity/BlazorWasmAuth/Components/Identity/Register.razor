@@ -1,4 +1,4 @@
-﻿@page "/register"
+@page "/register"
 @using BlazorWasmAuth.Identity
 @inject IAccountManagement Acct
 
@@ -95,7 +95,7 @@
             return;
         }
 
-        var result = await Acct.RegisterAsync(email!, password!);
+        var result = await Acct.RegisterAsync(email, password);
 
         if (result.Succeeded)
         {

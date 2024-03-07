@@ -2,7 +2,6 @@ using BlazorSample;
 using BlazorSample.Components;
 //using BlazorSample.Services;
 using static BlazorSample.Components.Pages.ProductDetails;
-using static BlazorSample.Components.Pages.TheSunmakers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +11,6 @@ builder.Services.AddRazorComponents()
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddScoped<NotifierService>();
 builder.Services.AddScoped<TimerService>();
-builder.Services.AddScoped<IDataAccess, DataAccess>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddHttpClient();
 builder.Services.AddCascadingValue(sp => new Dalek { Units = 123 });
