@@ -4,15 +4,13 @@ using System.Net.Http.Json;
 
 namespace BlazorApp.Client.Services;
 
-public class ClientMovieService(IConfiguration config, HttpClient httpClient) : IMovieService
+public class ClientMovieService(HttpClient httpClient) : IMovieService
 {
-    private readonly string serviceEndpoint = $"{config.GetValue<string>("FrontendUrl")}/movies";
-
     private HttpClient Http { get; set; } = httpClient;
 
     public async Task<Movie[]> GetMoviesAsync(bool watchedMovies)
     {
-        var requestUri = watchedMovies ? $"{serviceEndpoint}/watched" : serviceEndpoint;
+        var requestUri = watchedMovies ? $"movies/watched" : "movies";
         return await Http.GetFromJsonAsync<Movie[]>(requestUri) ?? [];
     }
 
@@ -20,7 +18,7 @@ public class ClientMovieService(IConfiguration config, HttpClient httpClient) : 
     {
         if (Http is not null)
         {
-            await Http.PostAsJsonAsync(serviceEndpoint, movie);
+            await Http.PostAsJsonAsync("movies", movie);
         }
     }
 
@@ -28,7 +26,7 @@ public class ClientMovieService(IConfiguration config, HttpClient httpClient) : 
     {
         if (Http is not null)
         {
-            await Http.PutAsJsonAsync($"{serviceEndpoint}/{id}", movie);
+            await Http.PutAsJsonAsync($"movies/{id}", movie);
         }
     }
 
@@ -36,7 +34,7 @@ public class ClientMovieService(IConfiguration config, HttpClient httpClient) : 
     {
         if (Http is not null)
         {
-            await Http.DeleteAsync($"{serviceEndpoint}/{id}");
+            await Http.DeleteAsync($"movies/{id}");
         }
     }
 }
