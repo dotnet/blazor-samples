@@ -1,0 +1,13 @@
+@page "/expander"
+
+<PageTitle>Expander</PageTitle>
+
+<h1>Expander Example</h1>
+
+<ShowMoreExpander InitiallyExpanded="false">
+    Expander 1 content
+</ShowMoreExpander>
+
+<BadShowMoreExpander InitiallyExpanded="false" />
+
+<button @onclick="StateHasChanged">Call StateHasChanged</button>
