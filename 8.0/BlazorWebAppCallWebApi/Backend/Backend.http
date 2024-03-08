@@ -1,4 +1,4 @@
-@Backend_HostAddress = https://localhost:7211
+@Backend_HostAddress = https://localhost:7212
 
 GET {{Backend_HostAddress}}/todoitems/
 Accept: application/json
@@ -10,7 +10,24 @@ Accept: application/json
 
 ###
 
+GET {{Backend_HostAddress}}/todoitems/incomplete
+Accept: application/json
+
+###
+
 GET {{Backend_HostAddress}}/todoitems/2
+
+###
+
+PATCH {{Backend_HostAddress}}/todoitems/2
+Content-Type: application/json
+
+{
+  "operationType": 2,
+  "path": "/IsComplete",
+  "op": "replace",
+  "value": true
+}
 
 ###
 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using Backend;
 using Backend.Models;
@@ -45,10 +46,12 @@ var todoItems = app.MapGroup("/todoitems");
 
 todoItems.MapGet("/", GetAllTodos);
 todoItems.MapGet("/complete", GetCompleteTodos);
+todoItems.MapGet("/incomplete", GetIncompleteTodos);
 todoItems.MapGet("/{id}", GetTodo);
 todoItems.MapPost("/", CreateTodo);
 todoItems.MapPut("/{id}", UpdateTodo);
 todoItems.MapDelete("/{id}", DeleteTodo);
+todoItems.MapPatch("/{id}", PatchTodo);
 
 app.Run();
 
@@ -60,6 +63,11 @@ static async Task<IResult> GetAllTodos(TodoContext db)
 static async Task<IResult> GetCompleteTodos(TodoContext db)
 {
     return TypedResults.Ok(await db.TodoItems.Where(t => t.IsComplete).ToListAsync());
+}
+
+static async Task<IResult> GetIncompleteTodos(TodoContext db)
+{
+    return TypedResults.Ok(await db.TodoItems.Where(t => !t.IsComplete).ToListAsync());
 }
 
 static async Task<IResult> GetTodo(long id, TodoContext db)
@@ -103,4 +111,18 @@ static async Task<IResult> DeleteTodo(long id, TodoContext db)
     }
 
     return TypedResults.NotFound();
+}
+
+static async Task<IResult> PatchTodo(long id, TodoContext db)
+{
+    if (await db.TodoItems.FindAsync(id) is TodoItem todo)
+    {
+        var patchDocument = new JsonPatchDocument<TodoItem>().Replace(p => p.IsComplete, true);
+        patchDocument.ApplyTo(todo);
+        await db.SaveChangesAsync();
+
+        return TypedResults.Ok(todo);
+    }
+
+    return TypedResults.NoContent();
 }

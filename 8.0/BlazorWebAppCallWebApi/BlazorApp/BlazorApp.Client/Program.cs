@@ -15,6 +15,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddHttpClient("WebAPI", client => client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5002"));
 
 // Register the app's typed HttpClient for the typed client component example
-builder.Services.AddHttpClient<TodoHttpClient>();
+builder.Services.AddHttpClient<TodoHttpClient>(client => client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5002"));
 
 await builder.Build().RunAsync();
