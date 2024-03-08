@@ -9,15 +9,15 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
-namespace BlazorWebAppOidc;
+namespace BlazorWebOidc;
 
 // https://github.com/dotnet/aspnetcore/issues/8175
-internal sealed class CookieOidcRefresher(IOptionsMonitor<OpenIdConnectOptions> oidcOptionsMonitor) : IDisposable
+internal sealed class CookieOidcRefresher(IOptionsMonitor<OpenIdConnectOptions> oidcOptionsMonitor)
 {
-    private readonly HttpClient refreshClient = new();
     private readonly OpenIdConnectProtocolValidator oidcTokenValidator = new()
     {
-        // Refresh requests do not use the nonce parameter. Otherwise, we'd use oidcOptions.ProtocolValidator.
+        // We no longer have the original nonce cookie which is deleted at the end of the authorization code flow having served its purpose.
+        // Even if we had the nonce, it's likely expired. It's not intended for refresh requests. Otherwise, we'd use oidcOptions.ProtocolValidator.
         RequireNonce = false,
     };
 
@@ -39,7 +39,7 @@ internal sealed class CookieOidcRefresher(IOptionsMonitor<OpenIdConnectOptions> 
         var oidcConfiguration = await oidcOptions.ConfigurationManager!.GetConfigurationAsync(validateContext.HttpContext.RequestAborted);
         var tokenEndpoint = oidcConfiguration.TokenEndpoint ?? throw new InvalidOperationException("Cannot refresh cookie. TokenEndpoint missing!");
 
-        using var refreshResponse = await refreshClient.PostAsync(tokenEndpoint,
+        using var refreshResponse = await oidcOptions.Backchannel.PostAsync(tokenEndpoint,
             new FormUrlEncodedContent(new Dictionary<string, string?>()
             {
                 ["grant_type"] = "refresh_token",
@@ -77,11 +77,13 @@ internal sealed class CookieOidcRefresher(IOptionsMonitor<OpenIdConnectOptions> 
             return;
         }
 
+        var validatedIdToken = JwtSecurityTokenConverter.Convert(validationResult.SecurityToken as JsonWebToken);
+        validatedIdToken.Payload["nonce"] = null;
         oidcTokenValidator.ValidateTokenResponse(new()
         {
             ProtocolMessage = message,
             ClientId = oidcOptions.ClientId,
-            ValidatedIdToken = JwtSecurityTokenConverter.Convert(validationResult.SecurityToken as JsonWebToken),
+            ValidatedIdToken = validatedIdToken,
         });
 
         validateContext.ShouldRenew = true;
@@ -97,6 +99,4 @@ internal sealed class CookieOidcRefresher(IOptionsMonitor<OpenIdConnectOptions> 
             new() { Name = "expires_at", Value = expiresAt.ToString("o", CultureInfo.InvariantCulture) },
         ]);
     }
-
-    public void Dispose() => refreshClient.Dispose();
 }
