@@ -14,7 +14,6 @@
 }
 
 @code {
-    private Random r = new();
     private string? stockSymbol;
     private decimal price;
     private JsInteropClasses1? jsClass;
@@ -29,8 +28,8 @@
         if (jsClass is not null)
         {
             stockSymbol = 
-                $"{(char)('A' + r.Next(0, 26))}{(char)('A' + r.Next(0, 26))}";
-            price = r.Next(1, 101);
+                $"{(char)('A' + Random.Shared.Next(0, 26))}{(char)('A' + Random.Shared.Next(0, 26))}";
+            price = Random.Shared.Next(1, 101);
             await jsClass.TickerChanged(stockSymbol, price);
         }
     }
