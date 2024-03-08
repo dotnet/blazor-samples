@@ -1,0 +1,35 @@
+<div class="card bg-light mb-3" style="width:30rem">
+    <div @onclick="Toggle" class="card-header">
+        <h2 class="card-title">Toggle (<code>Expanded</code> = @expanded)</h2>
+    </div>
+    @if (expanded)
+    {
+        <div class="card-body">
+            <p class="card-text">@ChildContent</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public bool Expanded { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ExpandedChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool expanded;
+
+    protected override void OnParametersSet()
+    {
+        expanded = Expanded;
+    }
+
+    private async void Toggle()
+    {
+        expanded = !expanded;
+        await ExpandedChanged.InvokeAsync(expanded);
+    }
+}
