@@ -1,4 +1,4 @@
-﻿namespace BlazorWebAppEFCore.Data;
+namespace BlazorWebAppEFCore.Data;
 
 // Generates desired number of random contacts.
 public class SeedContacts
@@ -146,13 +146,11 @@ public class SeedContacts
         "VA", "WA", "WV", "WI", "WY"
     };
 
-    private readonly Random _random = new();
-
     // Picks a random item from a list.
     // list: A list of string to parse.
     private string RandomOne(string[] list)
     {
-        var idx = _random.Next(list.Length - 1);
+        var idx = Random.Shared.Next(list.Length - 1);
 
         return list[idx];
     }
@@ -165,12 +163,12 @@ public class SeedContacts
         {
             FirstName = RandomOne(_gems),
             LastName = $"{RandomOne(_colors)}{RandomOne(_things)}",
-            Phone = $"({_random.Next(100, 999)})-555-{_random.Next(1000, 9999)}",
-            Street = $"{_random.Next(1, 99999)} {_random.Next(1, 999)}" +
+            Phone = $"({Random.Shared.Next(100, 999)})-555-{Random.Shared.Next(1000, 9999)}",
+            Street = $"{Random.Shared.Next(1, 99999)} {Random.Shared.Next(1, 999)}" +
             $" {RandomOne(_streets)} {RandomOne(_streetTypes)} {RandomOne(_directions)}",
             City = RandomOne(_cities),
             State = RandomOne(_states),
-            ZipCode = $"{ _random.Next(10000, 99999)}"
+            ZipCode = $"{Random.Shared.Next(10000, 99999)}"
         };
 
         return contact;

@@ -9,8 +9,6 @@
 </div>
 
 @code {
-    private Random r = new();
-
     [Parameter]
     public int Year { get; set; }
 
@@ -19,6 +17,6 @@
 
     private async Task UpdateYearFromChild()
     {
-        await YearChanged.InvokeAsync(r.Next(1950, 2021));
+        await YearChanged.InvokeAsync(Random.Shared.Next(1950, 2021));
     }
 }

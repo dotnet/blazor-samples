@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -169,18 +169,13 @@ public class SeedContacts
     };
 
     /// <summary>
-    /// Get some randominzation in play.
-    /// </summary>
-    private readonly Random _random = new();
-
-    /// <summary>
     /// Picks a random item from a list.
     /// </summary>
     /// <param name="list">A list of <c>string</c> to parse.</param>
     /// <returns>A single item from the list.</returns>
     private string RandomOne(string[] list)
     {
-        var idx = _random.Next(list.Length - 1);
+        var idx = Random.Shared.Next(list.Length - 1);
         return list[idx];
     }
 
@@ -194,12 +189,12 @@ public class SeedContacts
         {
             FirstName = RandomOne(_gems),
             LastName = $"{RandomOne(_colors)}{RandomOne(_things)}",
-            Phone = $"({_random.Next(100, 999)})-555-{_random.Next(1000, 9999)}",
-            Street = $"{_random.Next(1, 99999)} {_random.Next(1, 999)}" +
+            Phone = $"({Random.Shared.Next(100, 999)})-555-{Random.Shared.Next(1000, 9999)}",
+            Street = $"{Random.Shared.Next(1, 99999)} {Random.Shared.Next(1, 999)}" +
             $" {RandomOne(_streets)} {RandomOne(_streetTypes)} {RandomOne(_directions)}",
             City = RandomOne(_cities),
             State = RandomOne(_states),
-            ZipCode = $"{ _random.Next(10000, 99999)}"
+            ZipCode = $"{Random.Shared.Next(10000, 99999)}"
         };
         return contact;
     }
