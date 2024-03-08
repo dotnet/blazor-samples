@@ -18,7 +18,6 @@
 }
 
 @code {
-    private Random r = new();
     private string? stockSymbol;
     private decimal price;
     private string? result;
@@ -26,8 +25,8 @@
     private async Task SetStock()
     {
         stockSymbol = 
-            $"{(char)('A' + r.Next(0, 26))}{(char)('A' + r.Next(0, 26))}";
-        price = r.Next(1, 101);
+            $"{(char)('A' + Random.Shared.Next(0, 26))}{(char)('A' + Random.Shared.Next(0, 26))}";
+        price = Random.Shared.Next(1, 101);
         var interopResult = 
             await JS.InvokeAsync<string>("displayTickerAlert2", stockSymbol, price);
         result = $"Result of TickerChanged call for {stockSymbol} at " +
