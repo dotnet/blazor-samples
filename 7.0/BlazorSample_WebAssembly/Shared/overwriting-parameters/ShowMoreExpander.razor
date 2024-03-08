@@ -1,0 +1,31 @@
+<div @onclick="Expand" class="card bg-light mb-3" style="width:30rem">
+    <div class="card-header">
+        <h2 class="card-title">Show more (<code>Expanded</code> = @expanded)</h2>
+    </div>
+    @if (expanded)
+    {
+        <div class="card-body">
+            <p class="card-text">@ChildContent</p>
+        </div>
+    }
+</div>
+
+@code {
+    private bool expanded;
+
+    [Parameter]
+    public bool InitiallyExpanded { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        expanded = InitiallyExpanded;
+    }
+
+    private void Expand()
+    {
+        expanded = true;
+    }
+}
