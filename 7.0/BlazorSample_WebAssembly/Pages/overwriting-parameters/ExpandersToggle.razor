@@ -1,0 +1,22 @@
+@page "/expanders-toggle"
+
+<PageTitle>Expanders Toggle</PageTitle>
+
+<h1>Expanders Toggle</h1>
+
+<ToggleExpander @bind-Expanded="expanded">
+    Expander content
+</ToggleExpander>
+
+<button @onclick="Toggle">Toggle</button>
+
+<button @onclick="StateHasChanged">Call StateHasChanged</button>
+
+@code {
+    private bool expanded;
+
+    private void Toggle()
+    {
+        expanded = !expanded;
+    }
+}

@@ -1,0 +1,24 @@
+<div @onclick="ShowMore" class="card bg-light mb-3" style="width:30rem">
+    <div class="card-header">
+        <h2 class="card-title">Show more (<code>Expanded</code> = @InitiallyExpanded)</h2>
+    </div>
+    @if (InitiallyExpanded)
+    {
+        <div class="card-body">
+            <p class="card-text">@ChildContent</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public bool InitiallyExpanded { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private void ShowMore()
+    {
+        InitiallyExpanded = true;
+    }
+}
