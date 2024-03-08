@@ -3,10 +3,10 @@ using BlazorApp.Client.Models;
 
 namespace BlazorApp.Client;
 
-public class TodoHttpClient(IConfiguration config, HttpClient http)
+public class TodoHttpClient(HttpClient client)
 {
     public async Task<TodoItem[]> GetTodoItemsAsync()
     {
-        return await http.GetFromJsonAsync<TodoItem[]>($"{config.GetValue<string>("BackendUrl")}/todoitems") ?? [];
+        return await client.GetFromJsonAsync<TodoItem[]>("todoitems") ?? [];
     }
 }

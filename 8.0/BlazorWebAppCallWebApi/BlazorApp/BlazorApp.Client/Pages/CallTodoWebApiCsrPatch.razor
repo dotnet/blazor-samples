@@ -1,0 +1,102 @@
+@page "/call-todo-web-api-csr-patch"
+@rendermode InteractiveWebAssembly
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using Microsoft.AspNetCore.JsonPatch
+@using BlazorApp.Client.Models
+@implements IDisposable
+@inject PersistentComponentState ApplicationState
+@inject IHttpClientFactory ClientFactory
+
+<PageTitle>Call Todo web API (CSR, PATCH)</PageTitle>
+
+<h1>Call Todo web API Example (CSR, PATCH)</h1>
+
+@if (todoItems == null)
+{
+    <p>No Todo Items found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in todoItems)
+        {
+            <li>
+                @item.Name
+                <button class="btn btn-secondary" @onclick="_ => UpdateItemRaw(item.Id)">
+                    Mark 'Complete' raw body
+                </button>
+                <button class="btn btn-primary" @onclick="_ => UpdateItem(item.Id)">
+                    Mark 'Complete' PATCH doc
+                </button>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    JsonPatchDocument<TodoItem> patchDocument = new JsonPatchDocument<TodoItem>().Replace(p => p.IsComplete, true);
+    private TodoItem[]? todoItems;
+    private PersistingComponentStateSubscription persistingSubscription;
+    private HttpClient? client;
+
+    protected override async Task OnInitializedAsync()
+    {
+        client = ClientFactory.CreateClient("WebAPI");
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
+
+        if (!ApplicationState.TryTakeFromJson<TodoItem[]>(nameof(todoItems), out var restoredData))
+        {
+            await GetTodoItems();
+        }
+        else
+        {
+            todoItems = restoredData!;
+        }
+    }
+
+    private async Task GetTodoItems()
+    {
+        if (client is not null)
+        {
+            todoItems = await client.GetFromJsonAsync<TodoItem[]>("todoitems/incomplete") ?? [];
+        }
+    }
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson(nameof(todoItems), todoItems);
+
+        return Task.CompletedTask;
+    }
+
+    private async Task UpdateItemRaw(long id)
+    {
+        if (client is not null)
+        {
+            await client.PatchAsJsonAsync(
+                $"todoitems/{id}", 
+                "[{\"operationType\":2,\"path\":\"/IsComplete\",\"op\":\"replace\",\"value\":true}]");
+            await GetTodoItems();
+        }
+    }
+
+    private async Task UpdateItem(long id)
+    {
+        if (client is not null)
+        {
+            // Set WriteIndented to 'true' to format JSON during debugging
+            await client.PatchAsJsonAsync(
+                $"todoitems/{id}",
+                patchDocument.Operations,
+                new JsonSerializerOptions()
+                {
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+                    WriteIndented = false
+                });
+            await GetTodoItems();
+        }
+    }
+
+    void IDisposable.Dispose() => persistingSubscription.Dispose();
+}

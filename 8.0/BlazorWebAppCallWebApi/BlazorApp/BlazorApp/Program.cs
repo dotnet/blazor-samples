@@ -26,7 +26,7 @@ builder.Services.AddHttpClient("WebAPI", client =>
 
 // For prerendering purposes, register the client app's typed HttpClient
 // for the app's typed client component example.
-builder.Services.AddHttpClient<TodoHttpClient>();
+builder.Services.AddHttpClient<TodoHttpClient>(client => client.BaseAddress = new Uri(builder.Configuration["BackendUrl"] ?? "https://localhost:5002"));
 
 // Add Todo service for components adopting SSR
 builder.Services.AddScoped<IMovieService, ServerMovieService>();
