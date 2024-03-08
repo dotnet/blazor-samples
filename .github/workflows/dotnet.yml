@@ -37,42 +37,42 @@ jobs:
       with:
         dotnet-version: 3.1.x
     - name: Restore dependencies .NET 8 BWA
-      run: dotnet restore ./8.0/BlazorSample_BlazorWebApp/BlazorSample.sln --no-restore
+      run: dotnet restore ./8.0/BlazorSample_BlazorWebApp/BlazorSample.sln
     - name: Build .NET 8 BWA
       run: dotnet build ./8.0/BlazorSample_BlazorWebApp/BlazorSample.sln --no-restore
     - name: Restore dependencies .NET 8 WASM
-      run: dotnet restore ./8.0/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
+      run: dotnet restore ./8.0/BlazorSample_WebAssembly/BlazorSample.sln
     - name: Build .NET 8 WASM
       run: dotnet build ./8.0/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
     - name: Restore dependencies .NET 7 Server
-      run: dotnet restore ./7.0/BlazorSample_Server/BlazorSample.sln --no-restore
+      run: dotnet restore ./7.0/BlazorSample_Server/BlazorSample.sln
     - name: Build .NET 7 Server
       run: dotnet build ./7.0/BlazorSample_Server/BlazorSample.sln --no-restore
     - name: Restore dependencies .NET 7 WASM
-      run: dotnet restore ./7.0/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
+      run: dotnet restore ./7.0/BlazorSample_WebAssembly/BlazorSample.sln
     - name: Build .NET 7 WASM
       run: dotnet build ./7.0/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
     - name: Restore dependencies .NET 6 Server
-      run: dotnet restore ./6.0/BlazorSample_Server/BlazorSample.sln --no-restore
+      run: dotnet restore ./6.0/BlazorSample_Server/BlazorSample.sln
     - name: Build .NET 6 Server
       run: dotnet build ./6.0/BlazorSample_Server/BlazorSample.sln --no-restore
     - name: Restore dependencies .NET 6 WASM
-      run: dotnet restore ./6.0/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
+      run: dotnet restore ./6.0/BlazorSample_WebAssembly/BlazorSample.sln
     - name: Build .NET 6 WASM
       run: dotnet build ./6.0/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
     - name: Restore dependencies .NET 5 Server
-      run: dotnet restore ./5.0/BlazorSample_Server/BlazorSample.sln --no-restore
+      run: dotnet restore ./5.0/BlazorSample_Server/BlazorSample.sln
     - name: Build .NET 5 Server
       run: dotnet build ./5.0/BlazorSample_Server/BlazorSample.sln --no-restore
     - name: Restore dependencies .NET 5 WASM
-      run: dotnet restore ./5.0/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
+      run: dotnet restore ./5.0/BlazorSample_WebAssembly/BlazorSample.sln
     - name: Build .NET 5 WASM
       run: dotnet build ./5.0/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
     - name: Restore dependencies .NET 3.1 Server
-      run: dotnet restore ./3.1/BlazorSample_Server/BlazorSample.sln --no-restore
+      run: dotnet restore ./3.1/BlazorSample_Server/BlazorSample.sln
     - name: Build .NET 3.1 Server
       run: dotnet build ./3.1/BlazorSample_Server/BlazorSample.sln --no-restore
     - name: Restore dependencies .NET 3.1 WASM
-      run: dotnet restore ./3.1/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
+      run: dotnet restore ./3.1/BlazorSample_WebAssembly/BlazorSample.sln
     - name: Build .NET 3.1 WASM
       run: dotnet build ./3.1/BlazorSample_WebAssembly/BlazorSample.sln --no-restore
