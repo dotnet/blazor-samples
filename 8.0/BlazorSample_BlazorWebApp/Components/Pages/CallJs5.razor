@@ -21,7 +21,6 @@
 }
 
 @code {
-    private Random r = new();
     private string? stockSymbol;
     private decimal price;
     private JsInteropClasses2? jsClass;
@@ -37,8 +36,8 @@
         if (jsClass is not null)
         {
             stockSymbol = 
-                $"{(char)('A' + r.Next(0, 26))}{(char)('A' + r.Next(0, 26))}";
-            price = r.Next(1, 101);
+                $"{(char)('A' + Random.Shared.Next(0, 26))}{(char)('A' + Random.Shared.Next(0, 26))}";
+            price = Random.Shared.Next(1, 101);
             var interopResult = await jsClass.TickerChanged(stockSymbol, price);
             result = $"Result of TickerChanged call for {stockSymbol} at " +
                 $"{price.ToString("c")}: {interopResult}";

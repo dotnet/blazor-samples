@@ -11,11 +11,10 @@
 <ChildBind @bind-Year="year" />
 
 @code {
-    private Random r = new();
     private int year = 1979;
 
     private void UpdateYear()
     {
-        year = r.Next(1950, 2021);
+        year = Random.Shared.Next(1950, 2021);
     }
 }
