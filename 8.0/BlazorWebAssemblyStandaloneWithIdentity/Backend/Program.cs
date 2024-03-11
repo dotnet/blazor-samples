@@ -29,7 +29,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 builder.Services.AddAuthorizationBuilder();
 
 // Add the database (in memory for the sample)
-builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("AppDb"));
+builder.Services.AddDbContext<AppDbContext>(
+    options =>
+    {
+        options.UseInMemoryDatabase("AppDb");
+        //For debugging only: options.EnableDetailedErrors(true);
+        //For debugging only: options.EnableSensitiveDataLogging(true);
+    });
 
 // Add identity and opt-in to endpoints
 builder.Services.AddIdentityCore<AppUser>()
@@ -119,9 +125,13 @@ app.MapGet("/roles", (ClaimsPrincipal user) =>
     return Results.Unauthorized();
 }).RequireAuthorization();
 
-app.MapPost("/data-processing", ([FromBody] FormModel model) =>
+app.MapPost("/data-processing-1", ([FromBody] FormModel model) =>
     Results.Text($"{model.Message.Length} characters"))
         .RequireAuthorization();
+
+app.MapPost("/data-processing-2", ([FromBody] FormModel model) =>
+    Results.Text($"{model.Message.Length} characters"))
+        .RequireAuthorization(policy => policy.RequireRole("Manager"));
 
 app.Run();
 

@@ -7,18 +7,22 @@
 
 <AuthorizeView>
     <Authorized>
-        <p>Hello, @context.User.Identity?.Name! You're authenticated, so processing data will succeed.</p>
+        <p>Hello, @context.User.Identity?.Name! You're authenticated.</p>
     </Authorized>
     <NotAuthorized>
         <p>Hello! You're <em>NOT</em> authenticated, so processing data will fail.</p>
     </NotAuthorized>
 </AuthorizeView>
 
-<EditForm Model="Model" OnSubmit="Submit" FormName="ProcessData">
+<h2>Data processing for any authenticated user</h2>
+
+<p>If you're in any role, you can process data with the following form.</p>
+
+<EditForm Model="Model1" OnSubmit="Submit1" FormName="ProcessData1">
     <div>
         <label>
             Message:
-            <InputText @bind-Value="Model!.Message" />
+            <InputText @bind-Value="Model1!.Message" />
         </label>
     </div>
     <div>
@@ -27,30 +31,68 @@
 </EditForm>
 
 <div>
-    @result
+    @result1
+</div>
+
+<h2>Data processing for Managers</h2>
+
+<p>You must be in the Manager role to use the following form to process data.</p>
+
+<EditForm Model="Model2" OnSubmit="Submit2" FormName="ProcessData2">
+    <div>
+        <label>
+            Message:
+            <InputText @bind-Value="Model2!.Message" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+<div>
+    @result2
 </div>
 
 @code {
-    private string? result;
+    private string? result1;
+    private string? result2;
 
     [SupplyParameterFromForm]
-    public FormModel? Model { get; set; }
+    public FormModel? Model1 { get; set; }
 
-    protected override void OnInitialized() => Model ??= new();
+    [SupplyParameterFromForm]
+    public FormModel? Model2 { get; set; }
 
-    private async Task Submit()
+    protected override void OnInitialized()
+    {
+        Model1 ??= new();
+        Model2 ??= new();
+    }
+
+    private async Task Submit1()
+    {
+        result1 = await ProcessData("data-processing-1", Model1!);
+    }
+
+    private async Task Submit2()
+    {
+        result2 = await ProcessData("data-processing-2", Model2!);
+    }
+
+    private async Task<string> ProcessData(string endpoint, FormModel model)
     {
         var client = ClientFactory.CreateClient("Auth");
 
-        var response = await client.PostAsJsonAsync<FormModel>("data-processing", Model!);
+        var response = await client.PostAsJsonAsync<FormModel>(endpoint, model);
 
         if (response.IsSuccessStatusCode)
         {
-            result = $"The data was processed by the server! The server indicates that the message is {await response.Content.ReadAsStringAsync()} long.";
+            return $"The data was processed by the server! The server indicates that the message is {await response.Content.ReadAsStringAsync()} long.";
         }
         else
         {
-            result = $"The server responded with an unsuccessful status code ({response.StatusCode}).";
+            return $"The server responded with an unsuccessful status code ({response.StatusCode}).";
         }
     }
 

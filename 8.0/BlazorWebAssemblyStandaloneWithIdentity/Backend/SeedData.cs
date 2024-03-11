@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +6,26 @@ namespace Backend;
 
 public class SeedData
 {
+    private static readonly IEnumerable<SeedUser> seedUsers =
+    [
+        new SeedUser()
+        {
+            Email = "leela@contoso.com", 
+            NormalizedEmail = "LEELA@CONTOSO.COM", 
+            NormalizedUserName = "LEELA@CONTOSO.COM", 
+            RoleList = [ "Administrator", "Manager" ], 
+            UserName = "leela@contoso.com"
+        },
+        new SeedUser()
+        {
+            Email = "harry@contoso.com",
+            NormalizedEmail = "HARRY@CONTOSO.COM",
+            NormalizedUserName = "HARRY@CONTOSO.COM",
+            RoleList = [ "User" ],
+            UserName = "harry@contoso.com"
+        },
+    ];
+
     public static async Task InitializeAsync(IServiceProvider serviceProvider)
     {
         using var context = new AppDbContext(serviceProvider.GetRequiredService<DbContextOptions<AppDbContext>>());
@@ -15,8 +35,12 @@ public class SeedData
             return;
         }
 
-        string[] roles = [ "Administrator", "Manager" ];
+        var userStore = new UserStore<AppUser>(context);
+        var password = new PasswordHasher<AppUser>();
+
         using var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        string[] roles = [ "Administrator", "Manager", "User" ];
 
         foreach (var role in roles)
         {
@@ -28,25 +52,28 @@ public class SeedData
 
         using var userManager = serviceProvider.GetRequiredService<UserManager<AppUser>>();
 
-        var user = new AppUser
+        foreach (var user in seedUsers)
         {
-            Email = "leela@contoso.com",
-            NormalizedEmail = "LEELA@CONTOSO.COM",
-            UserName = "leela@contoso.com",
-            NormalizedUserName = "LEELA@CONTOSO.COM",
-            EmailConfirmed = true,
-            SecurityStamp = Guid.NewGuid().ToString("D")
-        };
+            var hashed = password.HashPassword(user, "Passw0rd!");
+            user.PasswordHash = hashed;
+            await userStore.CreateAsync(user);
 
-        var password = new PasswordHasher<AppUser>();
-        var hashed = password.HashPassword(user, "Passw0rd!");
-        user.PasswordHash = hashed;
+            if (user.Email is not null)
+            {
+                var appUser = await userManager.FindByEmailAsync(user.Email);
 
-        await userManager.AddToRolesAsync(user, roles);
-
-        var userStore = new UserStore<AppUser>(context);
-        var result = userStore.CreateAsync(user);
+                if (appUser is not null && user.RoleList is not null)
+                {
+                    await userManager.AddToRolesAsync(appUser, user.RoleList);
+                }
+            }
+        }
 
         await context.SaveChangesAsync();
+    }
+
+    private class SeedUser : AppUser
+    {
+        public string[]? RoleList { get; set; }
     }
 }
