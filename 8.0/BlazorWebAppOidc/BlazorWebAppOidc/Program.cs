@@ -35,13 +35,6 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // ........................................................................
 
         // ........................................................................
-        // SaveTokens is set to false by default because tokens aren't required
-        // by the app to make additional external API requests.
-
-        //oidcOptions.SaveTokens = false;
-        // ........................................................................
-
-        // ........................................................................
         // The following paths must match the redirect and post logout redirect 
         // paths configured when registering the application with the OIDC provider. 
         // For Microsoft Entra ID, this is accomplished through the "Authentication" 
@@ -64,12 +57,6 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // sign-out. The default value is "/signout-oidc".
 
         //oidcOptions.RemoteSignOutPath = new PathString("/signout-oidc");
-        // ........................................................................
-
-        // ........................................................................
-        // The "offline_access" scope is required for the refresh token.
-
-        oidcOptions.Scope.Add(OpenIdConnectScope.OfflineAccess);
         // ........................................................................
 
         // ........................................................................
@@ -134,11 +121,25 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         //var microsoftIssuerValidator = AadIssuerValidator.GetAadIssuerValidator(oidcOptions.Authority);
         //oidcOptions.TokenValidationParameters.IssuerValidator = microsoftIssuerValidator.Validate;
         // ........................................................................
+
+        // ........................................................................
+        // OIDC connect options set later via ConfigureCookieOidcRefresh
+        //
+        // (1) The "offline_access" scope is required for the refresh token.
+        //
+        // (2) SaveTokens is set to true, which saves the access and refresh tokens
+        // in the cookie, so the app can authenticate requests for weather data and
+        // use the refresh token to obtain a new access token on access token
+        // expiration.
+        // ........................................................................
     })
     .AddCookie("Cookies");
 
-// This attaches a cookie OnValidatePrincipal callback to get a new access token when the current one expires, and
-// reissue a cookie with the new access token saved inside. If the refresh fails, the user will be signed out.
+// ConfigureCookieOidcRefresh attaches a cookie OnValidatePrincipal callback to get
+// a new access token when the current one expires, and reissue a cookie with the
+// new access token saved inside. If the refresh fails, the user will be signed
+// out. OIDC connect options are set for saving tokens and the offline access
+// scope.
 builder.Services.ConfigureCookieOidcRefresh("Cookies", "MicrosoftOidc");
 
 builder.Services.AddAuthorization();

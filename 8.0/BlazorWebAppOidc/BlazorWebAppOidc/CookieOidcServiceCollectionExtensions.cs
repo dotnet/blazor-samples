@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using BlazorWebAppOidc;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ internal static partial class CookieOidcServiceCollectionExtensions
         services.AddOptions<OpenIdConnectOptions>(oidcScheme).Configure(oidcOptions =>
         {
             // Request a refresh_token.
-            oidcOptions.Scope.Add("offline_access");
+            oidcOptions.Scope.Add(OpenIdConnectScope.OfflineAccess);
             // Store the refresh_token.
             oidcOptions.SaveTokens = true;
         });
