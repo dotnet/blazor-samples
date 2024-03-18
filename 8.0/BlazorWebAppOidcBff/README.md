@@ -13,7 +13,7 @@ This sample features:
 
 ## Configure the sample
 
-Configure the OIDC provider using the comments in the Program.cs file.
+Configure the OIDC provider using the comments in the Program.cs file and guidance in [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc?view=aspnetcore-8.0&pivots=with-bff-pattern).
 
 ## Run the sample
 
