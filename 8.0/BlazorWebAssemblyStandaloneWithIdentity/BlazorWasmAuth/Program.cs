@@ -10,7 +10,7 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // register the cookie handler
-builder.Services.AddScoped<CookieHandler>();
+builder.Services.AddTransient<CookieHandler>();
 
 // set up authorization
 builder.Services.AddAuthorizationCore();
