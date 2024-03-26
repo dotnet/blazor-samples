@@ -46,7 +46,7 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // values are "/signin-oidc" and "/signout-callback-oidc".
         // Microsoft Identity currently only redirects back to the 
         // SignedOutCallbackPath if authority is 
-        // https://login.microsoftonline.com/{TENANT ID}/v2.0/ as it is above. 
+        // https://login.microsoftonline.com/{TENANT ID}/v2.0/ as it is below. 
         // You can use the "common" authority instead, and logout redirects back to 
         // the Blazor app. For more information, see 
         // https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/5783
@@ -65,7 +65,13 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // ........................................................................
         // The "Weather.Get" scope is configured in the Azure or Entra portal under 
         // "Expose an API". This is necessary for backend web API (MinimalApiJwt)
-        // to validate the access token with AddBearerJwt.
+        // to validate the access token with AddBearerJwt. The following code example
+        // uses a scope format of the App ID URI for an AAD B2C tenant type. If your
+        // tenant is an ME-ID tenant, the App ID URI format is different:
+        // api://{CLIENT ID}, so the full scope with an API name of "Weather.Get" is:
+        // api://{CLIENT ID}/Weather.Get
+        // The {CLIENT ID} is the application (client) ID of the MinimalApiJwt app 
+        // registration.
 
         oidcOptions.Scope.Add("https://{DIRECTORY NAME}.onmicrosoft.com/{CLIENT ID}/Weather.Get");
         // ........................................................................
