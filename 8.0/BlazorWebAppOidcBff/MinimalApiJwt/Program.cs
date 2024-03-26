@@ -6,11 +6,14 @@ builder.AddServiceDefaults();
 builder.Services.AddAuthentication()
     .AddJwtBearer("Bearer", jwtOptions =>
     {
-        // This should match the authority configured for the OIDC handler in BlazorWebAppOidc/Program.cs.
-        jwtOptions.Authority = "https://login.microsoftonline.com/{tenant-id}/v2.0/";
-        // This should match just the path of the Application ID URI configured when adding the "Weather.Get" scope
-        // under "Expose an API" in the Azure or Entra portal.
-        jwtOptions.Audience = "{client-id}";
+        // The following should match the authority configured for the OIDC handler in BlazorWebAppOidc/Program.cs.
+        // {TENANT ID} is the directory (tenant) ID.
+        jwtOptions.Authority = "https://login.microsoftonline.com/{TENANT ID}/v2.0/";
+        // The following should match just the path of the Application ID URI configured when adding the "Weather.Get" scope
+        // under "Expose an API" in the Azure or Entra portal. {CLIENT ID} is the application (client) ID of this 
+        // app's registration in the Azure portal. If using an ME-ID tenant type, the format of the App ID URI is:
+        // api://{CLIENT ID}
+        jwtOptions.Audience = "https://{DIRECTORY NAME}.onmicrosoft.com/{CLIENT ID}";
     });
 builder.Services.AddAuthorization();
 
