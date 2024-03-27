@@ -7,7 +7,9 @@ builder.Services.AddAuthentication()
     .AddJwtBearer("Bearer", jwtOptions =>
     {
         // The following should match the authority configured for the OIDC handler in BlazorWebAppOidc/Program.cs.
-        // {TENANT ID} is the directory (tenant) ID.
+        // {TENANT ID} is the directory (tenant) ID. If using an ME-ID tenant type, the authority should match
+        // the issurer (`iss`) of the JWT returned by the identity provider:
+        // https://sts.windows.net/{TENANT ID}/
         jwtOptions.Authority = "https://login.microsoftonline.com/{TENANT ID}/v2.0/";
         // The following should match just the path of the Application ID URI configured when adding the "Weather.Get" scope
         // under "Expose an API" in the Azure or Entra portal. {CLIENT ID} is the application (client) ID of this 
