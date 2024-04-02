@@ -51,7 +51,7 @@
            .Where(c => c.GetCustomAttributes(inherit: true)
                         .OfType<RouteAttribute>()
                         .ToArray()
-                        .Count() > 0)
+                        .Any())
            .Where(c => c.Name != "Home" && c.Name != "Error")
            .OrderBy(o => o.Name)
            .Select(c => c.Name);
