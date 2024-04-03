@@ -9,10 +9,10 @@
         Select your transport:
         <select @onchange="OnDropdownChange">
             <option value="">Select a value</option>
-			@foreach (var entry in components.Keys)
-			{
-				<option value="@entry">@entry</option>
-			}
+            @foreach (var entry in components.Keys)
+            {
+                <option value="@entry">@entry</option>
+            }
         </select>
     </label>
 </p>
@@ -25,24 +25,24 @@
 }
 
 @code {
-	private readonly Dictionary<string, Type> components = new()
+    private readonly Dictionary<string, Type> components = new()
     {
-        { "Rocket Lab", typeof(RocketLab) },
-        { "SpaceX", typeof(SpaceX) },
-        { "ULA", typeof(UnitedLaunchAlliance) },
-        { "Virgin Galactic", typeof(VirginGalactic) }
+        ["Rocket Lab"] = typeof(RocketLab),
+        ["SpaceX"] = typeof(SpaceX),
+        ["ULA"] = typeof(UnitedLaunchAlliance),
+        ["Virgin Galactic"] = typeof(VirginGalactic)
     };
-	private Type? selectedType;
+    private Type? selectedType;
 
-	private void OnDropdownChange(ChangeEventArgs e)
-	{
-		if (e.Value is string dropdownValue && !String.IsNullOrWhiteSpace(dropdownValue))
-		{
-			selectedType = components[dropdownValue];
-		}
-		else
-		{
-			selectedType = null;
-		}
-	}
+    private void OnDropdownChange(ChangeEventArgs e)
+    {
+        if ((e.Value is string dropdownValue) && !String.IsNullOrWhiteSpace(dropdownValue))
+        {
+            selectedType = components[dropdownValue];
+        }
+        else
+        {
+            selectedType = null;
+        }
+    }
 }
