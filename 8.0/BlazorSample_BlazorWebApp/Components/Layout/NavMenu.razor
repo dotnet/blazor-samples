@@ -50,7 +50,6 @@
            .Where(t => t.IsSubclassOf(typeof(ComponentBase)))
            .Where(c => c.GetCustomAttributes(inherit: true)
                         .OfType<RouteAttribute>()
-                        .ToArray()
                         .Any())
            .Where(c => c.Name != "Home" && c.Name != "Error")
            .OrderBy(o => o.Name)
