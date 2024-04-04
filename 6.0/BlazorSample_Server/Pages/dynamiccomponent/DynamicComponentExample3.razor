@@ -19,7 +19,7 @@
 {
     <div class="border border-primary my-1 p-1">
         <DynamicComponent Type="selectedComponent.Type"
-                          Parameters="selectedComponent.Parameters" />
+            Parameters="selectedComponent.Parameters" />
     </div>
 }
 
@@ -39,28 +39,28 @@
                 Type = typeof(RocketLab2),
                 Name = "Rocket Lab",
                 Parameters = { [nameof(RocketLab2.OnClickCallback)] =
-                                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
+                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
             },
             [nameof(VirginGalactic2)] = new ComponentMetadata()
             {
                 Type = typeof(VirginGalactic2),
                 Name = "Virgin Galactic",
                 Parameters = { [nameof(VirginGalactic2.OnClickCallback)] =
-                                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
+                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
             },
             [nameof(UnitedLaunchAlliance2)] = new ComponentMetadata()
             {
                 Type = typeof(UnitedLaunchAlliance2),
                 Name = "ULA",
                 Parameters = { [nameof(UnitedLaunchAlliance2.OnClickCallback)] =
-                                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
+                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
             },
             [nameof(SpaceX2)] = new ComponentMetadata()
             {
                 Type = typeof(SpaceX2),
                 Name = "SpaceX",
                 Parameters = { [nameof(SpaceX2.OnClickCallback)] =
-                                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
+                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
             }
         };
 
