@@ -1,7 +1,8 @@
-﻿namespace BlazorSample;
+namespace BlazorSample;
 
 public class ComponentMetadata
 {
-    public string? Name { get; set; }
-    public Dictionary<string, object> Parameters { get; set; } = [];
+    public required Type Type { get; init; }
+    public required string Name { get; init; }
+    public Dictionary<string, object> Parameters { get; } = [];
 }
