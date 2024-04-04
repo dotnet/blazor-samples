@@ -1,12 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Yarp.ReverseProxy.Transforms;
 using BlazorWebAppOidc;
 using BlazorWebAppOidc.Client.Weather;
 using BlazorWebAppOidc.Components;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 const string MS_OIDC_SCHEME = "MicrosoftOidc";
 
@@ -99,7 +99,7 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         
         // ........................................................................
         // ClientSecret shouldn't be compiled into the application assembly or 
-        // checked into source control. Instead adopt User Secrets, Azure KeyVault, 
+        // checked into source control. Adopt User Secrets, Azure KeyVault, 
         // or an environment variable to supply the value. Authentication scheme 
         // configuration is automatically read from 
         // "Authentication:Schemes:{SchemeName}:{PropertyName}", so ClientSecret is 
