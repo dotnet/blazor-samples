@@ -8,14 +8,16 @@ using BlazorWebAppOidc.Components;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
+const string MS_OIDC_SCHEME = "MicrosoftOidc";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
 
 // Add services to the container.
-builder.Services.AddAuthentication("MicrosoftOidc")
-    .AddOpenIdConnect("MicrosoftOidc", oidcOptions =>
+builder.Services.AddAuthentication(MS_OIDC_SCHEME)
+    .AddOpenIdConnect(MS_OIDC_SCHEME, oidcOptions =>
     {
         // For the following OIDC settings, any line that's commented out
         // represents a DEFAULT setting. If you adopt the default, you can
@@ -151,14 +153,14 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // expiration.
         // ........................................................................
     })
-    .AddCookie("Cookies");
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
 // ConfigureCookieOidcRefresh attaches a cookie OnValidatePrincipal callback to get
 // a new access token when the current one expires, and reissue a cookie with the
 // new access token saved inside. If the refresh fails, the user will be signed
 // out. OIDC connect options are set for saving tokens and the offline access
 // scope.
-builder.Services.ConfigureCookieOidcRefresh("Cookies", "MicrosoftOidc");
+builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.AuthenticationScheme, MS_OIDC_SCHEME);
 
 builder.Services.AddAuthorization();
 
