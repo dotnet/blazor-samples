@@ -9,10 +9,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Register factory and configure the options
-#region snippet1
 builder.Services.AddDbContextFactory<ContactContext>(opt =>
     opt.UseSqlite($"Data Source={nameof(ContactContext.ContactsDb)}.db"));
-#endregion
 
 // Pager
 builder.Services.AddScoped<IPageHelper, PageHelper>();
