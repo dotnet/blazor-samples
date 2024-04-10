@@ -26,7 +26,7 @@ namespace BlazorServerSignalRApp
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        #region snippet_ConfigureServices
+        // <snippet_ConfigureServices>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
@@ -38,10 +38,10 @@ namespace BlazorServerSignalRApp
                     new[] { "application/octet-stream" });
             });
         }
-        #endregion
+        // </snippet_ConfigureServices>
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        #region snippet_Configure
+        // <snippet_Configure>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseResponseCompression();
@@ -68,6 +68,6 @@ namespace BlazorServerSignalRApp
                 endpoints.MapFallbackToPage("/_Host");
             });
         }
-        #endregion
+        // </snippet_Configure>
     }
 }

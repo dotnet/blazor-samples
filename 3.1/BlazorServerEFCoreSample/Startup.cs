@@ -24,10 +24,10 @@ namespace BlazorServerDbContextExample
             services.AddServerSideBlazor();
 
             // register factory and configure the options
-            #region snippet1
+            // <snippet1>
             services.AddDbContextFactory<ContactContext>(opt =>
                 opt.UseSqlite($"Data Source={nameof(ContactContext.ContactsDb)}.db"));
-            #endregion
+            // </snippet1>
 
             // pager
             services.AddScoped<IPageHelper, PageHelper>();

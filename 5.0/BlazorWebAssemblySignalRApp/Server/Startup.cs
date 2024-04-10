@@ -31,7 +31,7 @@ namespace BlazorWebAssemblySignalRApp.Server
             });
         }
 
-        #region snippet_Configure
+        // <snippet_Configure>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseResponseCompression();
@@ -61,6 +61,6 @@ namespace BlazorWebAssemblySignalRApp.Server
                 endpoints.MapFallbackToFile("index.html");
             });
         }
-        #endregion
+        // </snippet_Configure>
     }
 }

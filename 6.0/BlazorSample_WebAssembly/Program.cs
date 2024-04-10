@@ -13,7 +13,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddSingleton<NotifierService>();
 builder.Services.AddTransient<TransientDisposableService>();
 
-#region snippet1
+// <snippet1>
 var vehicleData = new Dictionary<string, string?>()
 {
     { "color", "blue" },
@@ -27,7 +27,7 @@ var vehicleData = new Dictionary<string, string?>()
 var memoryConfig = new MemoryConfigurationSource { InitialData = vehicleData };
 
 builder.Configuration.Add(memoryConfig);
-#endregion
+// </snippet1>
 
 var host = builder.Build();
 host.EnableTransientDisposableDetection();

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region snippet_ConfigureServices
+// <snippet_ConfigureServices>
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
@@ -15,11 +15,11 @@ builder.Services.AddResponseCompression(opts =>
 	opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
 		new[] { "application/octet-stream" });
 });
-#endregion
+// </snippet_ConfigureServices>
 
 var app = builder.Build();
 
-#region snippet_Configure
+// <snippet_Configure>
 app.UseResponseCompression();
 
 if (!app.Environment.IsDevelopment())
@@ -39,5 +39,4 @@ app.MapHub<ChatHub>("/chathub");
 app.MapFallbackToPage("/_Host");
 
 app.Run();
-#endregion
-
+// </snippet_Configure>
