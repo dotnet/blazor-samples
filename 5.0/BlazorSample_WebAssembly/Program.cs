@@ -21,7 +21,7 @@ namespace BlazorSample
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddSingleton<NotifierService>();
 
-            #region snippet1
+            // <snippet1>
             var vehicleData = new Dictionary<string, string>()
             {
                 { "color", "blue" },
@@ -35,7 +35,7 @@ namespace BlazorSample
             var memoryConfig = new MemoryConfigurationSource { InitialData = vehicleData };
 
             builder.Configuration.Add(memoryConfig);
-            #endregion
+            // </snippet1>
 
             await builder.Build().RunAsync();
         }

@@ -9,10 +9,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 // register factory and configure the options
-#region snippet1
+// <snippet1>
 builder.Services.AddDbContextFactory<ContactContext>(opt =>
     opt.UseSqlite($"Data Source={nameof(ContactContext.ContactsDb)}.db"));
-#endregion
+// </snippet1>
 
 // pager
 builder.Services.AddScoped<IPageHelper, PageHelper>();

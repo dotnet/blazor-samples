@@ -16,7 +16,7 @@ builder.Services.AddResponseCompression(opts =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-#region snippet_Configure
+// <snippet_Configure>
 app.UseResponseCompression();
 
 if (app.Environment.IsDevelopment())
@@ -41,4 +41,4 @@ app.MapHub<ChatHub>("/chathub");
 app.MapFallbackToFile("index.html");
 
 app.Run();
-#endregion
+// </snippet_Configure>
