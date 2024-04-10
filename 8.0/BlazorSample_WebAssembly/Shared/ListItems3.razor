@@ -1,0 +1,28 @@
+﻿@attribute [CascadingTypeParameter(nameof(TExample))]
+@typeparam TExample
+
+<h2>List Items 3</h2>
+
+@ChildContent
+
+@if (ExampleList is not null)
+{
+    <ul style="color:green">
+        @foreach (var item in ExampleList)
+        {
+            <li>@item</li>
+        }
+    </ul>
+
+    <p>
+        Type of <code>TExample</code>: @typeof(TExample)
+    </p>
+}
+
+@code {
+    [CascadingParameter]
+    protected IEnumerable<TExample>? ExampleList { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,15 @@
+﻿@attribute [CascadingTypeParameter(nameof(TExample))]
+@typeparam TExample
+
+<h2>List Items 2</h2>
+
+@ChildContent
+
+<p>
+    Type of <code>TExample</code>: @typeof(TExample)
+</p>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}
