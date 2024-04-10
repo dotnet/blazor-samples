@@ -1,0 +1,19 @@
+﻿@page "/generics-2"
+
+<PageTitle>Generics 2</PageTitle>
+
+<h1>Generic Type Example 2</h1>
+
+<ListItems2 TExample="string">
+    <ListDisplay1 Color="blue" 
+                  ExampleList="@(new List<string> { "Item 1", "Item 2" })" />
+    <ListDisplay1 Color="red" 
+                  ExampleList="@(new List<string> { "Item 3", "Item 4" })" />
+</ListItems2>
+
+<ListItems2 TExample="int">
+    <ListDisplay1 Color="blue" 
+                  ExampleList="@(new List<int> { 1, 2 })" />
+    <ListDisplay1 Color="red" 
+                  ExampleList="@(new List<int> { 3, 4 })" />
+</ListItems2>

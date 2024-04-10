@@ -1,0 +1,24 @@
+﻿@page "/generics-3"
+
+<PageTitle>Generics 3</PageTitle>
+
+<h1>Generic Type Example 3</h1>
+
+<CascadingValue Value="stringData">
+    <ListItems3 TExample="string">
+        <ListDisplay2 Color="blue" />
+        <ListDisplay2 Color="red" />
+    </ListItems3>
+</CascadingValue>
+
+<CascadingValue Value="integerData">
+    <ListItems3 TExample="int">
+        <ListDisplay2 Color="blue" />
+        <ListDisplay2 Color="red" />
+    </ListItems3>
+</CascadingValue>
+
+@code {
+    private List<string> stringData = new() { "Item 1", "Item 2" };
+    private List<int> integerData = new() { 1, 2 };
+}
