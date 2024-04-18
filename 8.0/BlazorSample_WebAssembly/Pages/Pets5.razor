@@ -1,0 +1,43 @@
+@page "/pets-5"
+
+<PageTitle>Pets 5</PageTitle>
+
+<h1>Pets Example 5</h1>
+
+<TableTemplate Items="pets" Context="pet">
+    <TableHeader>
+        <th>ID</th>
+        <th>Name</th>
+    </TableHeader>
+    <RowTemplate>
+        <td><input value="@pet.PetId" /></td>
+        <td><input value="@pet.Name" /></td>
+    </RowTemplate>
+</TableTemplate>
+
+
+@code {
+    private List<Pet> pets = new()
+    {
+        new Pet { PetId = 1, Name = "Mr. Bigglesworth" },
+        new Pet { PetId = 2, Name = "Salem Saberhagen" },
+        new Pet { PetId = 3, Name = "K-9" }
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // insert new pet every 3 seconds
+        for (int i = 0; i < 10; i++)
+        {
+            await Task.Delay(3000);
+            pets.Insert(index: 0, item: new Pet());
+            StateHasChanged();
+        }
+    }
+
+    private class Pet
+    {
+        public int PetId { get; set; }
+        public string? Name { get; set; }
+    }
+}
