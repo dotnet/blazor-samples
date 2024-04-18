@@ -24,10 +24,10 @@
         new Pet { PetId = 3, Name = "K-9" }
     };
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // insert new pet every 3 seconds
-        for (int i = 0; i < 10; i++)
+        if (pets.Count < 10)
         {
             await Task.Delay(3000);
             pets.Insert(index: 0, item: new Pet());
