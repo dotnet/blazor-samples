@@ -1,0 +1,12 @@
+@page "/pet-detail/{id:int}"
+
+<PageTitle>Pet Detail</PageTitle>
+
+<h1>Pet Detail Record</h1>
+
+<p>Pet ID: @Id</p>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+}
