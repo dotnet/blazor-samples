@@ -7,7 +7,7 @@
     <tbody>
         @foreach (var item in Items)
         {
-            <tr>@RowTemplate(item)</tr>
+            <tr @key="@item">@RowTemplate(item)</tr>
         }
     </tbody>
 </table>
@@ -17,8 +17,8 @@
     public RenderFragment TableHeader { get; set; }
 
     [Parameter]
-    public RenderFragment<TItem> RowTemplate { get; set; }
+    public RenderFragment<TItem> RowTemplate { get; set; } = default;
 
     [Parameter]
-    public IReadOnlyList<TItem> Items { get; set; }
+    public IReadOnlyList<TItem> Items { get; set; } = default;
 }
