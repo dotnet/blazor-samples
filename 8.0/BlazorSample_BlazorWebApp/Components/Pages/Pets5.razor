@@ -29,7 +29,7 @@
     // insert new pet every 5 seconds
         for (int i = 0; i < 10; i++)
         {
-            await Task.Delay(5000);
+            await Task.Delay(3000);
             pets.Insert(index: 0, item: new Pet());
             StateHasChanged();
         }
