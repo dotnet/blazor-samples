@@ -1,4 +1,4 @@
-﻿@using System.Reflection
+@using System.Reflection
 @using System.Text.RegularExpressions
 
 <div class="top-row ps-3 navbar navbar-dark">
@@ -51,7 +51,7 @@
            .Where(c => c.GetCustomAttributes(inherit: true)
                         .OfType<RouteAttribute>()
                         .Any())
-           .Where(c => c.Name != "Home" && c.Name != "Error")
+           .Where(c => c.Name != "Home" && c.Name != "Error" && c.Name != "PetDetail")
            .OrderBy(o => o.Name)
            .Select(c => c.Name);
     }
