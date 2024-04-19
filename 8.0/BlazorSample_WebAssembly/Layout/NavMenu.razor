@@ -29,7 +29,7 @@
                         @Regex.Replace(name, @"(\B[A-Z]|\d+)", " $1")
                     </NavLink>
                 }
-                else if (name != "TransientService")
+                else
                 {
                     <NavLink class="nav-link"
                              href="@Regex.Replace(name, @"(\B[A-Z]|\d+)", "-$1").ToLower()">
@@ -51,7 +51,12 @@
            .Where(c => c.GetCustomAttributes(inherit: true)
                         .OfType<RouteAttribute>()
                         .Any())
-           .Where(c => c.Name != "Home" && c.Name != "Error" && c.Name != "PetDetail")
+           .Where(c =>
+               (c.Name != "Home")
+               && (c.Name != "Error")
+               && (c.Name != "PetDetail")
+               && (c.Name != "TransientService")
+           )
            .OrderBy(o => o.Name)
            .Select(c => c.Name);
     }
