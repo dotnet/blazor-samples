@@ -26,7 +26,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // insert new pet every 3 seconds
+        // Insert new pet every 3 seconds
         if (pets.Count < 10)
         {
             await Task.Delay(3000);

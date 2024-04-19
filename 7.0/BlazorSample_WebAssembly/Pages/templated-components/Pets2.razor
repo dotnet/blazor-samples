@@ -9,8 +9,9 @@
         <a href="/" class="navbar-brand">PetsApp</a>
     </StartContent>
     <ItemTemplate Context="pet">
-        <NavLink href="@($"/pet-detail/{pet.PetId}?ReturnUrl=%2Fpets-2")"
-            class="nav-link">@pet.Name</NavLink>
+        <NavLink href="@($"/pet-detail/{pet.PetId}?ReturnUrl=%2Fpets-2")" class="nav-link">
+            @pet.Name
+        </NavLink>
     </ItemTemplate>
 </TemplatedNavBar>
 
