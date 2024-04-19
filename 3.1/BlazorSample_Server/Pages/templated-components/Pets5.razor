@@ -24,11 +24,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Insert new pet every 3 seconds
+        // Insert new pet every 5 seconds
         if (pets.Count < 10)
         {
-            await Task.Delay(3000);
-            pets.Insert(index: 0, item: new Pet());
+            await Task.Delay(5000);
+            pets.Insert(0, new Pet() { PetId = pets.Count + 1, Name = "<new pet>" });
             StateHasChanged();
         }
     }
