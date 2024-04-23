@@ -1,11 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
+using MauiBlazorWeb.Shared;
+using Microsoft.Extensions.Logging;
+using MauiBlazorWeb.Maui.Services;
+using MauiBlazorWeb.Shared.Interfaces;
 
-namespace MAUIBlazorWeb.MAUI
+namespace MauiBlazorWeb.Maui
 {
     public static class MauiProgram
     {
         public static MauiApp CreateMauiApp()
         {
+            InteractiveRenderSettings.ConfigureBlazorHybridRenderModes();
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
@@ -20,6 +25,8 @@ namespace MAUIBlazorWeb.MAUI
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
+
+            builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
             return builder.Build();
         }

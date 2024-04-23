@@ -1,10 +1,14 @@
-using MAUIBlazorWeb.Web.Components;
+using MauiBlazorWeb.Web.Components;
+using MauiBlazorWeb.Shared.Interfaces;
+using MauiBlazorWeb.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<IFormFactor, FormFactor>();
 
 var app = builder.Build();
 
@@ -23,6 +27,6 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(typeof(MAUIBlazorWeb.Shared._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(MauiBlazorWeb.Shared._Imports).Assembly);
 
 app.Run();

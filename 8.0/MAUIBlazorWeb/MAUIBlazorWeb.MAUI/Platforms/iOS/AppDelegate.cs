@@ -1,6 +1,6 @@
-﻿using Foundation;
+using Foundation;
 
-namespace MAUIBlazorWeb.MAUI
+namespace MauiBlazorWeb.Maui
 {
     [Register("AppDelegate")]
     public class AppDelegate : MauiUIApplicationDelegate

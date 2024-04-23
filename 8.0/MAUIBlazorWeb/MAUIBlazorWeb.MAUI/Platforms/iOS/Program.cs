@@ -1,7 +1,7 @@
-﻿using ObjCRuntime;
+using ObjCRuntime;
 using UIKit;
 
-namespace MAUIBlazorWeb.MAUI
+namespace MauiBlazorWeb.Maui
 {
     public class Program
     {

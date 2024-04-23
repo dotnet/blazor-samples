@@ -1,0 +1,23 @@
+@page "/device-form-factor"
+@using MauiBlazorWeb.Shared.Interfaces
+@inject IFormFactor FormFactor
+
+<PageTitle>Form Factor</PageTitle>
+
+<h1>Device Form Factor</h1>
+
+<p>You are running on:</p>
+
+<ul>
+    <li>Form Factor: @factor</li>
+    <li>Platform: @platform</li>
+</ul>
+
+<p>
+    <em>This component is defined in the MauiBlazorWeb.Shared library.</em>
+</p>
+
+@code {
+    private string factor => FormFactor.GetFormFactor();
+    private string platform => FormFactor.GetPlatform();
+}
