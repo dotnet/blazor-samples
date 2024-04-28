@@ -69,7 +69,7 @@ if (builder.Environment.IsDevelopment())
 
     // Add OpenAPI/Swagger generator and the Swagger UI
     app.UseOpenApi();
-    app.UseSwaggerUi();
+    app.UseSwaggerUi(); // UseSwaggerUI Protected by if (env.IsDevelopment())
 }
 
 // Create routes for the identity endpoints
