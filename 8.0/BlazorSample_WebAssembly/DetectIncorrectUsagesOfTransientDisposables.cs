@@ -44,14 +44,19 @@ namespace BlazorWebAssemblyTransientDisposable
             foreach (var descriptor in containerBuilder)
             {
                 if (descriptor.Lifetime == ServiceLifetime.Transient &&
-                    descriptor.ImplementationType != null &&
-                    typeof(IDisposable).IsAssignableFrom(
-                        descriptor.ImplementationType))
+                    ((!descriptor.IsKeyedService && descriptor.ImplementationType != null && 
+                      typeof(IDisposable).IsAssignableFrom(
+                          descriptor.ImplementationType))
+                     || (descriptor.IsKeyedService && descriptor.KeyedImplementationType != null && 
+                         typeof(IDisposable).IsAssignableFrom(
+                             descriptor.KeyedImplementationType)))
+                   )
                 {
                     collection.Add(CreatePatchedDescriptor(descriptor));
                 }
                 else if (descriptor.Lifetime == ServiceLifetime.Transient &&
-                         descriptor.ImplementationFactory != null)
+                         ((!descriptor.IsKeyedService && descriptor.ImplementationFactory != null)
+                          || (descriptor.IsKeyedService && descriptor.KeyedImplementationFactory != null)))
                 {
                     collection.Add(CreatePatchedFactoryDescriptor(descriptor));
                 }
