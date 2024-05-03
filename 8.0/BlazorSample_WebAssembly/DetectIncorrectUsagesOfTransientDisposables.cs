@@ -43,21 +43,23 @@ namespace BlazorWebAssemblyTransientDisposable
 
             foreach (var descriptor in containerBuilder)
             {
-                if (descriptor.Lifetime == ServiceLifetime.Transient &&
-                    descriptor.ImplementationType != null &&
-                    typeof(IDisposable).IsAssignableFrom(
-                        descriptor.ImplementationType))
+                switch (descriptor.Lifetime)
                 {
-                    collection.Add(CreatePatchedDescriptor(descriptor));
-                }
-                else if (descriptor.Lifetime == ServiceLifetime.Transient &&
-                         descriptor.ImplementationFactory != null)
-                {
-                    collection.Add(CreatePatchedFactoryDescriptor(descriptor));
-                }
-                else
-                {
-                    collection.Add(descriptor);
+                    case ServiceLifetime.Transient 
+                        when (descriptor is { IsKeyedService: true, KeyedImplementationType: not null }
+                            && typeof(IDisposable).IsAssignableFrom(descriptor.KeyedImplementationType))
+                            || (descriptor is { IsKeyedService: false, ImplementationType: not null }
+                                && typeof(IDisposable).IsAssignableFrom(descriptor.ImplementationType)):
+                        collection.Add(CreatePatchedDescriptor(descriptor));
+                        break;
+                    case ServiceLifetime.Transient
+                        when descriptor is { IsKeyedService: true, KeyedImplementationFactory: not null }
+                            or { IsKeyedService: false, ImplementationFactory: not null }:
+                        collection.Add(CreatePatchedFactoryDescriptor(descriptor));
+                        break;
+                    default:
+                        collection.Add(descriptor);
+                        break;
                 }
             }
 
