@@ -27,6 +27,7 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 * Blazor WebAssembly with ASP.NET Core Identity: [Blazor WebAssembly with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity)
 * Blazor Web App with OIDC and Aspire (`BlazorWebAppOidcBff`/`BlazorWebAppOidc`): [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/server/blazor-web-app-with-oidc)
 * Call a web API (`BlazorWebAppCallWebApi`/`BlazorWebAssemblyCallWebApi`): [Call a web API from ASP.NET Core Blazor](https://learn.microsoft.com/aspnet/core/blazor/call-web-api)
+* .NET MAUI Blazor Hybrid app with a Blazor Web App and a shared UI RCL: [Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app)
 
 ## Snippet sample apps for article code examples
 
