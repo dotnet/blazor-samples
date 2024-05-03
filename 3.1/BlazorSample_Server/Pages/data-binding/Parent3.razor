@@ -1,0 +1,11 @@
+@page "/parent-3"
+
+<h1>Parent Example 3</h1>
+
+<p>Parent <code>year</code>: @year</p>
+
+<ChildParameterExpression @bind-Year="year" />
+
+@code {
+    private int year = 1979;
+}

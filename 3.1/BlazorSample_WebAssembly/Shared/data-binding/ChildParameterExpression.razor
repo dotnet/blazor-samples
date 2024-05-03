@@ -1,0 +1,24 @@
+@using System.Linq.Expressions
+
+<ul>
+    <li>Year model: @yearField.Model</li>
+    <li>Year field name: @yearField.FieldName</li>
+</ul>
+
+@code {
+    private FieldIdentifier yearField;
+
+    [Parameter]
+    public int Year { get; set; }
+
+    [Parameter]
+    public EventCallback<int> YearChanged { get; set; }
+
+    [Parameter]
+    public Expression<Func<int>> YearExpression { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        yearField = FieldIdentifier.Create(YearExpression);
+    }
+}
