@@ -16,7 +16,6 @@ _site/
 !.vscode/extensions.json
 !.vscode/settings.json
 *.userprefs
-.idea/
 
 # Build results
 [Dd]ebug/
