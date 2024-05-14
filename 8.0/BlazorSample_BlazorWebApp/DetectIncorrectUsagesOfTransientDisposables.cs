@@ -55,9 +55,12 @@ namespace BlazorServerTransientDisposable
                                 && typeof(IDisposable).IsAssignableFrom(descriptor.ImplementationType)):
                         collection.Add(CreatePatchedDescriptor(descriptor));
                         break;
-                    case ServiceLifetime.Transient
-                        when descriptor is { IsKeyedService: true, KeyedImplementationFactory: not null }
-                            or { IsKeyedService: false, ImplementationFactory: not null }:
+                    case ServiceLifetime.Transient 
+                        when descriptor is { IsKeyedService: true, KeyedImplementationFactory: not null }:
+                        collection.Add(CreatePatchedKeyedFactoryDescriptor(descriptor));
+                        break;
+                    case ServiceLifetime.Transient 
+                        when descriptor is { IsKeyedService: false, ImplementationFactory: not null }:
                         collection.Add(CreatePatchedFactoryDescriptor(descriptor));
                         break;
                     default:
@@ -88,11 +91,32 @@ namespace BlazorServerTransientDisposable
                     if (throwOnTransientDisposable.ShouldThrow && 
                         originalResult is IDisposable d)
                     {
-                        throw new InvalidOperationException("Trying to resolve " +
-                            $"transient disposable service {d.GetType().Name} in " +
-                            "the wrong scope. Use an 'OwningComponentBase<T>' " +
-                            "component base class for the service 'T' you are " +
-                            "trying to resolve.");
+                        ThrowTransientDisposableException(d.GetType().Name);
+                    }
+
+                    return originalResult;
+                },
+                ServiceLifetime.Transient);
+
+            return newDescriptor;
+        }
+
+        private static ServiceDescriptor CreatePatchedKeyedFactoryDescriptor(ServiceDescriptor original)
+        {
+            var newDescriptor = new ServiceDescriptor(
+                original.ServiceType,
+                original.ServiceKey,
+                (sp, obj) =>
+                {
+                    var originalFactory = original.KeyedImplementationFactory ?? 
+                                          throw new InvalidOperationException("KeyedImplementationFactory is null.");
+        
+                    var originalResult = originalFactory(sp, obj);
+        
+                    var throwOnTransientDisposable = sp.GetRequiredService<ThrowOnTransientDisposable>();
+                    if (throwOnTransientDisposable.ShouldThrow && originalResult is IDisposable d)
+                    {
+                        ThrowTransientDisposableException(d.GetType().Name);
                     }
 
                     return originalResult;
@@ -112,12 +136,7 @@ namespace BlazorServerTransientDisposable
                         sp.GetRequiredService<ThrowOnTransientDisposable>();
                     if (throwOnTransientDisposable.ShouldThrow)
                     {
-                        throw new InvalidOperationException("Trying to resolve " +
-                            "transient disposable service " +
-                            $"{original.ImplementationType?.Name} in the wrong " +
-                            "scope. Use an 'OwningComponentBase<T>' component " +
-                            "base class for the service 'T' you are trying to " +
-                            "resolve.");
+                        ThrowTransientDisposableException(original.ImplementationType?.Name);
                     }
 
                     if (original.ImplementationType is null)
@@ -132,6 +151,13 @@ namespace BlazorServerTransientDisposable
                 ServiceLifetime.Transient);
     
             return newDescriptor;
+        }
+        
+        private static void ThrowTransientDisposableException(string? typeName)
+        {
+            throw new InvalidOperationException(
+                $"Trying to resolve transient disposable service {typeName} in the wrong scope. " +
+                "Use an 'OwningComponentBase<T>' component base class for the service 'T' you are trying to resolve.");
         }
     }
 
