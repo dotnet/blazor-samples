@@ -18,7 +18,7 @@ internal static class LoginLogoutEndpointRouteBuilderExtensions
         // the user will automatically be signed back in the next time they visit a page that requires authentication
         // without being able to choose another account.
         group.MapPost("/logout", ([FromForm] string? returnUrl) => TypedResults.SignOut(GetAuthProperties(returnUrl),
-            ["Cookies", "MicrosoftOidc"]));
+            [CookieAuthenticationDefaults.AuthenticationScheme, "MicrosoftOidc"]));
 
         return group;
     }

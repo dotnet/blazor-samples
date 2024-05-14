@@ -1,18 +1,20 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using BlazorWebAppOidc;
-using BlazorWebAppOidc.Components;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using BlazorWebAppOidc.Weather;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using BlazorWebAppOidc;
 using BlazorWebAppOidc.Client.Weather;
+using BlazorWebAppOidc.Components;
+using BlazorWebAppOidc.Weather;
+
+const string MS_OIDC_SCHEME = "MicrosoftOidc";
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddAuthentication("MicrosoftOidc")
-    .AddOpenIdConnect("MicrosoftOidc", oidcOptions =>
+builder.Services.AddAuthentication(MS_OIDC_SCHEME)
+    .AddOpenIdConnect(MS_OIDC_SCHEME, oidcOptions =>
     {
         // For the following OIDC settings, any line that's commented out
         // represents a DEFAULT setting. If you adopt the default, you can
@@ -80,7 +82,7 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         
         // ........................................................................
         // ClientSecret shouldn't be compiled into the application assembly or 
-        // checked into source control. Instead adopt User Secrets, Azure KeyVault, 
+        // checked into source control. Adopt User Secrets, Azure KeyVault, 
         // or an environment variable to supply the value. Authentication scheme 
         // configuration is automatically read from 
         // "Authentication:Schemes:{SchemeName}:{PropertyName}", so ClientSecret is 
@@ -133,14 +135,14 @@ builder.Services.AddAuthentication("MicrosoftOidc")
         // expiration.
         // ........................................................................
     })
-    .AddCookie("Cookies");
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
 // ConfigureCookieOidcRefresh attaches a cookie OnValidatePrincipal callback to get
 // a new access token when the current one expires, and reissue a cookie with the
 // new access token saved inside. If the refresh fails, the user will be signed
 // out. OIDC connect options are set for saving tokens and the offline access
 // scope.
-builder.Services.ConfigureCookieOidcRefresh("Cookies", "MicrosoftOidc");
+builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.AuthenticationScheme, MS_OIDC_SCHEME);
 
 builder.Services.AddAuthorization();
 

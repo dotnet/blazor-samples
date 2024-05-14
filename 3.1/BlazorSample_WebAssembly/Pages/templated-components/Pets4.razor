@@ -1,20 +1,20 @@
-@page "/pets4"
+@page "/pets-4"
 
-<h1>Pets</h1>
+<h1>Pets Example 4</h1>
 
-<TableTemplate Items="pets" TItem="Pet">
-    <TableHeader>
-        <th>ID</th>
-        <th>Name</th>
-    </TableHeader>
-    <RowTemplate>
-        <td>@context.PetId</td>
-        <td>@context.Name</td>
-    </RowTemplate>
-</TableTemplate>
+<TemplatedNavBar Items="pets" Context="pet" TItem="Pet">
+    <StartContent>
+        <a href="/" class="navbar-brand">PetsApp</a>
+    </StartContent>
+    <ItemTemplate>
+        <NavLink href="@($"/pet-detail/{pet.PetId}")" class="nav-link">
+            @pet.Name
+        </NavLink>
+    </ItemTemplate>
+</TemplatedNavBar>
 
 @code {
-    private List<Pet> pets = new List<Pet>
+    private List<Pet> pets = new()
     {
         new Pet { PetId = 2, Name = "Mr. Bigglesworth" },
         new Pet { PetId = 4, Name = "Salem Saberhagen" },

@@ -1,4 +1,4 @@
-﻿@using System.Reflection
+@using System.Reflection
 @using System.Text.RegularExpressions
 
 <div class="top-row ps-3 navbar navbar-dark">
@@ -29,7 +29,7 @@
                         @Regex.Replace(name, @"(\B[A-Z]|\d+)", " $1")
                     </NavLink>
                 }
-                else if (name != "TransientService")
+                else
                 {
                     <NavLink class="nav-link"
                              href="@Regex.Replace(name, @"(\B[A-Z]|\d+)", "-$1").ToLower()">
@@ -50,9 +50,13 @@
            .Where(t => t.IsSubclassOf(typeof(ComponentBase)))
            .Where(c => c.GetCustomAttributes(inherit: true)
                         .OfType<RouteAttribute>()
-                        .ToArray()
-                        .Count() > 0)
-           .Where(c => c.Name != "Home" && c.Name != "Error")
+                        .Any())
+           .Where(c =>
+               (c.Name != "Home")
+               && (c.Name != "Error")
+               && (c.Name != "PetDetail")
+               && (c.Name != "TransientService")
+           )
            .OrderBy(o => o.Name)
            .Select(c => c.Name);
     }

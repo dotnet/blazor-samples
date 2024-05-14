@@ -1,5 +1,4 @@
 @typeparam TItem
-@using System.Diagnostics.CodeAnalysis
 
 <table class="table">
     <thead>
@@ -8,10 +7,7 @@
     <tbody>
         @foreach (var item in Items)
         {
-            if (RowTemplate is not null)
-            {
-                <tr>@RowTemplate(item)</tr>
-            }
+            <tr @key="@item">@RowTemplate(item)</tr>
         }
     </tbody>
 </table>
@@ -20,9 +16,9 @@
     [Parameter]
     public RenderFragment? TableHeader { get; set; }
 
-    [Parameter]
-    public RenderFragment<TItem>? RowTemplate { get; set; }
+    [Parameter, EditorRequired]
+    public RenderFragment<TItem> RowTemplate { get; set; } = default!;
 
-    [Parameter, AllowNull]
-    public IReadOnlyList<TItem> Items { get; set; }
+    [Parameter, EditorRequired]
+    public IReadOnlyList<TItem> Items { get; set; } = default!;
 }

@@ -1,0 +1,13 @@
+﻿@page "/generics-1"
+
+<PageTitle>Generics 1</PageTitle>
+
+<h1>Generic Type Example 1</h1>
+
+<ListItems1 Color="blue"
+            ExampleList="@(new List<string> { "Item 1", "Item 2" })"
+            TExample="string" />
+
+<ListItems1 Color="red"
+            ExampleList="@(new List<int> { 1, 2 })"
+            TExample="int" />

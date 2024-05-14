@@ -196,7 +196,7 @@
     /// Deletes a contact.
     /// </summary>
     /// <returns>A <see cref="Task"/>.</returns>
-    #region snippet1
+    // <snippet1>
     private async Task DeleteContactAsync()
     {
         using var context = DbFactory.CreateDbContext();
@@ -218,7 +218,7 @@
 
         await ReloadAsync();
     }
-    #endregion
+    // </snippet1>
 
     /// <summary>
     /// Reload page based on filters and paging controls.

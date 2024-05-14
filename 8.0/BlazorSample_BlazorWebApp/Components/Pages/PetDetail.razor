@@ -1,0 +1,17 @@
+@page "/pet-detail/{id:int}"
+
+<PageTitle>Pet Detail</PageTitle>
+
+<h1>Pet Detail Record</h1>
+
+<p>Pet ID: @Id</p>
+
+<p><a href="@ReturnUrl">Return</a></p>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+}
