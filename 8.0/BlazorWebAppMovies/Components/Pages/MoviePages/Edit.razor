@@ -1,0 +1,115 @@
+@page "/Movies/edit"
+@inject BlazorWebAppMovies.Data.BlazorWebAppMoviesContext DB
+@using BlazorWebAppMovies.Models
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Movie</h4>
+<hr />
+@if (Movie is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Movie" OnValidSubmit="UpdateMovie" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="Movie.Id" value="@Movie.Id" />
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title:</label>
+                    <InputText id="title" @bind-Value="Movie.Title" class="form-control" />
+                    <ValidationMessage For="() => Movie.Title" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="releasedate" class="form-label">ReleaseDate:</label>
+                    <InputDate id="releasedate" @bind-Value="Movie.ReleaseDate" class="form-control" />
+                    <ValidationMessage For="() => Movie.ReleaseDate" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="genre" class="form-label">Genre:</label>
+                    <InputText id="genre" @bind-Value="Movie.Genre" class="form-control" />
+                    <ValidationMessage For="() => Movie.Genre" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price:</label>
+                    <InputNumber id="price" @bind-Value="Movie.Price" class="form-control" />
+                    <ValidationMessage For="() => Movie.Price" class="text-danger" />
+                </div>
+                <!-- The following content for Rating is added in
+                     Part 7 of the tutorial series.
+                -->
+                <div class="mb-3">
+                    <label for="rating" class="form-label">Rating:</label>
+                    <InputText id="rating" @bind-Value="Movie.Rating" class="form-control" />
+                    <ValidationMessage For="() => Movie.Rating" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/movies">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Movie? Movie { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Movie ??= await DB.Movie.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Movie is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateMovie()
+    {
+        DB.Attach(Movie!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!MovieExists(Movie!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/movies");
+    }
+
+    /* Note that although the Blazor project template
+       produces the next line without the 'private'
+       access modifier, the documentation convention
+       for Razor component code is to always include
+       the 'private' access modifier.
+    */
+    bool MovieExists(int id)
+    {
+        return DB.Movie.Any(e => e.Id == id);
+    }
+}
