@@ -1,0 +1,64 @@
+@page "/movies/details"
+@inject BlazorWebAppMovies.Data.BlazorWebAppMoviesContext DB
+@using BlazorWebAppMovies.Models
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>Movie</h4>
+    <hr />
+    @if (movie is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Title</dt>
+            <dd class="col-sm-10">@movie.Title</dd>
+            <dt class="col-sm-2">ReleaseDate</dt>
+            <!-- The following is used up to Part 3 of
+                 the tutorial series.
+
+            <dd class="col-sm-10">@movie.ReleaseDate</dd>
+            -->
+            <!-- The following is used in Part 3 and
+                 later parts of the tutorial series.
+            -->
+            <dd class="col-sm-10">@movie.ReleaseDate.ToShortDateString()</dd>
+            <dt class="col-sm-2">Genre</dt>
+            <dd class="col-sm-10">@movie.Genre</dd>
+            <dt class="col-sm-2">Price</dt>
+            <dd class="col-sm-10">@movie.Price</dd>
+            <!-- The following content for Rating is added in
+                 Part 7 of the tutorial series.
+            -->
+            <dt class="col-sm-2">Rating</dt>
+            <dd class="col-sm-10">@movie.Rating</dd>
+        </dl>
+        <div>
+            <a href="@($"/movies/edit?id={movie.Id}")">Edit</a> |
+            <a href="@($"/movies")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    Movie? movie;
+
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        movie = await DB.Movie.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (movie is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}
