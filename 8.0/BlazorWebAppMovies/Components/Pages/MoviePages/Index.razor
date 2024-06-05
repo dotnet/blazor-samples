@@ -8,17 +8,6 @@
 <h1>Index</h1>
 
 <p>
-    <!-- The following is used up to Part 8 of
-         the tutorial series.
-
-    <form action="/movies">
-        <input type="text" name="titleFilter" />
-        <button type="submit">Search</button>
-    </form>
-    -->
-    <!-- The following is used in Part 8, the
-         last part of the tutorial series.
-    -->
     <input @bind="titleFilter" />
     <button @onclick="FilterMovies">Search</button>
 </p>
@@ -28,29 +17,10 @@
 </p>
 
 <QuickGrid Class="table" Items="@movies">
-    <!-- The following property column for the movie
-         title is used up to Part 8 of the tutorial series.
-
-    <PropertyColumn Property="movie => movie.Title" />
-    -->
-    <!-- The following property column is used in Part 8, 
-         the last part of the tutorial series.
-    -->
     <PropertyColumn Property="movie => movie.Title" Sortable="true" />
-    <!-- The following property column is used up to 
-         Part 3 of the tutorial series.
-
-    <PropertyColumn Property="movie => movie.ReleaseDate" />
-    -->
-    <!-- The following property column is used in 
-         Part 3 and later parts of the tutorial series.
-    -->
     <PropertyColumn Property="movie => movie.ReleaseDate.ToShortDateString()" Title="Release Date" />
     <PropertyColumn Property="movie => movie.Genre" />
     <PropertyColumn Property="movie => movie.Price" />
-    <!-- The property column for Rating is added in
-         Part 7 of the tutorial series.
-    -->
     <PropertyColumn Property="movie => movie.Rating" />
 
     <TemplateColumn Context="movie">
@@ -62,41 +32,8 @@
 
 @code {
     private IQueryable<Movie>? movies;
-
-    /*
-         The following two lines are used up to 
-         Part 8 of the tutorial series.
-
-    [SupplyParameterFromQuery]
-    public string? TitleFilter { get; set; }
-    */
-
-    // The following line is used in Part 8 of
-    // the tutorial series.
     private string? titleFilter;
 
-    /*
-         The following OnParametersSet method
-         is used up to Part 8 of the tutorial 
-         series.
-
-    protected override void OnParametersSet()
-    {
-        if (!string.IsNullOrEmpty(TitleFilter))
-        {
-            movies = DB.Movie.Where(
-                s => !string.IsNullOrEmpty(s.Title) ? 
-                    s.Title.Contains(TitleFilter) : false);
-        }
-        else
-        {
-            movies = DB.Movie;
-        }
-    }
-    */
-
-    // The following two methods are used in Part 8 of
-    // the tutorial series.
     protected override void OnInitialized()
     {
         movies = DB.Movie;
