@@ -29,11 +29,11 @@ h1:focus {
 }
 
 .invalid {
-    outline: 1px solid #e50940;
+    outline: 1px solid #e50000;
 }
 
 .validation-message {
-    color: #e50940;
+    color: #e50000;
 }
 
 .blazor-error-boundary {
@@ -45,3 +45,7 @@ h1:focus {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.darker-border-checkbox.form-check-input {
+    border-color: #929292;
+}
