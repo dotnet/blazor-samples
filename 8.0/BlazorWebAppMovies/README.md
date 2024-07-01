@@ -20,3 +20,7 @@ This sample app is the completed app for the Blazor Web App Movies tutorial:
    If you use Visual Studio to run the apps, Visual Studio automatically uses the `https` launch profile. No action is required to run the apps securely when using Visual Studio.
 
 1. Run the app.
+
+## Package roll-forward behavior
+
+The NuGet packages referenced in the project file (`.csproj`) aren't necessarily the latest patch package releases. However, patch releases in .NET roll-forward automatically when the app is built and packages are restored. There's no need to update the package versions in the project file to the latest patch package releases.
