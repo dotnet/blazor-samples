@@ -1,4 +1,5 @@
 @page "/movies"
+@rendermode InteractiveServer
 @using Microsoft.AspNetCore.Components.QuickGrid
 @inject BlazorWebAppMovies.Data.BlazorWebAppMoviesContext DB
 @using BlazorWebAppMovies.Models
@@ -8,7 +9,7 @@
 <h1>Index</h1>
 
 <p>
-    <input @bind="titleFilter" />
+    <input type="search" @bind="TitleFilter" />
     <button @onclick="FilterMovies">Search</button>
 </p>
 
@@ -16,9 +17,9 @@
     <a href="movies/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="@movies">
+<QuickGrid Class="table" Items="@movies" Pagination="@pagination">
     <PropertyColumn Property="movie => movie.Title" Sortable="true" />
-    <PropertyColumn Property="movie => movie.ReleaseDate.ToShortDateString()" Title="Release Date" />
+    <PropertyColumn Property="movie => movie.ReleaseDate" Title="Release Date" />
     <PropertyColumn Property="movie => movie.Genre" />
     <PropertyColumn Property="movie => movie.Price" />
     <PropertyColumn Property="movie => movie.Rating" />
@@ -30,22 +31,27 @@
     </TemplateColumn>
 </QuickGrid>
 
-@code {
-    private IQueryable<Movie>? movies;
-    private string? titleFilter;
+<Paginator State="@pagination" />
 
-    protected override void OnInitialized()
+@code {
+    PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+    private IQueryable<Movie>? movies;
+
+    [SupplyParameterFromQuery]
+    public string? TitleFilter { get; set; }
+
+    protected override void OnParametersSet()
     {
-        movies = DB.Movie;
+        FilterMovies();
     }
 
     private void FilterMovies()
     {
-        if (!string.IsNullOrEmpty(titleFilter))
+        if (!string.IsNullOrEmpty(TitleFilter))
         {
             movies = DB.Movie.Where(
                 s => !string.IsNullOrEmpty(s.Title) ? 
-                    s.Title.Contains(titleFilter) : false);
+                    s.Title.Contains(TitleFilter) : false);
         }
         else
         {
