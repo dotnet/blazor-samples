@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace BlazorWebAppMovies.Migrations
 {
     /// <inheritdoc />
-    public partial class New_DataAnnotations : Migration
+    public partial class NewMovieDataAnnotations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
