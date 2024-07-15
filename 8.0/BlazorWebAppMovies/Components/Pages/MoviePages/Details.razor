@@ -1,8 +1,9 @@
 @page "/movies/details"
-@inject BlazorWebAppMovies.Data.BlazorWebAppMoviesContext DB
-@using BlazorWebAppMovies.Models
-@inject NavigationManager NavigationManager
+
 @using Microsoft.EntityFrameworkCore
+@using BlazorWebAppMovies.Models
+@inject IDbContextFactory<BlazorWebAppMovies.Data.BlazorWebAppMoviesContext> DbFactory
+@inject NavigationManager NavigationManager
 
 <PageTitle>Details</PageTitle>
 
@@ -19,7 +20,7 @@
         <dl class="row">
             <dt class="col-sm-2">Title</dt>
             <dd class="col-sm-10">@movie.Title</dd>
-            <dt class="col-sm-2">ReleaseDate</dt>
+            <dt class="col-sm-2">Release Date</dt>
             <dd class="col-sm-10">@movie.ReleaseDate</dd>
             <dt class="col-sm-2">Genre</dt>
             <dd class="col-sm-10">@movie.Genre</dd>
@@ -43,7 +44,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        movie = await DB.Movie.FirstOrDefaultAsync(m => m.Id == Id);
+        using var context = DbFactory.CreateDbContext();
+        movie = await context.Movie.FirstOrDefaultAsync(m => m.Id == Id);
 
         if (movie is null)
         {
