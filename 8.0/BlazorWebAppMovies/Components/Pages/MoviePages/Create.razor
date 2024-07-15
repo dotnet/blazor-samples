@@ -1,8 +1,9 @@
 @page "/movies/create"
-@inject BlazorWebAppMovies.Data.BlazorWebAppMoviesContext DB
-@using BlazorWebAppMovies.Models
-@inject NavigationManager NavigationManager
+
 @using Microsoft.EntityFrameworkCore
+@using BlazorWebAppMovies.Models
+@inject IDbContextFactory<BlazorWebAppMovies.Data.BlazorWebAppMoviesContext> DbFactory
+@inject NavigationManager NavigationManager
 
 <PageTitle>Create</PageTitle>
 
@@ -21,10 +22,10 @@
                 <ValidationMessage For="() => Movie.Title" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="releasedate" class="form-label">ReleaseDate:</label> 
+                <label for="releasedate" class="form-label">Release Date:</label> 
                 <InputDate id="releasedate" @bind-Value="Movie.ReleaseDate" class="form-control" /> 
                 <ValidationMessage For="() => Movie.ReleaseDate" class="text-danger" /> 
-            </div>
+            </div>        
             <div class="mb-3">
                 <label for="genre" class="form-label">Genre:</label> 
                 <InputText id="genre" @bind-Value="Movie.Genre" class="form-control" /> 
@@ -57,8 +58,9 @@
     // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
     public async Task AddMovie()
     {
-        DB.Movie.Add(Movie);
-        await DB.SaveChangesAsync();
+        using var context = DbFactory.CreateDbContext();
+        context.Movie.Add(Movie);
+        await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/movies");
     }
 }
