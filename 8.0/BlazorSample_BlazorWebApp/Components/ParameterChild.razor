@@ -1,4 +1,4 @@
-﻿<div class="card w-25" style="margin-bottom:15px">
+<div class="card w-25" style="margin-bottom:15px">
     <div class="card-header font-weight-bold">@Title</div>
     <div class="card-body" style="font-style:@Body.Style">
         @Body.Text
@@ -13,7 +13,7 @@
     public PanelBody Body { get; set; } =
         new()
         {
-            Text = "Set by child.",
+            Text = "Card content set by child.",
             Style = "normal"
         };
 }
