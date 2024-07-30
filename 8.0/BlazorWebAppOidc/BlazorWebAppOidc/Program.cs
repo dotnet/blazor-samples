@@ -104,13 +104,16 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         // ........................................................................
 
         // ........................................................................
-        // Many OIDC servers use "name" and "role" rather than the SOAP/WS-Fed 
-        // defaults in ClaimTypes. If you don't use ClaimTypes, mapping inbound 
-        // claims to ASP.NET Core's ClaimTypes isn't necessary.
+        // Set MapInboundClaims to "false" to obtain the original claim types from 
+        // the token. Many OIDC servers use "name" and "role" (singular) rather 
+        // than the SOAP/WS-Fed defaults in ClaimTypes. The following code uses 
+        // "name" and "roles" (plural) to match Entra ID for the name and role 
+        // claim types. Adjust these values if your identity provider uses 
+        // different claim types.
 
         oidcOptions.MapInboundClaims = false;
         oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
-        oidcOptions.TokenValidationParameters.RoleClaimType = "role";
+        oidcOptions.TokenValidationParameters.RoleClaimType = "roles";
         // ........................................................................
 
         // ........................................................................
