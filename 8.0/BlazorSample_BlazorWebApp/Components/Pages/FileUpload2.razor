@@ -77,8 +77,10 @@
                 {
                     files.Add(new() { Name = file.Name });
 
-                    var fileContent = 
-                        new StreamContent(file.OpenReadStream(maxFileSize));
+                    await using var fileStream = uploadedFile.OpenReadStream(maxAllowedSize: maxFileSize);
+                    using var memoryStream = new MemoryStream();
+                    await fileStream.CopyToAsync(memoryStream);
+                    var fileContent = new ByteArrayContent(memoryStream.ToArray());
 
                     fileContent.Headers.ContentType = 
                         new MediaTypeHeaderValue(file.ContentType);
