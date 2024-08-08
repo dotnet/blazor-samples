@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 
@@ -41,6 +41,7 @@ public static class EventsUsage
             Console.WriteLine(
                 $"In C# event listener: Event {eventName} from ID {elementId}");
 
+        // Assumes two buttons exist on the page with ids of "btn1" and "btn2"
         JSObject listenerHandler1 =
             EventsInterop.SubscribeEventById("btn1", "click", listenerFunc);
         JSObject listenerHandler2 =
