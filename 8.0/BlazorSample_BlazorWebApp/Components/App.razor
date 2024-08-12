@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -69,14 +69,6 @@
         }
     </script>
     <script>
-        window.returnArrayAsync = () => {
-            DotNet.invokeMethodAsync('BlazorSample', 'ReturnArrayAsync')
-                .then(data => {
-                    console.log(data);
-                });
-        };
-    </script>
-    <script>
         window.sayHello1 = (dotNetHelper) => {
             return dotNetHelper.invokeMethodAsync('GetHelloMessage');
         };
@@ -125,32 +117,12 @@
         }
     </script>
     <script>
-        window.assignDotNetHelper = (element, dotNetHelper) => {
-            element.dotNetHelper = dotNetHelper;
-        }
-        window.interopCall = async (element) => {
-            await element.dotNetHelper.invokeMethodAsync('UpdateMessage');
-        }
-    </script>
-    <script>
         window.setElementText1 = (element, text) => element.innerText = text;
     </script>
     <script>
         window.setElementText2 = (element, text) => {
             element.innerText = text;
             return text;
-        };
-    </script>
-    <script>
-        window.sendByteArray = () => {
-            const data = new Uint8Array([0x45, 0x76, 0x65, 0x72, 0x79, 0x74, 0x68, 0x69,
-                0x6e, 0x67, 0x27, 0x73, 0x20, 0x73, 0x68, 0x69, 0x6e, 0x79, 0x2c,
-                0x20, 0x43, 0x61, 0x70, 0x74, 0x61, 0x69, 0x6e, 0x2e, 0x20, 0x4e,
-                0x6f, 0x74, 0x20, 0x74, 0x6f, 0x20, 0x66, 0x72, 0x65, 0x74, 0x2e]);
-            DotNet.invokeMethodAsync('BlazorSample', 'ReceiveByteArray', data)
-                .then(str => {
-                    alert(str);
-                });
         };
     </script>
 </body>

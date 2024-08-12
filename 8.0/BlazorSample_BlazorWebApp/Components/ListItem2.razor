@@ -1,8 +1,9 @@
 @inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <li>
-    <span style="font-weight:bold;color:@color" @ref="elementRef" 
-        onclick="interopCall(this)">
+    <span style="font-weight:bold;color:@color" @ref="elementRef"
+        @onclick="CallJSToInvokeDotnet">
         @message
     </span>
     <span style="display:@display">
@@ -11,6 +12,7 @@
 </li>
 
 @code {
+    private IJSObjectReference? module;
     private DotNetObjectReference<ListItem2>? objRef;
     private ElementReference elementRef;
     private string display = "inline-block";
@@ -21,8 +23,19 @@
     {
         if (firstRender)
         {
+            module = await JS.InvokeAsync<IJSObjectReference>("import",
+                "./Components/ListItem2.razor.js");
+
             objRef = DotNetObjectReference.Create(this);
-            await JS.InvokeVoidAsync("assignDotNetHelper", elementRef, objRef);
+            await module.InvokeVoidAsync("assignDotNetHelper", elementRef, objRef);
+        }
+    }
+
+    public async void CallJSToInvokeDotnet()
+    {
+        if (module is not null)
+        {
+            await module.InvokeVoidAsync("interopCall", elementRef);
         }
     }
 
@@ -35,5 +48,13 @@
         StateHasChanged();
     }
 
-    public void Dispose() => objRef?.Dispose();
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
+
+        objRef?.Dispose();
+    }
 }
