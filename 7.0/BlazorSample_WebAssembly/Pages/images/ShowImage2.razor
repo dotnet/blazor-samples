@@ -1,16 +1,16 @@
-﻿@page "/show-image-2"
+@page "/show-image-2"
 @inject HttpClient Http
 @inject IJSRuntime JS
 
-<h1>Stream Image Data Example</h1>
-
-<p>
-    <img id="image" />
-</p>
+<h1>Show Image Example 2</h1>
 
 <button @onclick="SetImageAsync">
     Set Image
 </button>
+
+<div class="p-3">
+    <img id="avatar" />
+</div>
 
 @code {
     private async Task<Stream> GetImageStreamAsync()
@@ -22,7 +22,8 @@
     private async Task SetImageAsync()
     {
         var imageStream = await GetImageStreamAsync();
-        var dotnetImageStream = new DotNetStreamReference(imageStream);
-        await JS.InvokeVoidAsync("setImage", "image", dotnetImageStream);
+        var strRef = new DotNetStreamReference(imageStream);
+        await JS.InvokeVoidAsync("setSource", "avatar", strRef, "image/png", 
+            ".NET GitHub avatar");
     }
 }
