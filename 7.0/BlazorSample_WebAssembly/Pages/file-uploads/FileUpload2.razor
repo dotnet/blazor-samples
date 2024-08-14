@@ -70,8 +70,12 @@
                 {
                     files.Add(new() { Name = file.Name });
 
-                    var fileContent = 
-                        new StreamContent(file.OpenReadStream(maxFileSize));
+                    var memoryStream = new MemoryStream();
+                    var browserFileStream = file.OpenReadStream(maxAllowedSize: maxFileSize);
+                    await browserFileStream.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+
+                    var fileContent = new StreamContent(memoryStream);
 
                     fileContent.Headers.ContentType = 
                         new MediaTypeHeaderValue(file.ContentType);
