@@ -1,12 +1,17 @@
 @page "/file-upload-2"
-@using System.Linq
 @using System.Net.Http.Headers
 @using System.Text.Json
 @using Microsoft.Extensions.Logging
 @inject IHttpClientFactory ClientFactory
 @inject ILogger<FileUpload2> Logger
 
-<h1>Upload Files</h1>
+<h1>File Upload Example 2</h1>
+
+<p>
+    This example requires a backend server API to function. For more information, 
+    see the <em>Upload files to a server</em> section 
+    of the <em>ASP.NET Core Blazor file uploads</em> article.
+</p>
 
 <p>
     <label>
@@ -57,7 +62,7 @@
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
         shouldRender = false;
-        long maxFileSize = 1024 * 15;
+        int maxFileSize = 1024 * 15;
         var upload = false;
 
         using var content = new MultipartFormDataContent();
@@ -71,13 +76,8 @@
                 {
                     files.Add(new() { Name = file.Name });
 
-                    var memoryStream = new MemoryStream();
-                    var browserFileStream = file.OpenReadStream(maxAllowedSize: maxFileSize);
-                    await browserFileStream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-
-                    var fileContent = new StreamContent(memoryStream);
-
+                    var stream = new LazyBrowserFileStream(file, maxFileSize);
+                    var fileContent = new StreamContent(stream);
                     fileContent.Headers.ContentType = 
                         new MediaTypeHeaderValue(file.ContentType);
 
@@ -126,7 +126,10 @@
                 var newUploadResults = await JsonSerializer
                     .DeserializeAsync<IList<UploadResult>>(responseStream, options);
 
-                uploadResults = uploadResults.Concat(newUploadResults).ToList();
+                if (newUploadResults is not null)
+                {
+                    uploadResults = uploadResults.Concat(newUploadResults).ToList();
+                }
             }
         }
 
@@ -136,12 +139,11 @@
     private static bool FileUpload(IList<UploadResult> uploadResults,
         string fileName, ILogger<FileUpload2> logger, out UploadResult result)
     {
-        result = uploadResults.SingleOrDefault(f => f.FileName == fileName);
+        result = uploadResults.SingleOrDefault(f => f.FileName == fileName) ?? new();
 
-        if (result is null)
+        if (!result.Uploaded)
         {
             logger.LogInformation("{FileName} not uploaded (Err: 5)", fileName);
-            result = new();
             result.ErrorCode = 5;
         }
 

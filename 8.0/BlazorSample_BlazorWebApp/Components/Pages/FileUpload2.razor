@@ -63,7 +63,7 @@
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
         shouldRender = false;
-        long maxFileSize = 1024 * 15;
+        int maxFileSize = 1024 * 15;
         var upload = false;
 
         using var content = new MultipartFormDataContent();
@@ -77,12 +77,8 @@
                 {
                     files.Add(new() { Name = file.Name });
 
-                    var memoryStream = new MemoryStream();
-                    var browserFileStream = file.OpenReadStream(maxAllowedSize: maxFileSize);
-                    await browserFileStream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-
-                    var fileContent = new StreamContent(memoryStream);
+                    var stream = new LazyBrowserFileStream(file, maxFileSize);
+                    var fileContent = new StreamContent(stream);
 
                     fileContent.Headers.ContentType = 
                         new MediaTypeHeaderValue(file.ContentType);
