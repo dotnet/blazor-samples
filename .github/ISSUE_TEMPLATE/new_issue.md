@@ -7,14 +7,14 @@ assignees: guardrex
 ---
 **IMPORTANT**
 
-Repo issues opened here are primarily only for quick patch 
+Repo issues opened here are primarily for quick patch 
 updates to sample apps.
 
-Usually, an issue should be opened ***from the link at the***
-***bottom of an article***, which opens an issue on the 
-documentation repo for work. An issue opened using the 
-documentation link also adds metadata to the issue for 
-tracking and pings the author of the article to respond.
+Usually, an issue should be opened from the link at the
+bottom of an article, which opens an issue on the 
+documentation repo for work. An issue opened from the 
+article also adds metadata to the issue for tracking and 
+pings the author of the article to respond.
 
 **Describe the issue**
 
