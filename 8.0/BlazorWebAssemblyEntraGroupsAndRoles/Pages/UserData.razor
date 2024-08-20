@@ -1,0 +1,32 @@
+﻿@page "/user-data"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Graph
+@attribute [Authorize]
+@inject GraphServiceClient Client
+
+<h1>Microsoft Graph User Subset Data</h1>
+
+<ul>
+    <li><b>Business Phones:</b> @businessPhones</li>
+    <li><b>Display Name:</b> @user?.DisplayName</li>
+    <li><b>Given Name:</b> @user?.GivenName</li>
+    <li><b>Id:</b> @user?.Id</li>
+    <li><b>Job Title:</b> @user?.JobTitle</li>
+    <li><b>Mail:</b> @user?.Mail</li>
+    <li><b>Mobile Phone:</b> @user?.MobilePhone</li>
+    <li><b>Office Location:</b> @user?.OfficeLocation</li>
+    <li><b>Preferred Language:</b> @user?.PreferredLanguage</li>
+    <li><b>Surname:</b> @user?.Surname</li>
+    <li><b>User Principal Name:</b> @user?.UserPrincipalName</li>
+</ul>
+
+@code {
+    private Microsoft.Graph.Models.User? user;
+    private string? businessPhones;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await Client.Me.GetAsync();
+        businessPhones = string.Join(",", user?.BusinessPhones?.ToArray() ?? []);
+    }
+}
