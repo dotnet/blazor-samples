@@ -1,10 +1,10 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication.Internal;
 using Microsoft.Graph;
 using Microsoft.Kiota.Abstractions.Authentication;
 
-namespace StandMEID80GraphSDK;
+namespace BlazorWebAssemblyEntraGroupsAndRoles;
 
 public class CustomAccountFactory(IAccessTokenProviderAccessor accessor,
         IServiceProvider serviceProvider, ILogger<CustomAccountFactory> logger,
@@ -28,16 +28,12 @@ public class CustomAccountFactory(IAccessTokenProviderAccessor accessor,
         {
             var userIdentity = initialUser.Identity as ClaimsIdentity;
 
-            if (userIdentity is not null && !string.IsNullOrEmpty(baseUrl))
+            if (userIdentity is not null && !string.IsNullOrEmpty(baseUrl) &&
+                account.Oid is not null)
             {
                 account?.Roles?.ForEach((role) =>
                 {
-                    userIdentity.AddClaim(new Claim("appRole", role));
-                });
-
-                account?.Wids?.ForEach((wid) =>
-                {
-                    userIdentity.AddClaim(new Claim("directoryRole", wid));
+                    userIdentity.AddClaim(new Claim("role", role));
                 });
 
                 try
@@ -58,11 +54,23 @@ public class CustomAccountFactory(IAccessTokenProviderAccessor accessor,
                             user.OfficeLocation ?? "Not set"));
                     }
 
-                    var requestMemberOf = client.Users[account?.Oid].MemberOf;
+                    var memberOf = client.Users[account?.Oid].MemberOf;
 
-                    /* HOLDING ... for future coverage ...
+                    var graphDirectoryRoles = await memberOf.GraphDirectoryRole.GetAsync();
 
-                    var graphAdministrativeUnits = await requestMemberOf.GraphAdministrativeUnit.GetAsync();
+                    if (graphDirectoryRoles?.Value is not null)
+                    {
+                        foreach (var entry in graphDirectoryRoles.Value)
+                        {
+                            if (entry.RoleTemplateId is not null)
+                            {
+                                userIdentity.AddClaim(
+                                    new Claim("directoryRole", entry.RoleTemplateId));
+                            }
+                        }
+                    }
+
+                    var graphAdministrativeUnits = await memberOf.GraphAdministrativeUnit.GetAsync();
 
                     if (graphAdministrativeUnits?.Value is not null)
                     {
@@ -71,27 +79,12 @@ public class CustomAccountFactory(IAccessTokenProviderAccessor accessor,
                             if (entry.Id is not null)
                             {
                                 userIdentity.AddClaim(
-                                    new Claim("graphAdministrativeUnit", entry.Id));
+                                    new Claim("administrativeUnit", entry.Id));
                             }
                         }
                     }
 
-                    var graphDirectoryRoles = await requestMemberOf.GraphDirectoryRole.GetAsync();
-
-                    if (graphDirectoryRoles?.Value is not null)
-                    {
-                        foreach (var entry in graphDirectoryRoles.Value)
-                        {
-                            if (entry.Id is not null)
-                            {
-                                userIdentity.AddClaim(
-                                    new Claim("graphDirectoryRole", entry.Id));
-                            }
-                        }
-                    }
-                    */
-
-                    var graphGroups = await requestMemberOf.GraphGroup.GetAsync();
+                    var graphGroups = await memberOf.GraphGroup.GetAsync();
 
                     if (graphGroups?.Value is not null)
                     {
