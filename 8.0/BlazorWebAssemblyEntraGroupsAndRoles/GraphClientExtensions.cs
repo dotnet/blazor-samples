@@ -6,7 +6,7 @@ using Microsoft.Kiota.Abstractions.Authentication;
 using IAccessTokenProvider =
     Microsoft.AspNetCore.Components.WebAssembly.Authentication.IAccessTokenProvider;
 
-namespace StandMEID80GraphSDK;
+namespace BlazorWebAssemblyEntraGroupsAndRoles;
 
 internal static class GraphClientExtensions
 {

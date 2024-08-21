@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using StandMEID80GraphSDK;
+using BlazorWebAssemblyEntraGroupsAndRoles;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -14,7 +14,7 @@ builder.Services.AddMsalAuthentication<RemoteAuthenticationState,
     {
         builder.Configuration.Bind("AzureAd",
             options.ProviderOptions.Authentication);
-        options.UserOptions.RoleClaim = "appRole";
+        options.UserOptions.RoleClaim = "role";
     })
     .AddAccountClaimsPrincipalFactory<RemoteAuthenticationState, CustomUserAccount,
         CustomAccountFactory>();

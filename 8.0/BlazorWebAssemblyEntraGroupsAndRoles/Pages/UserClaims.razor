@@ -1,4 +1,4 @@
-﻿@page "/user-claims"
+@page "/user-claims"
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
@@ -6,19 +6,12 @@
 
 <h1>User Claims</h1>
 
-@if (claims.Any())
-{
-    <ul>
-        @foreach (var claim in claims)
-        {
-            <li>@claim.Type: @claim.Value</li>
-        }
-    </ul>
-}
-else
-{
-    <p>No claims found.</p>
-}
+<ul>
+    @foreach (var claim in claims)
+    {
+        <li>@claim.Type: @claim.Value</li>
+    }
+</ul>
 
 @code {
     private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
