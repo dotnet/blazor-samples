@@ -1,5 +1,4 @@
 @page "/Movies/edit"
-
 @using Microsoft.EntityFrameworkCore
 @using BlazorWebAppMovies.Models
 @inject IDbContextFactory<BlazorWebAppMovies.Data.BlazorWebAppMoviesContext> DbFactory
@@ -76,8 +75,6 @@ else
         }
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see https://aka.ms/RazorPagesCRUD.
     public async Task UpdateMovie()
     {
         using var context = DbFactory.CreateDbContext();
@@ -102,7 +99,7 @@ else
         NavigationManager.NavigateTo("/movies");
     }
 
-    bool MovieExists(int id)
+    private bool MovieExists(int id)
     {
         using var context = DbFactory.CreateDbContext();
         return context.Movie.Any(e => e.Id == id);

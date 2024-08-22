@@ -1,10 +1,8 @@
 @page "/movies/delete"
-
 @using Microsoft.EntityFrameworkCore
 @using BlazorWebAppMovies.Models
 @inject IDbContextFactory<BlazorWebAppMovies.Data.BlazorWebAppMoviesContext> DbFactory
 @inject NavigationManager NavigationManager
-
 
 <PageTitle>Delete</PageTitle>
 
@@ -47,7 +45,7 @@
 </div>
 
 @code {
-    Movie? movie;
+    private Movie? movie;
 
     [SupplyParameterFromQuery]
     public int Id { get; set; }
