@@ -1,5 +1,4 @@
 @page "/movies/create"
-
 @using Microsoft.EntityFrameworkCore
 @using BlazorWebAppMovies.Models
 @inject IDbContextFactory<BlazorWebAppMovies.Data.BlazorWebAppMoviesContext> DbFactory
@@ -51,11 +50,9 @@
 </div>
 
 @code {
-
     [SupplyParameterFromForm]
     public Movie Movie { get; set; } = new();
 
-    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
     public async Task AddMovie()
     {
         using var context = DbFactory.CreateDbContext();
