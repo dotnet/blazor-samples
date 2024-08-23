@@ -9,7 +9,7 @@
 <h1>Details</h1>
 
 <div>
-    <h4>Movie</h4>
+    <h2>Movie</h2>
     <hr />
     @if (movie is null)
     {
@@ -39,7 +39,7 @@
     private Movie? movie;
 
     [SupplyParameterFromQuery]
-    public int Id { get; set; }
+    private int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
