@@ -21,13 +21,6 @@ The sample app is configured to match the Visual Studio version of the article a
 1. The default URLs for the app are `https://localhost:7073` (secure HTTPs) and `http://localhost:5261` (insecure HTTP).
    
    You can use the existing URLs or update them in the `Properties/launchSettings.json` file.
-  
-1. If you plan to run the app using the .NET CLI with `dotnet watch` or `dotnet run`, note that first launch profile in the launch settings file is used to run an app, which is the insecure `http` profile (HTTP protocol). To run the apps securely (HTTPS protocol), take ***either*** of the following approaches:
-
-   * Pass the launch profile option to the command when running the apps: `dotnet run -lp https`.
-   * In the launch settings file (`Properties/launchSettings.json`), rotate the `https` profile to the top, placing it above the `http` profile.
-  
-   If you use Visual Studio to run the apps, Visual Studio automatically uses the `https` launch profile. No action is required to run the apps securely when using Visual Studio.
 
 1. Run the app.
 
