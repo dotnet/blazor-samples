@@ -137,6 +137,12 @@
           }
           element.src = url;
         }
-</script>
+    </script>
+    <script>
+        window.scrollElementIntoView = (element) => {
+          element.scrollIntoView();
+          return element.getBoundingClientRect().top;
+        }
+    </script>
 </body>
 </html>

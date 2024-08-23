@@ -85,5 +85,11 @@
             dotnetHelper.dispose();
         }
     </script>
+    <script>
+        window.scrollElementIntoView = (element) => {
+          element.scrollIntoView();
+          return element.getBoundingClientRect().top;
+        }
+    </script>
 </body>
 </html>
