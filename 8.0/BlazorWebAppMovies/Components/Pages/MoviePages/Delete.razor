@@ -8,9 +8,9 @@
 
 <h1>Delete</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<p>Are you sure you want to delete this?</p>
 <div>
-    <h4>Movie</h4>
+    <h2>Movie</h2>
     <hr />
     @if (movie is null)
     {
@@ -48,7 +48,7 @@
     private Movie? movie;
 
     [SupplyParameterFromQuery]
-    public int Id { get; set; }
+    private int Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,7 +61,7 @@
         }
     }
 
-    public async Task DeleteMovie()
+    private async Task DeleteMovie()
     {
         using var context = DbFactory.CreateDbContext();
         context.Movie.Remove(movie!);

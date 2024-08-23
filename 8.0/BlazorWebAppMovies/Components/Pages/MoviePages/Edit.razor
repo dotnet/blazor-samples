@@ -8,7 +8,7 @@
 
 <h1>Edit</h1>
 
-<h4>Movie</h4>
+<h2>Movie</h2>
 <hr />
 @if (Movie is null)
 {
@@ -59,10 +59,10 @@ else
 
 @code {
     [SupplyParameterFromQuery]
-    public int Id { get; set; }
+    private int Id { get; set; }
 
     [SupplyParameterFromForm]
-    public Movie? Movie { get; set; }
+    private Movie? Movie { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,7 +75,7 @@ else
         }
     }
 
-    public async Task UpdateMovie()
+    private async Task UpdateMovie()
     {
         using var context = DbFactory.CreateDbContext();
         context.Attach(Movie!).State = EntityState.Modified;

@@ -8,7 +8,7 @@
 
 <h1>Create</h1>
 
-<h4>Movie</h4>
+<h2>Movie</h2>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -51,9 +51,9 @@
 
 @code {
     [SupplyParameterFromForm]
-    public Movie Movie { get; set; } = new();
+    private Movie Movie { get; set; } = new();
 
-    public async Task AddMovie()
+    private async Task AddMovie()
     {
         using var context = DbFactory.CreateDbContext();
         context.Movie.Add(Movie);
