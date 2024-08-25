@@ -1,9 +1,9 @@
 using BlazorWebAppEFCore.Components;
-using Microsoft.EntityFrameworkCore;
 using BlazorWebAppEFCore.Data;
 using BlazorWebAppEFCore.Grid;
+using Microsoft.EntityFrameworkCore;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -26,14 +26,14 @@ builder.Services.AddScoped<GridQueryAdapter>();
 // Service to communicate success on edit between pages
 builder.Services.AddScoped<EditSuccess>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // This section sets up and seeds the database. Seeding is NOT normally
 // handled this way in production. The following approach is used in this
 // sample app to make the sample simpler. The app can be cloned. The
 // connection string is configured. The app can be run.
-await using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
-var options = scope.ServiceProvider.GetRequiredService<DbContextOptions<ContactContext>>();
+await using AsyncServiceScope scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateAsyncScope();
+DbContextOptions<ContactContext> options = scope.ServiceProvider.GetRequiredService<DbContextOptions<ContactContext>>();
 await DatabaseUtility.EnsureDbCreatedAndSeedWithCountOfAsync(options, 500);
 
 // Configure the HTTP request pipeline.

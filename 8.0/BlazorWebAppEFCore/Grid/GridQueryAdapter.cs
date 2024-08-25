@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 using BlazorWebAppEFCore.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorWebAppEFCore.Grid;
 
@@ -24,8 +24,7 @@ public class GridQueryAdapter
         };
 
     // Queryables for filtering.
-    private readonly Dictionary<ContactFilterColumns, Func<IQueryable<Contact>, IQueryable<Contact>>> _filterQueries = 
-        new Dictionary<ContactFilterColumns, Func<IQueryable<Contact>, IQueryable<Contact>>>();
+    private readonly Dictionary<ContactFilterColumns, Func<IQueryable<Contact>, IQueryable<Contact>>> _filterQueries = [];
 
     // Creates a new instance of the GridQueryAdapter class.
     // controls: The IContactFilters" to use.
@@ -36,12 +35,12 @@ public class GridQueryAdapter
         // Set up queries.
         _filterQueries = new()
         {
-            { ContactFilterColumns.City, cs => cs.Where(c => c != null && c.City != null && _controls.FilterText != null ? c.City.Contains(_controls.FilterText) : false ) },
-            { ContactFilterColumns.Phone, cs => cs.Where(c => c != null && c.Phone != null && _controls.FilterText != null ? c.Phone.Contains(_controls.FilterText) : false ) },
-            { ContactFilterColumns.Name, cs => cs.Where(c => c != null && c.FirstName != null && _controls.FilterText != null ? c.FirstName.Contains(_controls.FilterText) : false ) },
-            { ContactFilterColumns.State, cs => cs.Where(c => c != null && c.State != null && _controls.FilterText != null ? c.State.Contains(_controls.FilterText) : false ) },
-            { ContactFilterColumns.Street, cs => cs.Where(c => c != null && c.Street != null && _controls.FilterText != null ? c.Street.Contains(_controls.FilterText) : false ) },
-            { ContactFilterColumns.ZipCode, cs => cs.Where(c => c != null && c.ZipCode != null && _controls.FilterText != null ? c.ZipCode.Contains(_controls.FilterText) : false ) }
+            { ContactFilterColumns.City, cs => cs.Where(c => c != null && c.City != null && _controls.FilterText != null && c.City.Contains(_controls.FilterText) ) },
+            { ContactFilterColumns.Phone, cs => cs.Where(c => c != null && c.Phone != null && _controls.FilterText != null && c.Phone.Contains(_controls.FilterText) ) },
+            { ContactFilterColumns.Name, cs => cs.Where(c => c != null && c.FirstName != null && _controls.FilterText != null && c.FirstName.Contains(_controls.FilterText) ) },
+            { ContactFilterColumns.State, cs => cs.Where(c => c != null && c.State != null && _controls.FilterText != null && c.State.Contains(_controls.FilterText) ) },
+            { ContactFilterColumns.Street, cs => cs.Where(c => c != null && c.Street != null && _controls.FilterText != null && c.Street.Contains(_controls.FilterText) ) },
+            { ContactFilterColumns.ZipCode, cs => cs.Where(c => c != null && c.ZipCode != null && _controls.FilterText != null && c.ZipCode.Contains(_controls.FilterText) ) }
         };
     }
 
@@ -52,7 +51,7 @@ public class GridQueryAdapter
     {
         query = FilterAndQuery(query);
         await CountAsync(query);
-        var collection = await FetchPageQuery(query)
+        List<Contact> collection = await FetchPageQuery(query)
             .ToListAsync();
         _controls.PageHelper.PageItems = collection.Count;
         return collection;
@@ -60,18 +59,17 @@ public class GridQueryAdapter
 
     // Get total filtered items count.
     // query: The IQueryable{Contact} to use.
-    public async Task CountAsync(IQueryable<Contact> query) => _controls.PageHelper.TotalItemCount = await query.CountAsync();
+    public async Task CountAsync(IQueryable<Contact> query) =>
+        _controls.PageHelper.TotalItemCount = await query.CountAsync();
 
     // Build the query to bring back a single page.
     // query: The <see IQueryable{Contact} to modify.
     // Returns the new IQueryable{Contact} for a page.
-    public IQueryable<Contact> FetchPageQuery(IQueryable<Contact> query)
-    {
-        return query
+    public IQueryable<Contact> FetchPageQuery(IQueryable<Contact> query) =>
+        query
             .Skip(_controls.PageHelper.Skip)
             .Take(_controls.PageHelper.PageSize)
             .AsNoTracking();
-    }
 
     // Builds the query.
     // root: The IQueryable{Contact} to start with.
@@ -83,20 +81,20 @@ public class GridQueryAdapter
         // Apply a filter?
         if (!string.IsNullOrWhiteSpace(_controls.FilterText))
         {
-            var filter = _filterQueries[_controls.FilterColumn];
+            Func<IQueryable<Contact>, IQueryable<Contact>> filter = _filterQueries[_controls.FilterColumn];
             sb.Append($"Filter: '{_controls.FilterColumn}' ");
             root = filter(root);
         }
 
         // Apply the expression.
-        var expression = _expressions[_controls.SortColumn];
+        Expression<Func<Contact, string>> expression = _expressions[_controls.SortColumn];
         sb.Append($"Sort: '{_controls.SortColumn}' ");
 
         // Fix name.
         if (_controls.SortColumn == ContactFilterColumns.Name && _controls.ShowFirstNameFirst)
         {
-            sb.Append($"(first name first) ");
-            expression = c => c.FirstName != null ? c.FirstName : string.Empty;
+            sb.Append("(first name first) ");
+            expression = c => c.FirstName ?? string.Empty;
         }
 
         var sortDir = _controls.SortAscending ? "ASC" : "DESC";

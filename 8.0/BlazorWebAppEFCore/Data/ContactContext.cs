@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorWebAppEFCore.Data;
 
 // Context for the contacts database.
-public class ContactContext : DbContext
+public sealed class ContactContext : DbContext
 {
     // Magic string.
     public static readonly string RowVersion = nameof(RowVersion);
@@ -15,10 +15,8 @@ public class ContactContext : DbContext
     // Inject options.
     // options: The DbContextOptions{ContactContext} for the context.
     public ContactContext(DbContextOptions<ContactContext> options)
-        : base(options)
-    {
+        : base(options) =>
         Debug.WriteLine($"{ContextId} context created.");
-    }
 
     // List of Contact.
     public DbSet<Contact>? Contacts { get; set; }

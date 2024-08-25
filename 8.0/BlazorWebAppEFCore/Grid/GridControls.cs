@@ -1,15 +1,10 @@
-﻿namespace BlazorWebAppEFCore.Grid;
+namespace BlazorWebAppEFCore.Grid;
 
 // State of grid filters.
-public class GridControls : IContactFilters
+public class GridControls(IPageHelper pageHelper) : IContactFilters
 {
     // Keep state of paging.
-    public IPageHelper PageHelper { get; set; }
-
-    public GridControls(IPageHelper pageHelper)
-    {
-        PageHelper = pageHelper;
-    }
+    public IPageHelper PageHelper { get; set; } = pageHelper;
 
     // Avoid multiple concurrent requests.
     public bool Loading { get; set; }

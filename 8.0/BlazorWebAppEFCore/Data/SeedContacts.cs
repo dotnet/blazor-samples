@@ -4,7 +4,7 @@ namespace BlazorWebAppEFCore.Data;
 public class SeedContacts
 {
     // Use these to make names.
-    private readonly string[] _gems = new[] {
+    private readonly string[] _gems = [
         "Diamond",
         "Crystal",
         "Morion",
@@ -32,11 +32,11 @@ public class SeedContacts
         "Ruby",
         "Amethyst",
         "Violet",
-        "Lilac"};
+        "Lilac"];
 
     // Combined with things for last names.
-    private readonly string[] _colors = new[]
-    {
+    private readonly string[] _colors =
+    [
         "Blue",
         "Aqua",
         "Red",
@@ -54,11 +54,11 @@ public class SeedContacts
         "Gold",
         "Pink",
         "Lavender"
-    };
+    ];
 
     // Also helpful for names.
-    private readonly string[] _things = new[]
-    {
+    private readonly string[] _things =
+    [
         "beard",
         "finger",
         "hand",
@@ -73,11 +73,11 @@ public class SeedContacts
         "lake",
         "stone",
         "ship"
-    };
+    ];
 
     // Street names.
-    private readonly string[] _streets = new[]
-    {
+    private readonly string[] _streets =
+    [
         "Broad",
         "Wide",
         "Main",
@@ -86,22 +86,22 @@ public class SeedContacts
         "Poplar",
         "First",
         "Third",
-    };
+    ];
 
     // Types of streets.
-    private readonly string[] _streetTypes = new[]
-    {
+    private readonly string[] _streetTypes =
+    [
         "Street",
         "Lane",
         "Place",
         "Terrace",
         "Drive",
         "Way"
-    };
+    ];
 
     // More uniqueness.
-    private readonly string[] _directions = new[]
-    {
+    private readonly string[] _directions =
+    [
         "N",
         "NE",
         "E",
@@ -110,11 +110,11 @@ public class SeedContacts
         "SW",
         "W",
         "NW"
-    };
+    ];
 
     // A sampling of cities.
-    private readonly string[] _cities = new[]
-    {
+    private readonly string[] _cities =
+    [
         "Austin",
         "Denver",
         "Fayetteville",
@@ -133,22 +133,22 @@ public class SeedContacts
         "Spokane",
         "Bellevue",
         "Seattle"
-    };
+    ];
 
     // State list.
-    private readonly string[] _states = new[]
-    {
+    private readonly string[] _states =
+    [
         "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL",
         "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA",
         "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE",
         "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK",
         "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT",
         "VA", "WA", "WV", "WI", "WY"
-    };
+    ];
 
     // Picks a random item from a list.
     // list: A list of string to parse.
-    private string RandomOne(string[] list)
+    private static string RandomOne(string[] list)
     {
         var idx = Random.Shared.Next(list.Length - 1);
 
@@ -188,7 +188,7 @@ public class SeedContacts
             if (list.Count > 0)
             {
                 context.Contacts?.AddRange(list);
-                await context.SaveChangesAsync();
+                _ = await context.SaveChangesAsync();
             }
             currentCycle = 0;
         }
