@@ -60,10 +60,7 @@ public class GridQueryAdapter
 
     // Get total filtered items count.
     // query: The IQueryable{Contact} to use.
-    public async Task CountAsync(IQueryable<Contact> query)
-    {
-        _controls.PageHelper.TotalItemCount = await query.CountAsync();
-    }
+    public async Task CountAsync(IQueryable<Contact> query) => _controls.PageHelper.TotalItemCount = await query.CountAsync();
 
     // Build the query to bring back a single page.
     // query: The <see IQueryable{Contact} to modify.
