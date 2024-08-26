@@ -45,7 +45,7 @@
     private CustomValidation? customValidation;
 
     [SupplyParameterFromForm]
-    public Starship? Model { get; set; }
+    private Starship? Model { get; set; }
 
     protected override void OnInitialized() =>
         Model ??= new() { ProductionDate = DateTime.UtcNow };

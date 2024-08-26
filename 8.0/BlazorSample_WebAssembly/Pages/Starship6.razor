@@ -27,10 +27,10 @@
 
 @code {
     [SupplyParameterFromForm(FormName = "Holodeck1")]
-    public Holodeck? Model1 { get; set; }
+    private Holodeck? Model1 { get; set; }
 
     [SupplyParameterFromForm(FormName = "Holodeck2")]
-    public Holodeck? Model2 { get; set; }
+    private Holodeck? Model2 { get; set; }
 
     protected override void OnInitialized()
     {
