@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-
-namespace BlazorWebAppEFCore.Data;
+using BlazorWebAppEFCore.Data;
 
 public static class DatabaseUtility
 {
