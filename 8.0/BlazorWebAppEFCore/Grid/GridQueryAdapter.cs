@@ -51,7 +51,7 @@ public class GridQueryAdapter
     {
         query = FilterAndQuery(query);
         await CountAsync(query);
-        List<Contact> collection = await FetchPageQuery(query)
+        var collection = await FetchPageQuery(query)
             .ToListAsync();
         _controls.PageHelper.PageItems = collection.Count;
         return collection;
@@ -81,13 +81,13 @@ public class GridQueryAdapter
         // Apply a filter?
         if (!string.IsNullOrWhiteSpace(_controls.FilterText))
         {
-            Func<IQueryable<Contact>, IQueryable<Contact>> filter = _filterQueries[_controls.FilterColumn];
+            var filter = _filterQueries[_controls.FilterColumn];
             sb.Append($"Filter: '{_controls.FilterColumn}' ");
             root = filter(root);
         }
 
         // Apply the expression.
-        Expression<Func<Contact, string>> expression = _expressions[_controls.SortColumn];
+        var expression = _expressions[_controls.SortColumn];
         sb.Append($"Sort: '{_controls.SortColumn}' ");
 
         // Fix name.

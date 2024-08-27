@@ -11,10 +11,10 @@ public static class DatabaseUtility
     {
         // Empty to avoid logging while inserting (otherwise will flood console).
         var factory = new LoggerFactory();
-        DbContextOptionsBuilder<ContactContext> builder = new DbContextOptionsBuilder<ContactContext>(options)
+        var builder = new DbContextOptionsBuilder<ContactContext>(options)
             .UseLoggerFactory(factory);
 
-        await using ContactContext context = new(builder.Options);
+        using var context = new ContactContext(builder.Options);
         // Result is true if the database had to be created.
         if (await context.Database.EnsureCreatedAsync())
         {
