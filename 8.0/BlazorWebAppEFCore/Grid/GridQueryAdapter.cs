@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
-using BlazorWebAppEFCore.Data;
 using Microsoft.EntityFrameworkCore;
+using BlazorWebAppEFCore.Data;
 
 namespace BlazorWebAppEFCore.Grid;
 
