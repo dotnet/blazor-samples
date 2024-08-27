@@ -1,0 +1,17 @@
+@using BlazorSample.Interfaces
+@implements ILoggable
+@inject ILogger<VirginGalactic3> Logger
+
+<h2>Virgin Galactic&reg;</h2>
+
+<p>
+    Virgin Galactic is a registered trademark of 
+    <a href="https://www.virgingalactic.com/">Galactic Enterprises, LLC</a>.
+</p>
+
+@code {
+    public void Log()
+    {
+        Logger.LogInformation("Woot! I logged this call!");
+    }
+}

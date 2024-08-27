@@ -1,0 +1,53 @@
+@page "/dynamic-component-example-4"
+@using BlazorSample.Interfaces
+
+<h1><code>DynamicComponent</code> Component Example 4</h1>
+
+<p>
+    <label>
+        Select your transport:
+        <select @onchange="OnDropdownChange">
+            <option value="">Select a value</option>
+            @foreach (var entry in components.Keys)
+            {
+                <option value="@entry">@entry</option>
+            }
+        </select>
+    </label>
+</p>
+
+@if (selectedType is not null)
+{
+    <div class="border border-primary my-1 p-1">
+        <DynamicComponent Type="selectedType" @ref="dc" />
+    </div>
+}
+
+<button @onclick="LogFromLoadedComponent">Log from loaded component</button>
+
+@code {
+    private DynamicComponent? dc;
+    private readonly Dictionary<string, Type> components = new()
+        {
+            ["Rocket Lab"] = typeof(RocketLab3),
+            ["SpaceX"] = typeof(SpaceX3),
+            ["ULA"] = typeof(UnitedLaunchAlliance3),
+            ["Virgin Galactic"] = typeof(VirginGalactic3)
+        };
+    private Type? selectedType;
+
+    private void OnDropdownChange(ChangeEventArgs e)
+    {
+        if ((e.Value is string dropdownValue) && !String.IsNullOrWhiteSpace(dropdownValue))
+        {
+            selectedType = components[dropdownValue];
+        }
+        else
+        {
+            selectedType = null;
+        }
+    }
+
+    private void LogFromLoadedComponent() => (dc?.Instance as ILoggable)?.Log();
+}
+

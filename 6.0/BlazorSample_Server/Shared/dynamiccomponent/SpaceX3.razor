@@ -1,0 +1,17 @@
+@using BlazorSample.Interfaces
+@implements ILoggable
+@inject ILogger<SpaceX3> Logger
+
+<h2>SpaceX&reg;</h2>
+
+<p>
+    SpaceX is a registered trademark of 
+    <a href="https://www.spacex.com/">Space Exploration Technologies Corp.</a>
+</p>
+
+@code {
+    public void Log()
+    {
+        Logger.LogInformation("Woot! I logged this call!");
+    }
+}
