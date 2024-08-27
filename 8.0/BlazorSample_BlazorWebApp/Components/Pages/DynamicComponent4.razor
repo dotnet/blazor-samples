@@ -50,6 +50,6 @@
         }
     }
 
-    public void LogFromLoadedComponent() => (dc?.Instance as ILoggable)?.Log();
+    private void LogFromLoadedComponent() => (dc?.Instance as ILoggable)?.Log();
 }
 
