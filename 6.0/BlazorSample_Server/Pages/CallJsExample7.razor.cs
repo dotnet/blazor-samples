@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Components;
 
 namespace BlazorSample.Pages;
 
-public partial class CallJsExample7 : 
+public partial class CallJsExample7 :
     ComponentBase, IObservable<ElementReference>, IDisposable
 {
     private bool disposing;
-    private IList<IObserver<ElementReference>> subscriptions = 
+    private IList<IObserver<ElementReference>> subscriptions =
         new List<IObserver<ElementReference>>();
     private ElementReference title;
 
@@ -18,14 +18,7 @@ public partial class CallJsExample7 :
 
         foreach (var subscription in subscriptions)
         {
-            try
-            {
-                subscription.OnNext(title);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            subscription.OnNext(title);
         }
     }
 
@@ -61,7 +54,7 @@ public partial class CallJsExample7 :
 
     private class Subscription : IDisposable
     {
-        public Subscription(IObserver<ElementReference> observer, 
+        public Subscription(IObserver<ElementReference> observer,
             CallJsExample7 self)
         {
             Observer = observer;
