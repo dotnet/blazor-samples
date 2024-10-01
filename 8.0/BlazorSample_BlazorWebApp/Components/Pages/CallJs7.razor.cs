@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace BlazorSample.Components.Pages;
 
-public partial class CallJs7 :
+public partial class CallJs7 : 
     ComponentBase, IObservable<ElementReference>, IDisposable
 {
     private bool disposing;
