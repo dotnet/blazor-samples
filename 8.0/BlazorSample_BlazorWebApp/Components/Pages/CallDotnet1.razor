@@ -17,7 +17,7 @@
 @code {
     private IJSObjectReference? module;
 
-    protected async override Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
