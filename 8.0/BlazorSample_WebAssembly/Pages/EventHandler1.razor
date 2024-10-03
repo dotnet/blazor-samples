@@ -23,13 +23,7 @@
     private string headingValue = "Initial heading";
     private string checkedMessage = "Not changed yet";
 
-    private void UpdateHeading()
-    {
-        headingValue = $"New heading ({DateTime.Now})";
-    }
+    private void UpdateHeading() => headingValue = $"New heading ({DateTime.Now})";
 
-    private void CheckChanged()
-    {
-        checkedMessage = $"Last changed at {DateTime.Now}";
-    }
+    private void CheckChanged() => checkedMessage = $"Last changed {DateTime.Now}";
 }

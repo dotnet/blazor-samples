@@ -4,12 +4,7 @@ namespace MauiBlazorWeb.Web.Services;
 
 public class FormFactor : IFormFactor
 {
-    public string GetFormFactor()
-    {
-        return "Web";
-    }
-    public string GetPlatform()
-    {
-        return Environment.OSVersion.ToString();
-    }
+    public string GetFormFactor() => "Web";
+
+    public string GetPlatform() => Environment.OSVersion.ToString();
 }

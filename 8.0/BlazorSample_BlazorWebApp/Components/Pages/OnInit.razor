@@ -9,8 +9,6 @@
 @code {
     private string? message;
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() => 
         message = $"Initialized at {DateTime.Now}";
-    }
 }

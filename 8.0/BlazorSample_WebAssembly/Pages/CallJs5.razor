@@ -26,17 +26,15 @@
     private JsInteropClasses2? jsClass;
     private string? result;
 
-    protected override void OnInitialized()
-    {
-        jsClass = new(JS);
-    }
+    protected override void OnInitialized() => jsClass = new(JS);
 
     private async Task SetStock()
     {
         if (jsClass is not null)
         {
             stockSymbol = 
-                $"{(char)('A' + Random.Shared.Next(0, 26))}{(char)('A' + Random.Shared.Next(0, 26))}";
+                $"{(char)('A' + Random.Shared.Next(0, 26))}" +
+                $"{(char)('A' + Random.Shared.Next(0, 26))}";
             price = Random.Shared.Next(1, 101);
             var interopResult = await jsClass.TickerChanged(stockSymbol, price);
             result = $"Result of TickerChanged call for {stockSymbol} at " +

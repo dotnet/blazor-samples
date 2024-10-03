@@ -1,4 +1,4 @@
-﻿@page "/starship-2"
+@page "/starship-2"
 @using System.ComponentModel.DataAnnotations
 @inject ILogger<Starship2> Logger
 
@@ -22,10 +22,7 @@
 
     protected override void OnInitialized() => Model ??= new();
 
-    private void Submit()
-    {
-        Logger.LogInformation("Id = {Id}", Model?.Id);
-    }
+    private void Submit() => Logger.LogInformation("Id = {Id}", Model?.Id);
 
     public class Starship
     {

@@ -10,8 +10,5 @@
     [Parameter]
     public string? Text { get; set; }
 
-    protected override void OnParametersSet()
-    {
-        Text = Text ?? "fantastic";
-    }
+    protected override void OnParametersSet() => Text = Text ?? "fantastic";
 }

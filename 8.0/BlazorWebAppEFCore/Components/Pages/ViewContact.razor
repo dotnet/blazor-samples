@@ -1,4 +1,4 @@
-﻿@page "/View/{ContactId:int}"
+@page "/View/{ContactId:int}"
 @rendermode InteractiveServer
 @using BlazorWebAppEFCore.Grid
 @using BlazorWebAppEFCore.Data
@@ -38,6 +38,7 @@ else
         <a class="btn btn-primary" title="Go Back" href="@PageHelper.Page">
             🔙 Back to Grid
         </a>
+        <span>&nbsp;</span>
         @if (!Deleted)
         {
             <a class="btn btn-primary" href="edit/@Contact.Id" title="Edit">Edit</a>
@@ -98,7 +99,6 @@ else
             _lastContactId = ContactId;
             await LoadContactAsync();
         }
-        await base.OnParametersSetAsync();
     }
 
     // Confirm deletion.

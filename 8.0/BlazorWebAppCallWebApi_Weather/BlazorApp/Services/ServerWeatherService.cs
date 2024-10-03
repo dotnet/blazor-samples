@@ -1,7 +1,7 @@
 using BlazorApp.Client.Models;
 using BlazorApp.Client.Services;
 
-namespace BlazorApp;
+namespace BlazorApp.Services;
 
 public class ServerWeatherService : IWeatherService
 {

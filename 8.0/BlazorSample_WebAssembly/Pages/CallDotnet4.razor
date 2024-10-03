@@ -26,10 +26,8 @@
     private string? result;
     private JsInteropClasses3? jsInteropClasses;
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() => 
         jsInteropClasses = new JsInteropClasses3(JS);
-    }
 
     private async Task TriggerDotNetInstanceMethod()
     {

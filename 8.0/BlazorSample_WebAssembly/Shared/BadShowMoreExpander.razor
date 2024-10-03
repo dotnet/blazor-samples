@@ -17,8 +17,5 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    private void ShowMore()
-    {
-        InitiallyExpanded = true;
-    }
+    private void ShowMore() => InitiallyExpanded = true;
 }

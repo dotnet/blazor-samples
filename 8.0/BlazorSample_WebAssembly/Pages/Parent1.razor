@@ -13,8 +13,5 @@
 @code {
     private int year = 1979;
 
-    private void UpdateYear()
-    {
-        year = Random.Shared.Next(1950, 2021);
-    }
+    private void UpdateYear() => year = Random.Shared.Next(1950, 2021);
 }

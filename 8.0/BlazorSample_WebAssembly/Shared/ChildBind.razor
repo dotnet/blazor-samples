@@ -15,8 +15,6 @@
     [Parameter]
     public EventCallback<int> YearChanged { get; set; }
 
-    private async Task UpdateYearFromChild()
-    {
+    private async Task UpdateYearFromChild() => 
         await YearChanged.InvokeAsync(Random.Shared.Next(1950, 2021));
-    }
 }

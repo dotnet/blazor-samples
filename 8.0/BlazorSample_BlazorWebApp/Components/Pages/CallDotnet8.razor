@@ -24,7 +24,7 @@
     {
         if (firstRender)
         {
-            module = await JS.InvokeAsync<IJSObjectReference>("import",
+            module = await JS.InvokeAsync<IJSObjectReference>("import", 
                 "./Components/Pages/CallDotnet8.razor.js");
 
             await module.InvokeVoidAsync("addHandlers");
@@ -32,11 +32,9 @@
     }
 
     [JSInvokable]
-    public static Task<string> ReceiveByteArray(byte[] receivedBytes)
-    {
-        return Task.FromResult(
-            Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length));
-    }
+    public static Task<string> ReceiveByteArray(byte[] receivedBytes) => 
+        Task.FromResult(Encoding.UTF8.GetString(receivedBytes, 0, 
+            receivedBytes.Length));
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {

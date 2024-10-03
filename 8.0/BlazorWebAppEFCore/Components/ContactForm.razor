@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Components.Forms;
+@using Microsoft.AspNetCore.Components.Forms;
 
 <h1>@Mode Contact</h1>
 
@@ -69,12 +69,10 @@
             </label>
         </p>
         <br />
-        <button type="button" disabled="@Busy" class="btn btn-warning"
-                @onclick="CancelAsync">
+        <button type="button" disabled="@Busy" class="btn btn-warning" @onclick="CancelAsync">
             Cancel
         </button>&nbsp;
-        <button disabled="@Busy" type="submit"
-                class="btn btn-primary">
+        <button disabled="@Busy" type="submit" class="btn btn-primary">
             Submit
         </button>
     </EditForm>
@@ -109,15 +107,9 @@
     private string Mode => IsAdd ? "Add" : "Edit";
 
     // Ask to cancel.
-    private Task CancelAsync()
-    {
-        return CancelRequest.InvokeAsync(null);
-    }
+    private async Task CancelAsync() => await CancelRequest.InvokeAsync(null);
 
     // Handle form submission request.
     // isValid: True when field validation passed.
-    private Task HandleSubmitAsync(bool isValid)
-    {
-        return ValidationResult.InvokeAsync(isValid);
-    }
+    private async Task HandleSubmitAsync(bool isValid) => await ValidationResult.InvokeAsync(isValid);
 }

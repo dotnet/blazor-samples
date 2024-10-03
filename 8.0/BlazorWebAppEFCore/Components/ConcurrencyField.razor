@@ -1,4 +1,4 @@
-﻿@typeparam TModel
+@typeparam TModel
 
 @if (Show)
 {
@@ -39,9 +39,9 @@
         {
             property = Property(DbModel);
 
-            if (Model is not null)
+            if (Model is not null && property is not null)
             {
-                IsDelta = !Property(Model).Equals(Property(DbModel));
+                IsDelta = !Property(Model).Equals(property);
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @page "/{Page:int}"
 @rendermode InteractiveServer
 @using BlazorWebAppEFCore.Grid
@@ -144,7 +144,6 @@
                 return;
             }
         }
-        base.OnAfterRender(firstRender);
     }
 
     // Triggered for any paging update.
@@ -156,7 +155,6 @@
             _lastPage = Page;
             await ReloadAsync();
         }
-        await base.OnParametersSetAsync();
     }
 
     // Used to toggle the grid sort. Will either switch to "ascending" on a new

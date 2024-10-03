@@ -1,4 +1,4 @@
-﻿@page "/chat"
+@page "/chat"
 @rendermode InteractiveWebAssembly
 @using Microsoft.AspNetCore.SignalR.Client
 @inject NavigationManager Navigation
@@ -31,7 +31,7 @@
 
 @code {
     private HubConnection? hubConnection;
-    private List<string> messages = new List<string>();
+    private List<string> messages = [];
     private string? userInput;
     private string? messageInput;
 

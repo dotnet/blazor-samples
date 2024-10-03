@@ -32,11 +32,9 @@
     }
 
     [JSInvokable]
-    public static Task<string> ReceiveByteArray(byte[] receivedBytes)
-    {
-        return Task.FromResult(
+    public static Task<string> ReceiveByteArray(byte[] receivedBytes) => 
+        Task.FromResult(
             Encoding.UTF8.GetString(receivedBytes, 0, receivedBytes.Length));
-    }
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {

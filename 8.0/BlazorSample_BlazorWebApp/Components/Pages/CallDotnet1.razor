@@ -29,10 +29,8 @@
     }
 
     [JSInvokable]
-    public static Task<int[]> ReturnArrayAsync()
-    {
-        return Task.FromResult(new int[] { 11, 12, 13 });
-    }
+    public static Task<int[]> ReturnArrayAsync() =>
+        Task.FromResult(new int[] { 11, 12, 13 });
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {

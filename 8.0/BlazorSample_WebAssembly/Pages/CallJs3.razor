@@ -20,10 +20,7 @@
     private decimal price;
     private JsInteropClasses1? jsClass;
 
-    protected override void OnInitialized()
-    {
-        jsClass = new(JS);
-    }
+    protected override void OnInitialized() => jsClass = new(JS);
 
     private async Task SetStock()
     {

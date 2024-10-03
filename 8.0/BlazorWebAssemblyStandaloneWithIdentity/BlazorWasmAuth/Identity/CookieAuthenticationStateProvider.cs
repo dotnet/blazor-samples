@@ -10,7 +10,11 @@ namespace BlazorWasmAuth.Identity
     /// <summary>
     /// Handles state for cookie-based auth.
     /// </summary>
-    public class CookieAuthenticationStateProvider : AuthenticationStateProvider, IAccountManagement
+    /// <remarks>
+    /// Create a new instance of the auth provider.
+    /// </remarks>
+    /// <param name="httpClientFactory">Factory to retrieve auth client.</param>
+    public class CookieAuthenticationStateProvider(IHttpClientFactory httpClientFactory) : AuthenticationStateProvider, IAccountManagement
     {
         /// <summary>
         /// Map the JavaScript-formatted properties to C#-formatted classes.
@@ -24,25 +28,17 @@ namespace BlazorWasmAuth.Identity
         /// <summary>
         /// Special auth client.
         /// </summary>
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient httpClient = httpClientFactory.CreateClient("Auth");
 
         /// <summary>
         /// Authentication state.
         /// </summary>
-        private bool _authenticated = false;
+        private bool authenticated = false;
 
         /// <summary>
         /// Default principal for anonymous (not authenticated) users.
         /// </summary>
-        private readonly ClaimsPrincipal Unauthenticated =
-            new(new ClaimsIdentity());
-
-        /// <summary>
-        /// Create a new instance of the auth provider.
-        /// </summary>
-        /// <param name="httpClientFactory">Factory to retrieve auth client.</param>
-        public CookieAuthenticationStateProvider(IHttpClientFactory httpClientFactory)
-            => _httpClient = httpClientFactory.CreateClient("Auth");
+        private readonly ClaimsPrincipal unauthenticated = new(new ClaimsIdentity());
 
         /// <summary>
         /// Register a new user.
@@ -53,12 +49,12 @@ namespace BlazorWasmAuth.Identity
         /// </returns>
         public async Task<FormResult> RegisterAsync(string email, string password)
         {
-            string[] defaultDetail = ["An unknown error prevented registration from succeeding."];
+            string[] defaultDetail = [ "An unknown error prevented registration from succeeding." ];
 
             try
             {
                 // make the request
-                var result = await _httpClient.PostAsJsonAsync(
+                var result = await httpClient.PostAsJsonAsync(
                     "register", new
                     {
                         email,
@@ -120,7 +116,7 @@ namespace BlazorWasmAuth.Identity
             try
             {
                 // login with cookies
-                var result = await _httpClient.PostAsJsonAsync(
+                var result = await httpClient.PostAsJsonAsync(
                     "login?useCookies=true", new
                     {
                         email,
@@ -143,7 +139,7 @@ namespace BlazorWasmAuth.Identity
             return new FormResult
             {
                 Succeeded = false,
-                ErrorList = ["Invalid email and/or password."]
+                ErrorList = [ "Invalid email and/or password." ]
             };
         }
 
@@ -157,15 +153,15 @@ namespace BlazorWasmAuth.Identity
         /// <returns>The authentication state asynchronous request.</returns>
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            _authenticated = false;
+            authenticated = false;
 
             // default to not authenticated
-            var user = Unauthenticated;
+            var user = unauthenticated;
 
             try
             {
                 // the user info endpoint is secured, so if the user isn't logged in this will fail
-                var userResponse = await _httpClient.GetAsync("manage/info");
+                var userResponse = await httpClient.GetAsync("manage/info");
 
                 // throw if user info wasn't retrieved
                 userResponse.EnsureSuccessStatusCode();
@@ -176,11 +172,11 @@ namespace BlazorWasmAuth.Identity
 
                 if (userInfo != null)
                 {
-                    // in our system name and email are the same
+                    // in this example app, name and email are the same
                     var claims = new List<Claim>
                     {
                         new(ClaimTypes.Name, userInfo.Email),
-                        new(ClaimTypes.Email, userInfo.Email)
+                        new(ClaimTypes.Email, userInfo.Email),
                     };
 
                     // add any additional claims
@@ -188,8 +184,8 @@ namespace BlazorWasmAuth.Identity
                         userInfo.Claims.Where(c => c.Key != ClaimTypes.Name && c.Key != ClaimTypes.Email)
                             .Select(c => new Claim(c.Key, c.Value)));
 
-                    // tap the roles endpoint for the user's roles
-                    var rolesResponse = await _httpClient.GetAsync("roles");
+                    // request the roles endpoint for the user's roles
+                    var rolesResponse = await httpClient.GetAsync("roles");
 
                     // throw if request fails
                     rolesResponse.EnsureSuccessStatusCode();
@@ -200,7 +196,7 @@ namespace BlazorWasmAuth.Identity
                     // deserialize the roles string into an array
                     var roles = JsonSerializer.Deserialize<RoleClaim[]>(rolesJson, jsonSerializerOptions);
 
-                    // if there are roles, add them to the claims collection
+                    // add any roles to the claims collection
                     if (roles?.Length > 0)
                     {
                         foreach (var role in roles)
@@ -215,7 +211,7 @@ namespace BlazorWasmAuth.Identity
                     // set the principal
                     var id = new ClaimsIdentity(claims, nameof(CookieAuthenticationStateProvider));
                     user = new ClaimsPrincipal(id);
-                    _authenticated = true;
+                    authenticated = true;
                 }
             }
             catch { }
@@ -228,14 +224,14 @@ namespace BlazorWasmAuth.Identity
         {
             const string Empty = "{}";
             var emptyContent = new StringContent(Empty, Encoding.UTF8, "application/json");
-            await _httpClient.PostAsync("logout", emptyContent);
+            await httpClient.PostAsync("logout", emptyContent);
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
 
         public async Task<bool> CheckAuthenticatedAsync()
         {
             await GetAuthenticationStateAsync();
-            return _authenticated;
+            return authenticated;
         }
 
         public class RoleClaim

@@ -1,6 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using static CustomLoggerConfiguration;
+using static BlazorWebAssemblyScopesLogger.CustomLoggerConfiguration;
+
+namespace BlazorWebAssemblyScopesLogger;
 
 public sealed class CustomLogger : ILogger
 {
@@ -16,13 +17,9 @@ public sealed class CustomLogger : ILogger
         Func<CustomLoggerConfiguration> getCurrentConfig) =>
         (this.provider, this.name, this.getCurrentConfig) = (provider, name, getCurrentConfig);
 
-    public IDisposable BeginScope<TState>(TState state) where TState : notnull
-    {
-        return provider.ScopeProvider.Push(state);
-    }
+    public IDisposable BeginScope<TState>(TState state) where TState : notnull => provider.ScopeProvider.Push(state);
 
-    public bool IsEnabled(LogLevel logLevel) =>
-        getCurrentConfig().LogLevels.ContainsKey(logLevel);
+    public bool IsEnabled(LogLevel logLevel) => getCurrentConfig().LogLevels.ContainsKey(logLevel);
 
     public void Log<TState>(
         LogLevel logLevel,
@@ -45,13 +42,10 @@ public sealed class CustomLogger : ILogger
             scopes.Clear();
             var scopeProvider = provider.ScopeProvider;
 
-            if (scopeProvider != null)
-            {
-                scopeProvider.ForEachScope((scope, stringBuilder) =>
+            scopeProvider?.ForEachScope((scope, stringBuilder) =>
                 {
                     stringBuilder.Append(" => ").Append(scope);
                 }, scopes);
-            }
 
             switch (config.LogLevels[logLevel])
             {

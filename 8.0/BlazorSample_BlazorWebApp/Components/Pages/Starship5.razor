@@ -1,4 +1,4 @@
-﻿@page "/starship-5"
+@page "/starship-5"
 @using System.ComponentModel.DataAnnotations
 @inject ILogger<Starship5> Logger
 
@@ -40,10 +40,7 @@
         editContext = new(Model);
     }
 
-    private void Submit()
-    {
-        Logger.LogInformation("Submit called: Processing the form");
-    }
+    private void Submit() => Logger.LogInformation("Submit: Processing form");
 
     private class Starship
     {

@@ -1,5 +1,7 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
+
+namespace BlazorWebAssemblyScopesLogger;
 
 [ProviderAlias("CustomLog")]
 public sealed class CustomLoggerProvider : IDisposable, ILoggerProvider, ISupportExternalScope
@@ -10,10 +12,7 @@ public sealed class CustomLoggerProvider : IDisposable, ILoggerProvider, ISuppor
         new(StringComparer.OrdinalIgnoreCase);
     private IExternalScopeProvider scopeProvider = default!;
 
-    void ISupportExternalScope.SetScopeProvider(IExternalScopeProvider scopeProvider)
-    {
-        this.scopeProvider = scopeProvider;
-    }
+    void ISupportExternalScope.SetScopeProvider(IExternalScopeProvider scopeProvider) => this.scopeProvider = scopeProvider;
 
     public CustomLoggerProvider(
         IOptionsMonitor<CustomLoggerConfiguration> config)
@@ -31,12 +30,7 @@ public sealed class CustomLoggerProvider : IDisposable, ILoggerProvider, ISuppor
     {
         get
         {
-            if (scopeProvider is null)
-            {
-                scopeProvider = new LoggerExternalScopeProvider();
-            }
-                
-            return scopeProvider;
+            return scopeProvider ??= new LoggerExternalScopeProvider();
         }
     }
 

@@ -14,8 +14,7 @@ public sealed class ContactContext : DbContext
 
     // Inject options.
     // options: The DbContextOptions{ContactContext} for the context.
-    public ContactContext(DbContextOptions<ContactContext> options)
-        : base(options) =>
+    public ContactContext(DbContextOptions<ContactContext> options) : base(options) =>
         Debug.WriteLine($"{ContextId} context created.");
 
     // List of Contact.
