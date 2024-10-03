@@ -31,7 +31,7 @@
         if (mapModule is not null && mapInstance is not null)
         {
             await mapModule.InvokeVoidAsync("setMapCenter", mapInstance, 
-                latitude, longitude).AsTask();
+                latitude, longitude);
         }
     }
 
