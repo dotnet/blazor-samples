@@ -19,13 +19,7 @@
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
-    protected override void OnInitialized()
-    {
-        expanded = InitiallyExpanded;
-    }
+    protected override void OnInitialized() => expanded = InitiallyExpanded;
 
-    private void Expand()
-    {
-        expanded = true;
-    }
+    private void Expand() => expanded = true;
 }

@@ -15,11 +15,8 @@
 </div>
 
 @code {
-    private async Task<Stream> GetImageStreamAsync()
-    {
-        return await Http.GetStreamAsync(
-            "https://avatars.githubusercontent.com/u/9141961");
-    }
+    private async Task<Stream> GetImageStreamAsync() => 
+        await Http.GetStreamAsync("https://avatars.githubusercontent.com/u/9141961");
 
     private async Task SetImageAsync()
     {

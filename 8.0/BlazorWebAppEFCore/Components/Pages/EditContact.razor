@@ -1,4 +1,4 @@
-﻿@page "/edit/{ContactId:int}"
+@page "/edit/{ContactId:int}"
 @rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore;
 @using BlazorWebAppEFCore.Grid
@@ -109,8 +109,6 @@ else
         {
             Busy = false;
         }
-
-        await base.OnInitializedAsync();
     }
     // </snippet2>
 
@@ -193,10 +191,5 @@ else
     /// <summary>
     /// Implement <see cref="IDisposable"/>.
     /// </summary>
-    // <snippet1>
-    public void Dispose()
-    {
-        Context?.Dispose();
-    }
-    // </snippet1>
+    public void Dispose() => Context?.Dispose();
 }

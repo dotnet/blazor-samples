@@ -13,8 +13,7 @@ public class GridControls(IPageHelper pageHelper) : IContactFilters
     public bool ShowFirstNameFirst { get; set; }
 
     // Column to sort by.
-    public ContactFilterColumns SortColumn { get; set; }
-        = ContactFilterColumns.Name;
+    public ContactFilterColumns SortColumn { get; set; } = ContactFilterColumns.Name;
 
     // True when sorting ascending, otherwise sort descending.
     public bool SortAscending { get; set; } = true;

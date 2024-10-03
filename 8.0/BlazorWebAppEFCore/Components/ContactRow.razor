@@ -1,4 +1,4 @@
-﻿@using BlazorWebAppEFCore.Grid
+@using BlazorWebAppEFCore.Grid
 @inject IContactFilters Filters
 
 @if (CurrentContact is not null)
@@ -69,9 +69,8 @@
     public GridWrapper? Wrapper { get; set; }
 
     // Returns True if conditions for delete are met.
-    private bool CanDelete => !DeleteConfirmation &&
-    (Wrapper?.DeleteRequestId == 0 ||
-    Wrapper?.DeleteRequestId == CurrentContact?.Id);
+    private bool CanDelete =>
+        !DeleteConfirmation && (Wrapper?.DeleteRequestId == 0 || Wrapper?.DeleteRequestId == CurrentContact?.Id);
 
     // Navigate to view.
     private string ViewLink => $"View/{CurrentContact?.Id}";
@@ -109,13 +108,11 @@
     }
 
     // Deletes the Contact.
-    private Task DeleteAsync()
-    {
-        return DeleteContact.InvokeAsync(this);
-    }
+    private Task DeleteAsync() => DeleteContact.InvokeAsync(this);
 
     /// Correctly formatted name.
-    private string Name => Filters.ShowFirstNameFirst ?
-    $"{CurrentContact?.FirstName} {CurrentContact?.LastName}" :
-    $"{CurrentContact?.LastName}, {CurrentContact?.FirstName}";
+    private string Name =>
+        Filters.ShowFirstNameFirst ?
+            $"{CurrentContact?.FirstName} {CurrentContact?.LastName}" :
+            $"{CurrentContact?.LastName}, {CurrentContact?.FirstName}";
 }

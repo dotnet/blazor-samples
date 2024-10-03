@@ -1,4 +1,4 @@
-﻿@page "/starship-6"
+@page "/starship-6"
 @inject ILogger<Starship6> Logger
 
 <EditForm Model="Model1" OnSubmit="Submit1" FormName="Holodeck1">
@@ -38,15 +38,9 @@
         Model2 ??= new();
     }
 
-    private void Submit1()
-    {
-        Logger.LogInformation("Submit1: Id = {Id}", Model1?.Id);
-    }
+    private void Submit1() => Logger.LogInformation("Submit1: Id={Id}", Model1?.Id);
 
-    private void Submit2()
-    {
-        Logger.LogInformation("Submit2: Id = {Id}", Model2?.Id);
-    }
+    private void Submit2() => Logger.LogInformation("Submit2: Id={Id}", Model2?.Id);
 
     public class Holodeck
     {

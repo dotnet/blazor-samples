@@ -1,4 +1,4 @@
-﻿@page "/starship-13"
+@page "/starship-13"
 @using System.ComponentModel.DataAnnotations
 @inject ILogger<Starship13> Logger
 
@@ -29,10 +29,7 @@
         editContext.SetFieldCssClassProvider(new CustomFieldClassProvider());
     }
 
-    private void Submit()
-    {
-        Logger.LogInformation("Submit called: Processing the form");
-    }
+    private void Submit() => Logger.LogInformation("Submit: Processing form");
 
     public class Starship
     {

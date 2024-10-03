@@ -31,8 +31,6 @@
             105, 118, 101, 114, 115, 101, 10, 10,
         };
 
-    private async Task ConvertArray()
-    {
+    private async Task ConvertArray() => 
         text = new(await JS.InvokeAsync<string>("convertArray", quoteArray));
-    }
 }

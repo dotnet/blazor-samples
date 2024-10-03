@@ -20,8 +20,6 @@
 @code {
     private string heading = "Select a button to learn its position";
 
-    private void UpdateHeading(MouseEventArgs e, int buttonNumber)
-    {
+    private void UpdateHeading(MouseEventArgs e, int buttonNumber) => 
         heading = $"Selected #{buttonNumber} at {e.ClientX}:{e.ClientY}";
-    }
 }

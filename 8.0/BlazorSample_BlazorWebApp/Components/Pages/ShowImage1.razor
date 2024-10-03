@@ -1,4 +1,4 @@
-﻿@page "/show-image-1"
+@page "/show-image-1"
 
 <PageTitle>Show Image 1</PageTitle>
 
@@ -22,8 +22,5 @@
 @code {
     private string? imageSource;
 
-    private void ShowImage(int id)
-    {
-        imageSource = $"images/image{id}.png";
-    }
+    private void ShowImage(int id) => imageSource = $"images/image{id}.png";
 }

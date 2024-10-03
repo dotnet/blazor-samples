@@ -1,4 +1,4 @@
-﻿@page "/parameter-2"
+@page "/parameter-2"
 
 <PageTitle>Parameter 2</PageTitle>
 
@@ -16,10 +16,7 @@
     private string title = "From Parent field";
     private PanelData panelData = new();
 
-    private string GetTitle()
-    {
-        return "From Parent method";
-    }
+    private string GetTitle() => "From Parent method";
 
     private class PanelData
     {

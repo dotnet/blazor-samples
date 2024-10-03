@@ -22,21 +22,12 @@ public partial class SurveyPrompt :
         subscription = Parent?.Subscribe(this);
     }
 
-    public void OnCompleted()
-    {
-        subscription = null;
-    }
+    public void OnCompleted() => subscription = null;
 
-    public void OnError(Exception error)
-    {
-        subscription = null;
-    }
+    public void OnError(Exception error) => subscription = null;
 
-    public void  OnNext(ElementReference value)
-    {
-        _ = (JS?.InvokeAsync<object>(
-            "setElementClass", [value, "red"]));
-    }
+    public void OnNext(ElementReference value) =>
+        _ = (JS?.InvokeAsync<object>("setElementClass", [value, "red"]));
 
     public void Dispose()
     {

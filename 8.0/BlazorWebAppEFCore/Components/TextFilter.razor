@@ -1,17 +1,22 @@
-﻿@using BlazorWebAppEFCore.Grid
+@using BlazorWebAppEFCore.Grid
 @using System.Timers;
 @inject IContactFilters Filters
 @implements IDisposable
 
-Filter by:
-<input type="text" autofocus @bind-value="FilterText" @bind-value:event="oninput" />
+<label>
+    Filter by:
+    <input type="text" autofocus @bind-value="FilterText" @bind-value:event="oninput" />
+</label>
 <button class="btn btn-danger" @onclick="@(() => FilterText = string.Empty)">Clear</button>
-Filter on: <select @bind="SelectedColumn">
-    @foreach (ContactFilterColumns column in (ContactFilterColumns[])Enum.GetValues(typeof(ContactFilterColumns)))
-    {
-        <option @attributes="Selected(column)" value="@((int)column)">@(column.ToString())</option>
-    }
-</select>
+<label>
+    Filter on:
+    <select @bind="SelectedColumn">
+        @foreach (ContactFilterColumns column in (ContactFilterColumns[])Enum.GetValues(typeof(ContactFilterColumns)))
+        {
+            <option @attributes="Selected(column)" value="@((int)column)">@(column.ToString())</option>
+        }
+    </select>
+</label>
 
 @code {
     // Get a reference to the global GridWrapper.
@@ -32,8 +37,6 @@ Filter on: <select @bind="SelectedColumn">
 
         // Grab column to filter on.
         selectedColumn = (int)(Filters.FilterColumn);
-
-        base.OnInitialized();
     }
 
     // Sets selected attribute.
@@ -45,6 +48,7 @@ Filter on: <select @bind="SelectedColumn">
         {
             return new[] { new KeyValuePair<string, object>("selected", (object)"selected") };
         }
+
         return Enumerable.Empty<KeyValuePair<string, object>>();
     }
 

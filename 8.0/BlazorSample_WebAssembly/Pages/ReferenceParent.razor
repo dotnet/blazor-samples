@@ -1,4 +1,4 @@
-﻿@page "/reference-parent"
+@page "/reference-parent"
 
 <div>
     <button @onclick="@(() => childComponent1!.ChildMethod(5))">
@@ -22,8 +22,5 @@
     private ReferenceChild? childComponent1;
     private ReferenceChild? childComponent2;
 
-    private void CallChildMethod()
-    {
-        childComponent2!.ChildMethod(5);
-    }
+    private void CallChildMethod() => childComponent2!.ChildMethod(5);
 }

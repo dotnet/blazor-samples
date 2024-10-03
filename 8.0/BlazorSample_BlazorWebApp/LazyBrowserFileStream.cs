@@ -25,10 +25,7 @@ internal sealed class LazyBrowserFileStream(IBrowserFile file, int maxAllowedSiz
         set => throw new NotSupportedException();
     }
 
-    public override void Flush()
-    {
-        underlyingStream?.Flush();
-    }
+    public override void Flush() => underlyingStream?.Flush();
 
     public override Task<int> ReadAsync(byte[] buffer, int offset, int count, 
         CancellationToken cancellationToken)
@@ -46,10 +43,8 @@ internal sealed class LazyBrowserFileStream(IBrowserFile file, int maxAllowedSiz
     }
 
     [MemberNotNull(nameof(underlyingStream))]
-    private void EnsureStreamIsOpen()
-    {
+    private void EnsureStreamIsOpen() => 
         underlyingStream ??= file.OpenReadStream(maxAllowedSize);
-    }
 
     protected override void Dispose(bool disposing)
     {

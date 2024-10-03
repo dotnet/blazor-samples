@@ -1,4 +1,4 @@
-﻿@page "/starship-14"
+@page "/starship-14"
 @implements IDisposable
 @inject ILogger<Starship14> Logger
 
@@ -47,10 +47,7 @@
         }
     }
 
-    private void Submit()
-    {
-        Logger.LogInformation("Submit called: Processing the form");
-    }
+    private void Submit() => Logger.LogInformation("Submit: Processing form");
 
     public void Dispose()
     {

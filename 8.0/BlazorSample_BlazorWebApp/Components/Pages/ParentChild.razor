@@ -13,8 +13,6 @@
 @code {
     private string? message;
 
-    private void ShowMessage(MouseEventArgs e)
-    {
+    private void ShowMessage(MouseEventArgs e) => 
         message = $"Blaze a new trail with Blazor! ({e.ScreenX}:{e.ScreenY})";
-    }
 }

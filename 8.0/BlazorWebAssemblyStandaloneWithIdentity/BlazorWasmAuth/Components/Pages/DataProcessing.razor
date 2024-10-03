@@ -70,15 +70,9 @@
         Model2 ??= new();
     }
 
-    private async Task Submit1()
-    {
-        result1 = await ProcessData("data-processing-1", Model1!);
-    }
+    private async Task Submit1() => result1 = await ProcessData("data-processing-1", Model1!);
 
-    private async Task Submit2()
-    {
-        result2 = await ProcessData("data-processing-2", Model2!);
-    }
+    private async Task Submit2() => result2 = await ProcessData("data-processing-2", Model2!);
 
     private async Task<string> ProcessData(string endpoint, FormModel model)
     {

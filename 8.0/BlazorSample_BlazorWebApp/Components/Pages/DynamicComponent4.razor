@@ -40,7 +40,8 @@
 
     private void OnDropdownChange(ChangeEventArgs e)
     {
-        if ((e.Value is string dropdownValue) && !String.IsNullOrWhiteSpace(dropdownValue))
+        if ((e.Value is string dropdownValue) && 
+            !String.IsNullOrWhiteSpace(dropdownValue))
         {
             selectedType = components[dropdownValue];
         }

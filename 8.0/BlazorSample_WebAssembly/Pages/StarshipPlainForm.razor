@@ -1,4 +1,4 @@
-﻿@page "/starship-plain-form"
+@page "/starship-plain-form"
 @inject ILogger<StarshipPlainForm> Logger
 
 <form method="post" @onsubmit="Submit" @formname="starship-plain-form">
@@ -20,10 +20,7 @@
 
     protected override void OnInitialized() => Model ??= new();
 
-    private void Submit()
-    {
-        Logger.LogInformation("Id = {Id}", Model?.Id);
-    }
+    private void Submit() => Logger.LogInformation("Id = {Id}", Model?.Id);
 
     public class Starship
     {
