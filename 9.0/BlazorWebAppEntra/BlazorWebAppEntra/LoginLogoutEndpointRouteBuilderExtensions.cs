@@ -9,7 +9,7 @@ internal static class LoginLogoutEndpointRouteBuilderExtensions
 {
     internal static IEndpointConventionBuilder MapLoginAndLogout(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("");
+        var group = endpoints.MapGroup(string.Empty);
 
         group.MapGet("/login", (string? returnUrl) => TypedResults.Challenge(GetAuthProperties(returnUrl)))
             .AllowAnonymous();
