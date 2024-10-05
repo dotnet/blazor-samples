@@ -18,8 +18,6 @@
 @code {
     private string? mousePointerMessage;
 
-    private void ReportPointerLocation(MouseEventArgs e)
-    {
+    private void ReportPointerLocation(MouseEventArgs e) => 
         mousePointerMessage = $"Mouse coordinates: {e.ScreenX}:{e.ScreenY}";
-    }
 }

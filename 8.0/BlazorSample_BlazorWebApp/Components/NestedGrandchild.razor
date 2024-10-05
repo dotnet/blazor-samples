@@ -15,9 +15,7 @@
     [Parameter]
     public EventCallback<string> GrandchildMessageChanged { get; set; }
 
-    private async Task ChangeValue()
-    {
+    private async Task ChangeValue() => 
         await GrandchildMessageChanged.InvokeAsync(
             $"Set in Grandchild {DateTime.Now}");
-    }
 }

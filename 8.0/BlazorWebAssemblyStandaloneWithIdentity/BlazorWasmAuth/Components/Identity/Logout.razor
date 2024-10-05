@@ -1,4 +1,4 @@
-﻿@page "/logout"
+@page "/logout"
 @using BlazorWasmAuth.Identity
 @inject IAccountManagement Acct
 
@@ -24,7 +24,5 @@
         {
             await Acct.LogoutAsync();
         }
-
-        await base.OnInitializedAsync();
     }
 }

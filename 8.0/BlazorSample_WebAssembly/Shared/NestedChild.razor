@@ -18,9 +18,6 @@
     [Parameter]
     public EventCallback<string?> ChildMessageChanged { get; set; }
 
-    private async Task ChangeValue()
-    {
-        await ChildMessageChanged.InvokeAsync(
-            $"Set in Child {DateTime.Now}");
-    }
+    private async Task ChangeValue() => 
+        await ChildMessageChanged.InvokeAsync($"Set in Child {DateTime.Now}");
 }

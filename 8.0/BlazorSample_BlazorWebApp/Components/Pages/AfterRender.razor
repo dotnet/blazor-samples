@@ -12,13 +12,8 @@
 <p>Study logged messages in the console.</p>
 
 @code {
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Logger.LogInformation("OnAfterRender: firstRender = {FirstRender}", firstRender);
-    }
+    protected override void OnAfterRender(bool firstRender) =>
+        Logger.LogInformation("firstRender = {FirstRender}", firstRender);
 
-    private void HandleClick()
-    {
-        Logger.LogInformation("HandleClick called");
-    }
+    private void HandleClick() => Logger.LogInformation("HandleClick called");
 }

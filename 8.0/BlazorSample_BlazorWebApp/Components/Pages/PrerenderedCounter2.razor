@@ -42,8 +42,5 @@
 
     void IDisposable.Dispose() => persistingSubscription.Dispose();
 
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+    private void IncrementCount() => currentCount++;
 }

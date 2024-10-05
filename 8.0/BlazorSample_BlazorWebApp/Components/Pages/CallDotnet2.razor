@@ -27,15 +27,11 @@
     private string? result;
     private DotNetObjectReference<CallDotnet2>? objRef;
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() =>
         objRef = DotNetObjectReference.Create(this);
-    }
 
-    public async Task TriggerDotNetInstanceMethod()
-    {
+    public async Task TriggerDotNetInstanceMethod() =>
         result = await JS.InvokeAsync<string>("sayHello1", objRef);
-    }
 
     [JSInvokable]
     public string GetHelloMessage() => $"Hello, {name}!";

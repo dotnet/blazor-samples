@@ -61,11 +61,9 @@
     private ComponentMetadata? selectedComponent;
     private bool windowSeat;
 
-    private void HandleWindowSeatChanged()
-    {
+    private void HandleWindowSeatChanged() =>
         components[nameof(RocketLabWithWindowSeat)]
             .Parameters[nameof(RocketLabWithWindowSeat.WindowSeat)] = windowSeat;
-    }
 
     private void OnDropdownChange(ChangeEventArgs e)
     {

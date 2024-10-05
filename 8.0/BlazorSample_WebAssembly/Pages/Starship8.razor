@@ -1,4 +1,4 @@
-﻿@page "/starship-8"
+@page "/starship-8"
 @implements IDisposable
 @inject ILogger<Starship8> Logger
 
@@ -53,10 +53,7 @@
         }
     }
 
-    private void Submit()
-    {
-        Logger.LogInformation("Submit called: Processing the form");
-    }
+    private void Submit() => Logger.LogInformation("Submit: Processing form");
 
     public class Holodeck
     {

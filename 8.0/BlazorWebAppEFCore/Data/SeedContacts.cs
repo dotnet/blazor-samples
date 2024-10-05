@@ -4,7 +4,7 @@ namespace BlazorWebAppEFCore.Data;
 public class SeedContacts
 {
     // Use these to make names.
-    private readonly string[] _gems = [
+    private readonly string[] gems = [
         "Diamond",
         "Crystal",
         "Morion",
@@ -35,7 +35,7 @@ public class SeedContacts
         "Lilac"];
 
     // Combined with things for last names.
-    private readonly string[] _colors =
+    private readonly string[] colors =
     [
         "Blue",
         "Aqua",
@@ -57,7 +57,7 @@ public class SeedContacts
     ];
 
     // Also helpful for names.
-    private readonly string[] _things =
+    private readonly string[] things =
     [
         "beard",
         "finger",
@@ -76,7 +76,7 @@ public class SeedContacts
     ];
 
     // Street names.
-    private readonly string[] _streets =
+    private readonly string[] streets =
     [
         "Broad",
         "Wide",
@@ -89,7 +89,7 @@ public class SeedContacts
     ];
 
     // Types of streets.
-    private readonly string[] _streetTypes =
+    private readonly string[] streetTypes =
     [
         "Street",
         "Lane",
@@ -100,7 +100,7 @@ public class SeedContacts
     ];
 
     // More uniqueness.
-    private readonly string[] _directions =
+    private readonly string[] directions =
     [
         "N",
         "NE",
@@ -113,7 +113,7 @@ public class SeedContacts
     ];
 
     // A sampling of cities.
-    private readonly string[] _cities =
+    private readonly string[] cities =
     [
         "Austin",
         "Denver",
@@ -136,7 +136,7 @@ public class SeedContacts
     ];
 
     // State list.
-    private readonly string[] _states =
+    private readonly string[] states =
     [
         "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL",
         "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA",
@@ -161,13 +161,13 @@ public class SeedContacts
     {
         var contact = new Contact
         {
-            FirstName = RandomOne(_gems),
-            LastName = $"{RandomOne(_colors)}{RandomOne(_things)}",
+            FirstName = RandomOne(gems),
+            LastName = $"{RandomOne(colors)}{RandomOne(things)}",
             Phone = $"({Random.Shared.Next(100, 999)})-555-{Random.Shared.Next(1000, 9999)}",
             Street = $"{Random.Shared.Next(1, 99999)} {Random.Shared.Next(1, 999)}" +
-            $" {RandomOne(_streets)} {RandomOne(_streetTypes)} {RandomOne(_directions)}",
-            City = RandomOne(_cities),
-            State = RandomOne(_states),
+            $" {RandomOne(streets)} {RandomOne(streetTypes)} {RandomOne(directions)}",
+            City = RandomOne(cities),
+            State = RandomOne(states),
             ZipCode = $"{Random.Shared.Next(10000, 99999)}"
         };
 

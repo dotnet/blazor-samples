@@ -15,8 +15,5 @@
 @code {
     private string parentMessage = "Initial value set in Parent";
 
-    private void ChangeValue()
-    {
-        parentMessage = $"Set in Parent {DateTime.Now}";
-    }
+    private void ChangeValue() => parentMessage = $"Set in Parent {DateTime.Now}";
 }

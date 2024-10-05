@@ -1,4 +1,4 @@
-﻿@using BlazorWebAppEFCore.Grid
+@using BlazorWebAppEFCore.Grid
 @inject IContactFilters Filters
 
 <button class="btn btn-primary"
@@ -10,9 +10,7 @@
 
 @code {
     // Button text based on current state.
-    private string Label => Filters.ShowFirstNameFirst ?
-    "Show Last Name, First Name" :
-    "Show First Name, Last Name";
+    private string Label => Filters.ShowFirstNameFirst ? "Show Last Name, First Name" : "Show First Name, Last Name";
 
     // Reference to the GridWrapper.
     [CascadingParameter]

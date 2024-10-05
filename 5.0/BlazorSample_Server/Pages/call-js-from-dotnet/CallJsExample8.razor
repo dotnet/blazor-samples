@@ -28,7 +28,7 @@
 
     private async Task ShowAsync(double latitude, double longitude)
         => await mapModule.InvokeVoidAsync("setMapCenter", mapInstance, latitude,
-            longitude).AsTask();
+            longitude);
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {

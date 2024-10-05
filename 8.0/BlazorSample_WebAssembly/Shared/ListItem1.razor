@@ -10,10 +10,8 @@
     private string display = "inline-block";
     private MessageUpdateInvokeHelper? messageUpdateInvokeHelper;
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() => 
         messageUpdateInvokeHelper = new MessageUpdateInvokeHelper(UpdateMessage);
-    }
 
     protected async Task InteropCall()
     {

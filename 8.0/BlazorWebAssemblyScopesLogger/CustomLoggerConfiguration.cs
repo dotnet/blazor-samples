@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
+
+namespace BlazorWebAssemblyScopesLogger;
 
 public class CustomLoggerConfiguration
 {

@@ -1,4 +1,4 @@
-﻿@page "/starship-11"
+@page "/starship-11"
 @using System.ComponentModel.DataAnnotations
 @inject ILogger<Starship11> Logger
 
@@ -26,10 +26,7 @@
 
     protected override void OnInitialized() => Model ??= new();
 
-    private void Submit()
-    {
-        Logger.LogInformation("Submit called: Processing the form");
-    }
+    private void Submit() => Logger.LogInformation("Submit: Processing form");
 
     public class Starship
     {

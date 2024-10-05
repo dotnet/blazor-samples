@@ -27,10 +27,7 @@
         }
     }
 
-    private async Task TriggerPrompt()
-    {
-        result = await Prompt("Provide some text");
-    }
+    private async Task TriggerPrompt() => result = await Prompt("Provide text");
 
     public async ValueTask<string?> Prompt(string message) =>
         module is not null ? 

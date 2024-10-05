@@ -12,6 +12,7 @@ namespace MauiBlazorWeb.Maui
             InteractiveRenderSettings.ConfigureBlazorHybridRenderModes();
 
             var builder = MauiApp.CreateBuilder();
+
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>

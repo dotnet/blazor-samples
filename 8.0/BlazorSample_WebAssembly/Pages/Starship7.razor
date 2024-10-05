@@ -1,4 +1,4 @@
-﻿@page "/starship-7"
+@page "/starship-7"
 @inject ILogger<Starship7> Logger
 
 <EditForm Model="Model" OnSubmit="Submit" FormName="Starship7">
@@ -20,9 +20,7 @@
 
     protected override void OnInitialized() => Model ??= new();
 
-    private void Submit()
-    {
+    private void Submit() => 
         Logger.LogInformation("Id = {Id} Desc = {Description} Length = {Length}",
             Model?.Id, Model?.Details?.Description, Model?.Details?.Length);
-    }
 }

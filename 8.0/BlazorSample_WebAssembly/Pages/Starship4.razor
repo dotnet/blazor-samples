@@ -1,4 +1,4 @@
-﻿@page "/starship-4"
+@page "/starship-4"
 @inject ILogger<Starship4> Logger
 
 <EditForm EditContext="editContext" OnSubmit="Submit" FormName="Starship4">
@@ -34,13 +34,11 @@
         editContext = new(Model);
     }
 
-    private async Task Submit()
+    private void Submit()
     {
         if (editContext != null && editContext.Validate())
         {
             Logger.LogInformation("Submit called: Form is valid");
-
-            // await ...
         }
         else
         {

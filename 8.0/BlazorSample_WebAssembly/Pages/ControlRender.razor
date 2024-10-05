@@ -19,13 +19,7 @@
     private int currentCount = 0;
     private bool shouldRender = true;
 
-    protected override bool ShouldRender()
-    {
-        return shouldRender;
-    }
+    protected override bool ShouldRender() => shouldRender;
 
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+    private void IncrementCount() => currentCount++;
 }

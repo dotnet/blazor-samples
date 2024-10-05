@@ -12,23 +12,13 @@
 </button>
 
 @code {
-    private void NavigateToCounterComponent()
-    {
-        Navigation.NavigateTo("counter");
-    }
+    private void NavigateToCounterComponent() => Navigation.NavigateTo("counter");
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() => 
         Navigation.LocationChanged += HandleLocationChanged;
-    }
 
-    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs e) => 
         Logger.LogInformation("URL of new location: {Location}", e.Location);
-    }
 
-    public void Dispose()
-    {
-        Navigation.LocationChanged -= HandleLocationChanged;
-    }
+    public void Dispose() => Navigation.LocationChanged -= HandleLocationChanged;
 }
