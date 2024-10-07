@@ -1,0 +1,18 @@
+﻿@page "/parameter-3"
+
+<PageTitle>Parameter 3</PageTitle>
+
+<h1>Parameter Example 3</h1>
+
+<ParameterChild Title="@GetTitle()" />
+
+@code {
+    private PanelData panelData = new();
+
+    private string GetTitle() => $"Set by {panelData.Title}";
+
+    private class PanelData
+    {
+        public string Title { get; set; } = "Parent";
+    }
+}

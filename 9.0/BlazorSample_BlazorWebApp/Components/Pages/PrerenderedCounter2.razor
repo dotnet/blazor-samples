@@ -1,0 +1,46 @@
+@page "/prerendered-counter-2"
+@implements IDisposable
+@inject ILogger<PrerenderedCounter2> Logger
+@inject PersistentComponentState ApplicationState
+
+<PageTitle>Prerendered Counter 2</PageTitle>
+
+<h1>Prerendered Counter 2</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount;
+    private PersistingComponentStateSubscription persistingSubscription;
+
+    protected override void OnInitialized()
+    {
+        persistingSubscription =
+            ApplicationState.RegisterOnPersisting(PersistCount);
+
+        if (!ApplicationState.TryTakeFromJson<int>(
+            nameof(currentCount), out var restoredCount))
+        {
+            currentCount = Random.Shared.Next(100);
+            Logger.LogInformation("currentCount set to {Count}", currentCount);
+        }
+        else
+        {
+            currentCount = restoredCount!;
+            Logger.LogInformation("currentCount restored to {Count}", currentCount);
+        }
+    }
+
+    private Task PersistCount()
+    {
+        ApplicationState.PersistAsJson(nameof(currentCount), currentCount);
+
+        return Task.CompletedTask;
+    }
+
+    void IDisposable.Dispose() => persistingSubscription.Dispose();
+
+    private void IncrementCount() => currentCount++;
+}

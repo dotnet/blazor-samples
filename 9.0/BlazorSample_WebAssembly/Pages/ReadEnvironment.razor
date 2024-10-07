@@ -1,0 +1,9 @@
+@page "/read-environment"
+@using Microsoft.AspNetCore.Components.WebAssembly.Hosting
+@inject IWebAssemblyHostEnvironment HostEnvironment
+
+<PageTitle>Read Environment</PageTitle>
+
+<h1>Read Environment Example</h1>
+
+<p>Environment: @HostEnvironment.Environment</p>

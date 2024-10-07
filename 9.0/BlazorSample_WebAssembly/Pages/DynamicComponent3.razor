@@ -1,0 +1,83 @@
+@page "/dynamic-component-3"
+
+<PageTitle>Dynamic Component 3</PageTitle>
+
+<h1>Dynamic Component Example 3</h1>
+
+<p>
+    <label>
+        Select your transport:
+        <select @onchange="OnDropdownChange">
+            <option value="">Select a value</option>
+            @foreach (var c in Components)
+            {
+                <option value="@c.Key">@c.Value.Name</option>
+            }
+        </select>
+    </label>
+</p>
+
+@if (selectedComponent is not null)
+{
+    <div class="border border-primary my-1 p-1">
+        <DynamicComponent Type="selectedComponent.Type"
+            Parameters="selectedComponent.Parameters" />
+    </div>
+}
+
+<p>
+    @message
+</p>
+
+@code {
+    private ComponentMetadata? selectedComponent;
+    private string? message;
+
+    private Dictionary<string, ComponentMetadata> Components =>
+        new()
+        {
+            [nameof(RocketLab2)] = new ComponentMetadata()
+            {
+                Type = typeof(RocketLab2),
+                Name = "Rocket Lab",
+                Parameters = { [nameof(RocketLab2.OnClickCallback)] =
+                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
+            },
+            [nameof(VirginGalactic2)] = new ComponentMetadata()
+            {
+                Type = typeof(VirginGalactic2),
+                Name = "Virgin Galactic",
+                Parameters = { [nameof(VirginGalactic2.OnClickCallback)] =
+                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
+            },
+            [nameof(UnitedLaunchAlliance2)] = new ComponentMetadata()
+            {
+                Type = typeof(UnitedLaunchAlliance2),
+                Name = "ULA",
+                Parameters = { [nameof(UnitedLaunchAlliance2.OnClickCallback)] =
+                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
+            },
+            [nameof(SpaceX2)] = new ComponentMetadata()
+            {
+                Type = typeof(SpaceX2),
+                Name = "SpaceX",
+                Parameters = { [nameof(SpaceX2.OnClickCallback)] =
+                    EventCallback.Factory.Create<MouseEventArgs>(this, ShowDTMessage) }
+            }
+        };
+
+    private void OnDropdownChange(ChangeEventArgs e)
+    {
+        if ((e.Value is string dropdownValue) && !String.IsNullOrWhiteSpace(dropdownValue))
+        {
+            selectedComponent = Components[dropdownValue];
+        }
+        else
+        {
+            selectedComponent = null;
+        }
+    }
+
+    private void ShowDTMessage(MouseEventArgs e) =>
+        message = $"The current DT is: {DateTime.Now}.";
+}

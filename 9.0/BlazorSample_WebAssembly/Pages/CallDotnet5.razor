@@ -1,0 +1,33 @@
+@page "/call-dotnet-5"
+@inject IJSRuntime JS
+
+<PageTitle>Call .NET 5</PageTitle>
+
+<h1>Call .NET Example 5</h1>
+
+<p>
+    <label>
+        Name: <input @bind="name" />
+    </label>
+</p>
+
+<p>
+    <button @onclick="TriggerDotNetInstanceMethod">
+        Trigger .NET instance method
+    </button>
+</p>
+
+<p>
+    @result
+</p>
+
+@code {
+    private string? name;
+    private string? result;
+
+    public async Task TriggerDotNetInstanceMethod()
+    {
+        using var objRef = DotNetObjectReference.Create(new HelloHelper(name));
+        result = await JS.InvokeAsync<string>("sayHello1", objRef);
+    }
+}
