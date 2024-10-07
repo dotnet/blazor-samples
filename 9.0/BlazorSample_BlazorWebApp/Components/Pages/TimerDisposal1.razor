@@ -1,0 +1,31 @@
+@page "/timer-disposal-1"
+@using System.Timers
+@implements IDisposable
+
+<PageTitle>Timer Disposal 1</PageTitle>
+
+<h1>Timer Disposal Example 1</h1>
+
+<p>Current count: @currentCount</p>
+
+@code {
+    private int currentCount = 0;
+    private Timer timer = new(1000);
+
+    protected override void OnInitialized()
+    {
+        timer.Elapsed += (sender, eventArgs) => OnTimerCallback();
+        timer.Start();
+    }
+
+    private void OnTimerCallback()
+    {
+        _ = InvokeAsync(() =>
+        {
+            currentCount++;
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose() => timer.Dispose();
+}

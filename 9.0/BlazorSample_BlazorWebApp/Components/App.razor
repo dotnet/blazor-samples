@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="BlazorSample.styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet @rendermode="InteractiveServer" />
+    <style>
+        .red {
+            color: red
+        }
+    </style>
+</head>
+
+<body>
+    <Routes @rendermode="InteractiveServer" />
+    <script src="_framework/blazor.web.js"></script>
+    <script>
+        window.convertArray = (win1251Array) => {
+            var win1251decoder = new TextDecoder('windows-1251');
+            var bytes = new Uint8Array(win1251Array);
+            var decodedArray = win1251decoder.decode(bytes);
+            return decodedArray;
+        };
+    </script>
+    <script>
+        window.returnObjectReference = () => {
+            return {
+                unmarshalledFunctionReturnBoolean: function (fields) {
+                    const name = Blazor.platform.readStringField(fields, 0);
+                    const year = Blazor.platform.readInt32Field(fields, 8);
+
+                    return name === "Brigadier Alistair Gordon Lethbridge-Stewart" &&
+                        year === 1968;
+                },
+                unmarshalledFunctionReturnString: function (fields) {
+                    const name = Blazor.platform.readStringField(fields, 0);
+                    const year = Blazor.platform.readInt32Field(fields, 8);
+
+                    return BINDING.js_string_to_mono_string(`Hello, ${name} (${year})!`);
+                }
+            };
+        }
+    </script>
+    <script>
+        window.displayTickerAlert1 = (symbol, price) => {
+            alert(`${symbol}: $${price}!`);
+        };
+    </script>
+    <script>
+        window.displayTickerAlert2 = (symbol, price) => {
+            if (price < 20) {
+                alert(`${symbol}: $${price}!`);
+                return "Alert!";
+            } else {
+                return "No Alert";
+            }
+        };
+    </script>
+    <script>
+        window.setElementClass = (element, className) => {
+            var myElement = element;
+            myElement.classList.add(className);
+        }
+    </script>
+    <script>
+        window.sayHello1 = (dotNetHelper) => {
+            return dotNetHelper.invokeMethodAsync('GetHelloMessage');
+        };
+    </script>
+    <script>
+        window.sayHello2 = (dotNetHelper, name) => {
+            return dotNetHelper.invokeMethodAsync('GetHelloMessage', name);
+        };
+    </script>
+    <script>
+        window.updateMessageCaller = (dotnetHelper) => {
+            dotnetHelper.invokeMethodAsync('UpdateMessageCaller');
+            dotnetHelper.dispose();
+        }
+    </script>
+    <script>
+        window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+            const arrayBuffer = await contentStreamReference.arrayBuffer();
+            const blob = new Blob([arrayBuffer]);
+            const url = URL.createObjectURL(blob);
+            const anchorElement = document.createElement('a');
+            anchorElement.href = url;
+            anchorElement.download = fileName ?? '';
+            anchorElement.click();
+            anchorElement.remove();
+            URL.revokeObjectURL(url);
+        }
+        window.triggerFileDownload = (fileName, url) => {
+            const anchorElement = document.createElement('a');
+            anchorElement.href = url;
+            anchorElement.download = fileName ?? '';
+            anchorElement.click();
+            anchorElement.remove();
+        }
+    </script>
+    <script>
+        window.setSource = async (elementId, stream, contentType, title) => {
+          const arrayBuffer = await stream.arrayBuffer();
+          let blobOptions = {};
+          if (contentType) {
+            blobOptions['type'] = contentType;
+          }
+          const blob = new Blob([arrayBuffer], blobOptions);
+          const url = URL.createObjectURL(blob);
+          const element = document.getElementById(elementId);
+          element.title = title;
+          element.onload = () => {
+            URL.revokeObjectURL(url);
+          }
+          element.src = url;
+        }
+    </script>
+    <script>
+        window.scrollElementIntoView = (element) => {
+          element.scrollIntoView();
+          return element.getBoundingClientRect().top;
+        }
+    </script>
+</body>
+
+</html>

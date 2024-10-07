@@ -1,0 +1,23 @@
+﻿@page "/daleks"
+
+<PageTitle>Daleks</PageTitle>
+
+<h1>Root-level Cascading Value Example</h1>
+
+<ul>
+    <li>Dalek Units: @Dalek?.Units</li>
+    <li>Alpha Group Dalek Units: @AlphaGroupDalek?.Units</li>
+</ul>
+
+<p>
+    Dalek© <a href="https://www.imdb.com/name/nm0622334/">Terry Nation</a><br>
+    Doctor Who© <a href="https://www.bbc.co.uk/programmes/b006q2x0">BBC</a>
+</p>
+
+@code {
+    [CascadingParameter]
+    public Dalek? Dalek { get; set; }
+
+    [CascadingParameter(Name = "AlphaGroup")]
+    public Dalek? AlphaGroupDalek { get; set; }
+}

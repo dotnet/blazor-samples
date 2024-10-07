@@ -1,0 +1,82 @@
+@page "/product-details/{ProductId:int?}"
+@inject ILogger<ProductDetails> Logger
+@inject IProductRepository Product
+
+<PageTitle>Product Details</PageTitle>
+
+<h1>Product Details Example</h1>
+
+@if (details != null)
+{
+    <h2>@details.ProductName</h2>
+    <p>
+        @details.Description
+        <a href="@details.Url">Company Link</a>
+    </p>
+}
+else if (loadFailed)
+{
+    <h1>Sorry, we could not load this product due to an error.</h1>
+}
+else
+{
+    <h1>Loading...</h1>
+}
+
+@code {
+    private ProductDetail? details;
+    private bool loadFailed;
+
+    [Parameter]
+    public int ProductId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            loadFailed = false;
+
+            // Reset details to null to display the loading indicator
+            details = null;
+
+            details = await Product.GetProductByIdAsync(ProductId);
+        }
+        catch (Exception ex)
+        {
+            loadFailed = true;
+            Logger.LogWarning(ex, "Failed to load product {ProductId}", ProductId);
+        }
+    }
+
+    public class ProductDetail
+    {
+        public string? ProductName { get; set; }
+        public string? Description { get; set; }
+        public string? Url { get; set; }
+    }
+
+    /*
+     * Register the service in Program.cs:
+     * using static BlazorSample.Pages.ProductDetails;
+     * builder.Services.AddScoped<IProductRepository, ProductRepository>();
+    */
+
+    public interface IProductRepository
+    {
+        public Task<ProductDetail> GetProductByIdAsync(int id);
+    }
+
+    public class ProductRepository : IProductRepository
+    {
+        public Task<ProductDetail> GetProductByIdAsync(int id)
+        {
+            return Task.FromResult(
+                new ProductDetail()
+                { 
+                    ProductName = "Flowbee&reg;",
+                    Description = "The Revolutionary Haircutting System You've Come to Love!",
+                    Url = "https://flowbee.com/"
+                });
+        }
+    }
+}

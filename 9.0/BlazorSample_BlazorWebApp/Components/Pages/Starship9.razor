@@ -1,0 +1,76 @@
+﻿@page "/starship-9"
+@inject ILogger<Starship9> Logger
+
+<h1>Starfleet Starship Database</h1>
+
+<h2>New Ship Entry Form</h2>
+
+<EditForm Model="Model" OnValidSubmit="Submit" FormName="Starship9">
+    <CustomValidation @ref="customValidation" />
+    <ValidationSummary />
+    <div>
+        <label>
+            Primary Classification:
+            <InputSelect @bind-Value="Model!.Classification">
+                <option value="">
+                    Select classification ...
+                </option>
+                <option checked="@(Model!.Classification == "Exploration")" 
+                    value="Exploration">
+                    Exploration
+                </option>
+                <option checked="@(Model!.Classification == "Diplomacy")" 
+                    value="Diplomacy">
+                    Diplomacy
+                </option>
+                <option checked="@(Model!.Classification == "Defense")" 
+                    value="Defense">
+                    Defense
+                </option>
+            </InputSelect>
+        </label>
+    </div>
+    <div>
+        <label>
+            Description (optional):
+            <InputTextArea @bind-Value="Model!.Description" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+    private CustomValidation? customValidation;
+
+    [SupplyParameterFromForm]
+    private Starship? Model { get; set; }
+
+    protected override void OnInitialized() =>
+        Model ??= new() { ProductionDate = DateTime.UtcNow };
+
+    private void Submit()
+    {
+        customValidation?.ClearErrors();
+
+        var errors = new Dictionary<string, List<string>>();
+
+        if (Model!.Classification == "Defense" &&
+                string.IsNullOrEmpty(Model.Description))
+        {
+            errors.Add(nameof(Model.Description),
+                new() { "For a 'Defense' ship classification, " +
+                "'Description' is required." });
+        }
+
+        if (errors.Any())
+        {
+            customValidation?.DisplayErrors(errors);
+        }
+        else
+        {
+            Logger.LogInformation("Submit called: Processing the form");
+        }
+    }
+}

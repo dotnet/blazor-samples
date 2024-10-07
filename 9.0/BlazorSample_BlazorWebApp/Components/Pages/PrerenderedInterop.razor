@@ -1,0 +1,28 @@
+@page "/prerendered-interop"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+@inject IJSRuntime JS
+
+<PageTitle>Prerendered Interop</PageTitle>
+
+<h1>Prerendered Interop Example</h1>
+
+<div @ref="divElement" style="margin-top:2000px">
+    Set value via JS interop call: <strong>@scrollPosition</strong>
+</div>
+
+@code {
+    private ElementReference divElement;
+    private double? scrollPosition;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && scrollPosition is null)
+        {
+            scrollPosition = await JS.InvokeAsync<double>(
+                "scrollElementIntoView", divElement);
+
+            StateHasChanged();
+        }
+    }
+}

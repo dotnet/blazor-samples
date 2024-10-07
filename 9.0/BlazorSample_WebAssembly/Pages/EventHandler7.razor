@@ -1,0 +1,52 @@
+@page "/event-handler-7"
+
+<PageTitle>Event Handler 7</PageTitle>
+
+<h1>Event Handler Example 7</h1>
+
+<div>
+    <b>stopPropagation</b>: @stopPropagation
+</div>
+
+<div>
+    <button @onclick="StopPropagation">
+        Stop Propagation (stopPropagation = true)
+    </button>
+    <button @onclick="EnablePropagation">
+        Enable Propagation (stopPropagation = false)
+    </button>
+</div>
+
+<div class="m-1 p-1 border border-primary" @onclick="OnSelectParentDiv">
+    <h3>Parent div</h3>
+
+    <div class="m-1 p-1 border" @onclick="OnSelectChildDiv">
+        Child div that never stops propagation to the parent div when 
+        selected.
+    </div>
+
+    <div class="m-1 p-1 border" @onclick="OnSelectChildDiv" 
+            @onclick:stopPropagation="stopPropagation">
+        Child div that stops propagation when selected if 
+        <b>stopPropagation</b> is <b>true</b>.
+    </div>
+</div>
+
+<p>
+    @message
+</p>
+
+@code {
+    private bool stopPropagation = false;
+    private string? message;
+
+    private void StopPropagation() => stopPropagation = true;
+
+    private void EnablePropagation() => stopPropagation = false;
+
+    private void OnSelectParentDiv() =>
+        message = $"The parent div was selected. {DateTime.Now}";
+
+    private void OnSelectChildDiv() =>
+        message = $"The child div was selected. {DateTime.Now}";
+}

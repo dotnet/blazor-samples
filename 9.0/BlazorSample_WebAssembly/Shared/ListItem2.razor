@@ -1,0 +1,60 @@
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+
+<li>
+    <span style="font-weight:bold;color:@color" @ref="elementRef"
+        @onclick="CallJSToInvokeDotnet">
+        @message
+    </span>
+    <span style="display:@display">
+        Not Updated Yet!
+    </span>
+</li>
+
+@code {
+    private IJSObjectReference? module;
+    private DotNetObjectReference<ListItem2>? objRef;
+    private ElementReference elementRef;
+    private string display = "inline-block";
+    private string message = "Select one of these list items.";
+    private string color = "initial";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import",
+                "./Shared/ListItem2.razor.js");
+
+            objRef = DotNetObjectReference.Create(this);
+            await module.InvokeVoidAsync("assignDotNetHelper", elementRef, objRef);
+        }
+    }
+
+    public async void CallJSToInvokeDotnet()
+    {
+        if (module is not null)
+        {
+            await module.InvokeVoidAsync("interopCall", elementRef);
+        }
+    }
+
+    [JSInvokable]
+    public void UpdateMessage()
+    {
+        message = "UpdateMessage Called!";
+        display = "none";
+        color = "MediumSeaGreen";
+        StateHasChanged();
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
+
+        objRef?.Dispose();
+    }
+}

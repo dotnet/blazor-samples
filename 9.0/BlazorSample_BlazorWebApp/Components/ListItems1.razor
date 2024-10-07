@@ -1,0 +1,25 @@
+﻿@typeparam TExample
+
+<h2>List Items 1</h2>
+
+@if (ExampleList is not null)
+{
+    <ul style="color:@Color">
+        @foreach (var item in ExampleList)
+        {
+            <li>@item</li>
+        }
+    </ul>
+
+    <p>
+        Type of <code>TExample</code>: @typeof(TExample)
+    </p>
+}
+
+@code {
+    [Parameter]
+    public string? Color { get; set; }
+
+    [Parameter]
+    public IEnumerable<TExample>? ExampleList { get; set; }
+}
