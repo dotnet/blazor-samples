@@ -1,7 +1,10 @@
 @page "/weather"
-
 @using Microsoft.AspNetCore.Authorization
+@using BlazorWebAppEntra.Client.Weather
 @attribute [Authorize]
+@implements IDisposable
+@inject PersistentComponentState ApplicationState
+@inject IWeatherForecaster WeatherForecaster
 
 <PageTitle>Weather</PageTitle>
 
@@ -20,7 +23,7 @@ else
             <tr>
                 <th>Date</th>
                 <th aria-label="Temperature in Celsius">Temp. (C)</th>
-                <th aria-label="Temperature in Farenheit">Temp. (F)</th>
+                <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
                 <th>Summary</th>
             </tr>
         </thead>
@@ -39,28 +42,29 @@ else
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private IEnumerable<WeatherForecast>? forecasts;
+    private PersistingComponentStateSubscription persistingSubscription;
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate a loading indicator
-        await Task.Delay(500);
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
 
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>(nameof(forecasts), out var restoredData))
         {
-            Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
-        }).ToArray();
+            forecasts = await WeatherForecaster.GetWeatherForecastAsync();
+        }
+        else
+        {
+            forecasts = restoredData!;
+        }
     }
 
-    private class WeatherForecast
+    private Task PersistData()
     {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        ApplicationState.PersistAsJson(nameof(forecasts), forecasts);
+
+        return Task.CompletedTask;
     }
+
+    void IDisposable.Dispose() => persistingSubscription.Dispose();
 }

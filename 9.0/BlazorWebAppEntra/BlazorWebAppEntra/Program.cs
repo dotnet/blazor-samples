@@ -1,5 +1,8 @@
+using BlazorWebAppEntra.Client.Weather;
 using BlazorWebAppEntra.Components;
+using BlazorWebAppEntra.Weather;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +16,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
 builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
 
 var app = builder.Build();
 
@@ -33,6 +38,12 @@ app.UseHttpsRedirection();
 app.UseAntiforgery();
 
 app.MapStaticAssets();
+
+app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
+{
+    return WeatherForecaster.GetWeatherForecastAsync();
+}).RequireAuthorization();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
