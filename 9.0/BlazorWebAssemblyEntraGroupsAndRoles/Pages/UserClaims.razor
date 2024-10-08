@@ -1,0 +1,27 @@
+@page "/user-claims"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h1>User Claims</h1>
+
+<ul>
+    @foreach (var claim in claims)
+    {
+        <li>@claim.Type: @claim.Value</li>
+    }
+</ul>
+
+@code {
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        claims = user.Claims;
+    }
+}

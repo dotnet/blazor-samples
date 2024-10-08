@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Name": "Backend\\Backend.csproj",
+        "Action": "StartWithoutDebugging"
+      },
+      {
+        "Name": "BlazorTodo\\BlazorTodo.csproj",
+        "Action": "Start",
+        "DebugTarget": ""
+      }
+    ]
+  }
+]
