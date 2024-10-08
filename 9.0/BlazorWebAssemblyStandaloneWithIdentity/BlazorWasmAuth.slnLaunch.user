@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Name": "BlazorWasmAuth\\BlazorWasmAuth.csproj",
+        "Action": "Start"
+      },
+      {
+        "Name": "Backend\\Backend.csproj",
+        "Action": "StartWithoutDebugging"
+      }
+    ]
+  }
+]

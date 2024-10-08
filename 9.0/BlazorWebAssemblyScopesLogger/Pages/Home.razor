@@ -1,0 +1,41 @@
+﻿@page "/"
+@inject ILogger<Home> Logger
+
+<p>
+    <button @onclick="LogMessages">Log Messages</button>
+</p>
+
+@code{
+    private void LogMessages()
+    {
+        Logger.LogDebug(1, "This is a debug message."); // Not logged
+        Logger.LogInformation(3, "This is an information message."); // Logs in Format1
+        Logger.LogWarning(5, "This is a warning message."); // Logs in Format2
+        Logger.LogError(7, "This is an error message.");  // Logs in Format3
+        Logger.LogTrace(5!, "This is a trace message."); // Not logged
+
+        using (Logger.BeginScope("L1"))
+        {
+            Logger.LogInformation(3, "INFO: ONE scope.");
+        }
+
+        using (Logger.BeginScope("L1"))
+        {
+            using (Logger.BeginScope("L2"))
+            {
+                Logger.LogInformation(3, "INFO: TWO scopes.");
+            }
+        }
+
+        using (Logger.BeginScope("L1"))
+        {
+            using (Logger.BeginScope("L2"))
+            {
+                using (Logger.BeginScope("L3"))
+                {
+                    Logger.LogInformation(3, "INFO: THREE scopes.");
+                }
+            }
+        }
+    }
+}
