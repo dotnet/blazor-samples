@@ -1,0 +1,47 @@
+@page "/show-file"
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>Show File</PageTitle>
+
+<div class="d-flex flex-column">
+    <h1>Show File Example</h1>
+    <div class="mb-4">
+        <button @onclick="@(() => ShowFileAsync("files/quote.txt", 
+                "General Ravon quote (text file)"))">
+            Show text ('quote.txt')
+        </button>
+        <button @onclick="@(() => ShowFileAsync("files/quote.pdf", 
+                "General Ravon quote (PDF file)"))">
+            Show PDF ('quote.pdf')
+        </button>
+    </div>
+    <iframe id="iframe" style="height: calc(100vh - 200px)" />
+</div>
+
+@code
+{
+    private async Task<(Stream, string?)> DownloadFileAsync(string url)
+    {
+        var absoluteUrl = NavigationManager.ToAbsoluteUri(url);
+        Console.WriteLine($"Downloading file from {absoluteUrl}");
+
+        var response = await Http.GetAsync(absoluteUrl);
+        string? contentType = null;
+
+        if (response.Content.Headers.TryGetValues("Content-Type", out var values))
+        {
+            contentType = values.FirstOrDefault();
+        }
+
+        return (await response.Content.ReadAsStreamAsync(), contentType);
+    }
+
+    private async Task ShowFileAsync(string url, string title)
+    {
+        var (fileStream, contentType) = await DownloadFileAsync(url);
+        var strRef = new DotNetStreamReference(fileStream);
+        await JS.InvokeVoidAsync("setSource", "iframe", strRef, contentType, title);
+    }
+}

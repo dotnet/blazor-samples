@@ -1,0 +1,28 @@
+@page "/show-image-2"
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>Show Image 2</PageTitle>
+
+<h1>Show Image Example 2</h1>
+
+<button @onclick="SetImageAsync">
+    Set Image
+</button>
+
+<div class="p-3">
+    <img id="avatar" />
+</div>
+
+@code {
+    private async Task<Stream> GetImageStreamAsync() =>
+        await Http.GetStreamAsync("https://avatars.githubusercontent.com/u/9141961");
+
+    private async Task SetImageAsync()
+    {
+        var imageStream = await GetImageStreamAsync();
+        var strRef = new DotNetStreamReference(imageStream);
+        await JS.InvokeVoidAsync("setSource", "avatar", strRef, "image/png", 
+            ".NET GitHub avatar");
+    }
+}

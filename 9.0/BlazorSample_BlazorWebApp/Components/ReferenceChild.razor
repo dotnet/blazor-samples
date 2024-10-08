@@ -1,0 +1,20 @@
+﻿@inject ILogger<ReferenceChild> Logger
+
+@if (value > 0)
+{
+    <p>
+        <code>value</code>: @value
+    </p>
+}
+
+@code {
+    private int value;
+
+    public void ChildMethod(int value)
+    {
+        Logger.LogInformation("Received {Value} in ChildMethod", value);
+
+        this.value = value;
+        StateHasChanged();
+    }
+}

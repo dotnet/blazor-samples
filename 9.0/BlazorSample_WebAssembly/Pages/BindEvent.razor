@@ -1,0 +1,21 @@
+@page "/bind-event"
+
+<PageTitle>Bind Event</PageTitle>
+
+<h1>Bind Event Example</h1>
+
+<p>
+    <label>
+        InputValue: 
+        <input @bind="InputValue" @bind:event="oninput" />
+    </label>
+    
+</p>
+
+<p>
+    <code>InputValue</code>: @InputValue
+</p>
+
+@code {
+    private string? InputValue { get; set; }
+}

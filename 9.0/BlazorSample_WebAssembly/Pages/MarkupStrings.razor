@@ -1,0 +1,12 @@
+﻿@page "/markup-strings"
+
+<PageTitle>Markup Strings</PageTitle>
+
+<h1>Markup Strings Example</h1>
+
+@((MarkupString)myMarkup)
+
+@code {
+    private string myMarkup =
+        "<p class=\"text-danger\">This is a dangerous <em>markup string</em>.</p>";
+}

@@ -1,0 +1,21 @@
+@page "/unparsable-values"
+
+<PageTitle>Unparsable Values</PageTitle>
+
+<h1>Unparsable Values Example</h1>
+
+<p>
+    <label>
+        inputValue: 
+        <input @bind="inputValue" />
+    </label>
+    
+</p>
+
+<p>
+    <code>inputValue</code>: @inputValue
+</p>
+
+@code {
+    private int inputValue = 123;
+}

@@ -1,0 +1,42 @@
+@page "/call-dotnet-1"
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<PageTitle>Call .NET 1</PageTitle>
+
+<h1>Call .NET Example 1</h1>
+
+<p>
+    <button id="btn">Trigger .NET static method</button>
+</p>
+
+<p>
+    See the result in the developer tools console.
+</p>
+
+@code {
+    private IJSObjectReference? module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import",
+                "./Components/Pages/CallDotnet1.razor.js");
+
+            await module.InvokeVoidAsync("addHandlers");
+        }
+    }
+
+    [JSInvokable]
+    public static Task<int[]> ReturnArrayAsync() =>
+        Task.FromResult(new int[] { 11, 12, 13 });
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
+    }
+}
