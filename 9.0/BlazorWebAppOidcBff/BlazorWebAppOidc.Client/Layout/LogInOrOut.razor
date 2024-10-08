@@ -1,0 +1,43 @@
+@implements IDisposable
+
+@inject NavigationManager NavigationManager
+
+<div class="nav-item px-3">
+    <AuthorizeView>
+        <Authorized>
+            <form action="authentication/logout" method="post">
+                <AntiforgeryToken />
+                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                <button type="submit" class="nav-link">
+                    <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout @context.User.Identity?.Name
+                </button>
+            </form>
+        </Authorized>
+        <NotAuthorized>
+            <a class="nav-link" href="authentication/login">
+                <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+            </a>
+        </NotAuthorized>
+    </AuthorizeView>
+</div>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}
