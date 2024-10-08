@@ -169,9 +169,8 @@ builder.Services.AddCascadingAuthenticationState();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
-
-builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization();
 
 builder.Services.AddHttpForwarderWithServiceDiscovery();
 builder.Services.AddHttpContextAccessor();

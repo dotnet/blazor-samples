@@ -7,7 +7,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddSingleton<AuthenticationStateProvider, PersistentAuthenticationStateProvider>();
+builder.Services.AddAuthenticationStateDeserialization();
 
 builder.Services.AddHttpClient<IWeatherForecaster, ClientWeatherForecaster>(httpClient =>
 {
