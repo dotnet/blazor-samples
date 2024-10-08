@@ -1,0 +1,63 @@
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Blazor App</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="call-movie-web-api-ssr">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Movies (SSR)
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="call-movie-web-api-csr">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Movies (CSR)
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="call-movie-web-api-auto">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Movies (Auto)
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="call-todo-web-api-ssr">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Todo List (SSR)
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="call-todo-web-api-csr">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Todo List (CSR)
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="call-todo-web-api-auto">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Todo List (Auto)
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="call-todo-web-api-csr-named-client">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Todo Named Client
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="call-todo-web-api-csr-typed-client">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Todo Typed Client
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="call-todo-web-api-csr-patch">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Todo List (PATCH)
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
