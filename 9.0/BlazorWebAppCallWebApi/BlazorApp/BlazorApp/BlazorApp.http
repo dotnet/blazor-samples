@@ -1,0 +1,40 @@
+@BlazorApp_HostAddress = https://localhost:7172
+
+GET {{BlazorApp_HostAddress}}/movies/
+Accept: application/json
+
+###
+
+GET {{BlazorApp_HostAddress}}/movies/watched
+Accept: application/json
+
+###
+
+GET {{BlazorApp_HostAddress}}/movies/2
+
+###
+
+Post {{BlazorApp_HostAddress}}/movies
+Content-Type: application/json
+
+{
+  "name": "Spaceman",
+  "isWatched": false
+}
+
+###
+
+Put {{BlazorApp_HostAddress}}/movies/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Contact",
+  "isWatched": true
+}
+
+###
+
+DELETE {{BlazorApp_HostAddress}}/movies/4
+
+###
