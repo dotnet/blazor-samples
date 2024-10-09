@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -115,7 +114,7 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         // identity provider uses different claim types.
 
         oidcOptions.MapInboundClaims = false;
-        oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
+        oidcOptions.TokenValidationParameters.NameClaimType = "name";
         oidcOptions.TokenValidationParameters.RoleClaimType = "roles";
         // ........................................................................
 

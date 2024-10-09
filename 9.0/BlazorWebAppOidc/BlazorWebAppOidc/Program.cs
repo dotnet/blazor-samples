@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using BlazorWebAppOidc.Client.Weather;
 using BlazorWebAppOidc.Components;
@@ -96,7 +95,7 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         // identity provider uses different claim types.
 
         oidcOptions.MapInboundClaims = false;
-        oidcOptions.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
+        oidcOptions.TokenValidationParameters.NameClaimType = "name";
         oidcOptions.TokenValidationParameters.RoleClaimType = "roles";
         // ........................................................................
 
