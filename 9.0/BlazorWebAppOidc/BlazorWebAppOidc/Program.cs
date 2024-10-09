@@ -77,18 +77,6 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
 
         oidcOptions.ClientId = "{CLIENT ID}";
         // ........................................................................
-        
-        // ........................................................................
-        // ClientSecret shouldn't be compiled into the application assembly or 
-        // checked into source control. Adopt User Secrets, Azure KeyVault, 
-        // or an environment variable to supply the value. Authentication scheme 
-        // configuration is automatically read from 
-        // "Authentication:Schemes:{SchemeName}:{PropertyName}", so ClientSecret is 
-        // for OIDC configuration is automatically read from 
-        // "Authentication:Schemes:MicrosoftOidc:ClientSecret" configuration.
-
-        //oidcOptions.ClientSecret = "{PREFER NOT SETTING THIS HERE}";
-        // ........................................................................
 
         // ........................................................................
         // Setting ResponseType to "code" configures the OIDC handler to use 
