@@ -18,14 +18,7 @@ namespace BlazorSample.Pages
 
             foreach (var subscription in subscriptions)
             {
-                try
-                {
-                    subscription.OnNext(title);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                subscription.OnNext(title);
             }
         }
 

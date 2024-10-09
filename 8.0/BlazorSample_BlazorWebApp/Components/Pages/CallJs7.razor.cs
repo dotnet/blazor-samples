@@ -15,14 +15,7 @@ public partial class CallJs7 :
 
         foreach (var subscription in subscriptions)
         {
-            try
-            {
-                subscription.OnNext(title);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            subscription.OnNext(title);
         }
     }
 
