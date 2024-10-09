@@ -2,7 +2,7 @@ using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 
-namespace MauiBlazorWeb.Maui
+namespace MauiBlazorWeb
 {
     internal class Program : MauiApplication
     {

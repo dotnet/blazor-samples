@@ -1,9 +1,9 @@
 using MauiBlazorWeb.Shared;
 using Microsoft.Extensions.Logging;
-using MauiBlazorWeb.Maui.Services;
+using MauiBlazorWeb.Services;
 using MauiBlazorWeb.Shared.Interfaces;
 
-namespace MauiBlazorWeb.Maui
+namespace MauiBlazorWeb
 {
     public static class MauiProgram
     {

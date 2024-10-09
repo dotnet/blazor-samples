@@ -1,4 +1,4 @@
-namespace MauiBlazorWeb.Maui
+namespace MauiBlazorWeb
 {
     public partial class MainPage : ContentPage
     {

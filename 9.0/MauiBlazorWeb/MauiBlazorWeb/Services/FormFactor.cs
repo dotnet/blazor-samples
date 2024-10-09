@@ -1,6 +1,6 @@
 using MauiBlazorWeb.Shared.Interfaces;
 
-namespace MauiBlazorWeb.Maui.Services;
+namespace MauiBlazorWeb.Services;
 
 public class FormFactor : IFormFactor
 {
