@@ -1,7 +1,7 @@
-using MauiBlazorWeb.Shared;
-using Microsoft.Extensions.Logging;
 using MauiBlazorWeb.Services;
-using MauiBlazorWeb.Shared.Interfaces;
+using MauiBlazorWeb.Shared;
+using MauiBlazorWeb.Shared.Services;
+using Microsoft.Extensions.Logging;
 
 namespace MauiBlazorWeb
 {
@@ -12,7 +12,6 @@ namespace MauiBlazorWeb
             InteractiveRenderSettings.ConfigureBlazorHybridRenderModes();
 
             var builder = MauiApp.CreateBuilder();
-
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -20,14 +19,15 @@ namespace MauiBlazorWeb
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
+            // Add device-specific services used by the MauiBlazorWeb.Shared project
+            builder.Services.AddSingleton<IFormFactor, FormFactor>();
+
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Logging.AddDebug();
 #endif
-
-            builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
             return builder.Build();
         }

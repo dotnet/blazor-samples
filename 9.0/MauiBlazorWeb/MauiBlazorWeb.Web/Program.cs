@@ -1,5 +1,5 @@
+using MauiBlazorWeb.Shared.Services;
 using MauiBlazorWeb.Web.Components;
-using MauiBlazorWeb.Shared.Interfaces;
 using MauiBlazorWeb.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<IFormFactor, FormFactor>();
+// Add device-specific services used by the MauiBlazorWeb.Shared project
+builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
 var app = builder.Build();
 
@@ -22,7 +23,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapStaticAssets();
+app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()

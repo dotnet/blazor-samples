@@ -1,11 +1,17 @@
-using MauiBlazorWeb.Shared.Interfaces;
+using MauiBlazorWeb.Shared.Services;
 
-namespace MauiBlazorWeb.Services;
-
-public class FormFactor : IFormFactor
+namespace MauiBlazorWeb.Services
 {
-    public string GetFormFactor() => DeviceInfo.Idiom.ToString();
+    public class FormFactor : IFormFactor
+    {
+        public string GetFormFactor()
+        {
+            return DeviceInfo.Idiom.ToString();
+        }
 
-    public string GetPlatform() =>
-        DeviceInfo.Platform.ToString() + " - " + DeviceInfo.VersionString;
+        public string GetPlatform()
+        {
+            return DeviceInfo.Platform.ToString() + " - " + DeviceInfo.VersionString;
+        }
+    }
 }
