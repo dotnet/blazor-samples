@@ -159,7 +159,7 @@ else
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseAntiforgery();
 
 app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>

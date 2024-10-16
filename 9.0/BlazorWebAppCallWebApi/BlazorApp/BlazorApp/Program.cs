@@ -76,7 +76,7 @@ app.UseCors("server");
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.MapStaticAssets();
 app.UseAntiforgery();
 
 // Set up API endpoints and methods
