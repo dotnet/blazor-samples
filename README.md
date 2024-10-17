@@ -25,7 +25,8 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 * Blazor with SignalR: [Use ASP.NET Core SignalR with Blazor](https://learn.microsoft.com/aspnet/core/blazor/tutorials/signalr-blazor)
 * Blazor WebAssembly scopes-enabled logging: [ASP.NET Core Blazor logging: Client-side log scopes](https://learn.microsoft.com/aspnet/core/blazor/fundamentals/logging#client-side-log-scopes)
 * Blazor WebAssembly with ASP.NET Core Identity: [Blazor WebAssembly with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity)
-* Blazor Web App with OIDC and Aspire (`BlazorWebAppOidcBff`/`BlazorWebAppOidc`): [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/server/blazor-web-app-with-oidc)
+* Blazor Web App with Microsoft Entra ID (`BlazorWebAppEntra`): [Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra)
+* Blazor Web App with OIDC and Aspire (`BlazorWebAppOidcBff`/`BlazorWebAppOidc`): [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc)
 * Call a web API (`BlazorWebAppCallWebApi`/`BlazorWebAssemblyCallWebApi`): [Call a web API from ASP.NET Core Blazor](https://learn.microsoft.com/aspnet/core/blazor/call-web-api)
 * .NET MAUI Blazor Hybrid app with a Blazor Web App and a shared UI RCL: [Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app)
 
