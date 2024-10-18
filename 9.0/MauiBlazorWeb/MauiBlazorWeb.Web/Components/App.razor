@@ -1,13 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
-    <link rel="stylesheet" href="_content/MauiBlazorWeb.Shared/bootstrap/bootstrap.min.css" />
-    <link rel="stylesheet" href="_content/MauiBlazorWeb.Shared/app.css" />
-    <link rel="stylesheet" href="MauiBlazorWeb.Web.styles.css" />
+    <link rel="stylesheet" href="@Assets["_content/MauiBlazorWeb.Shared/lib/bootstrap/dist/css/bootstrap.min.css"]" />
+    <link rel="stylesheet" href="@Assets["_content/MauiBlazorWeb.Shared/app.css"]" />
+    <link rel="stylesheet" href="@Assets["MauiBlazorWeb.Web.styles.css"]" />
+    <ImportMap />
     <link rel="icon" type="image/png" href="_content/MauiBlazorWeb.Shared/favicon.png" />
     <HeadOutlet @rendermode="InteractiveServer" />
 </head>
