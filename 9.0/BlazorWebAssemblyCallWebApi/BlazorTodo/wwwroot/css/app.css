@@ -37,9 +37,11 @@ a, .btn-link {
 }
 
 #blazor-error-ui {
+    color-scheme: light only;
     background: lightyellow;
     bottom: 0;
     box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
     display: none;
     left: 0;
     padding: 0.6rem 1.25rem 0.7rem 1.25rem;
@@ -102,32 +104,11 @@ code {
     color: #c02d76;
 }
 
-label {
-    font-weight: bold;
-    color: darkblue;    
-    margin: 3px;
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
 }
 
-input {
-    margin: 3px;
-}
-
-.flex-outer div {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.flex-outer div:last-child {
-    margin-top: 20px;
-}
-
-.flex-outer div label,
-.flex-outer div input {
-    flex: 1 0 120px;
-    max-width: 220px;
-}
-
-.flex-outer div label + * {
-    flex: 1 0 120px;
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+    text-align: start;
 }
