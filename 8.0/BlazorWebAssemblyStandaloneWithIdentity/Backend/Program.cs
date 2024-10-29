@@ -138,11 +138,6 @@ app.MapPost("/data-processing-2", ([FromBody] FormModel model) =>
 
 app.Run();
 
-// Identity user
-class AppUser : IdentityUser
-{
-}
-
 // Identity database
 class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<AppUser>(options)
 {
