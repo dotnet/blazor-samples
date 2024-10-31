@@ -31,7 +31,7 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 * Blazor WebAssembly scopes-enabled logging (`BlazorWebAssemblyScopesLogger`): [ASP.NET Core Blazor logging: Client-side log scopes](https://learn.microsoft.com/aspnet/core/blazor/fundamentals/logging#client-side-log-scopes)
 * Blazor WebAssembly with ASP.NET Core Identity (`BlazorWebAssemblyStandaloneWithIdentity`): [Blazor WebAssembly with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity)
 * Blazor WebAssembly with app roles, built-in Azure Administrator roles, and Azure security groups (`BlazorWebAssemblyEntraGroupsAndRoles`): [Microsoft Entra (ME-ID) groups, Administrator Roles, and App Roles](https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/microsoft-entra-id-groups-and-roles)
-* WebAssembly Broswer App import-export interop (`WASMBroswerAppImportExportInterop`): [JavaScript [JSImport]/[JSExport] interop with a WebAssembly Browser App project](https://learn.microsoft.com/aspnet/core/client-side/dotnet-interop/wasm-browser-app)
+* WebAssembly Browser App import-export interop (`WASMBroswerAppImportExportInterop`): [JavaScript [JSImport]/[JSExport] interop with a WebAssembly Browser App project](https://learn.microsoft.com/aspnet/core/client-side/dotnet-interop/wasm-browser-app)
 
 ## Snippet sample apps for article code examples
 
