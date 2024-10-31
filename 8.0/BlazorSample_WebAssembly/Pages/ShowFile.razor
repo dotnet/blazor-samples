@@ -1,5 +1,5 @@
 @page "/show-file"
-@inject NavigationManager NavigationManager
+@inject NavigationManager Navigation
 @inject HttpClient Http
 @inject IJSRuntime JS
 
@@ -24,7 +24,7 @@
 {
     private async Task<(Stream, string?)> DownloadFileAsync(string url)
     {
-        var absoluteUrl = NavigationManager.ToAbsoluteUri(url);
+        var absoluteUrl = Navigation.ToAbsoluteUri(url);
         Console.WriteLine($"Downloading file from {absoluteUrl}");
 
         var response = await Http.GetAsync(absoluteUrl);
