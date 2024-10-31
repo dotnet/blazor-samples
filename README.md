@@ -21,6 +21,8 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 
 ## Sample app article links (latest release)
 
+* General Blazor samples referenced by the full Blazor documentation set (`BlazorSample_BlazorWebApp`/`BlazorSample_BlazorWebAssembly`)
+
 * .NET MAUI Blazor Hybrid app with a Blazor Web App and a shared UI RCL (`MauiBlazorWeb`)<br>[Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app)
 
 * Blazor with SignalR (`BlazorSignalRApp`)<br>[Use ASP.NET Core SignalR with Blazor](https://learn.microsoft.com/aspnet/core/blazor/tutorials/signalr-blazor)
