@@ -19,16 +19,29 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 * [Fork this repository](https://docs.github.com/get-started/quickstart/fork-a-repo) and [clone it](https://docs.github.com/repositories/creating-and-managing-repositories/cloning-a-repository) to your local system.
 * Select the **Code** button. Select **Download ZIP** to save the repository locally. Extract the saved Zip archive (`.zip`) to access the sample apps.
 
-## Sample app article links
+## Sample app article links (latest release)
 
-* Blazor Server with EF Core: [ASP.NET Core Blazor Server with Entity Framework Core (EFCore)](https://learn.microsoft.com/aspnet/core/blazor/blazor-server-ef-core)
-* Blazor with SignalR: [Use ASP.NET Core SignalR with Blazor](https://learn.microsoft.com/aspnet/core/blazor/tutorials/signalr-blazor)
-* Blazor WebAssembly scopes-enabled logging: [ASP.NET Core Blazor logging: Client-side log scopes](https://learn.microsoft.com/aspnet/core/blazor/fundamentals/logging#client-side-log-scopes)
-* Blazor WebAssembly with ASP.NET Core Identity: [Blazor WebAssembly with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity)
-* Blazor Web App with Microsoft Entra ID (`BlazorWebAppEntra`): [Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra)
-* Blazor Web App with OIDC and Aspire (`BlazorWebAppOidcBff`/`BlazorWebAppOidc`): [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc)
-* Call a web API (`BlazorWebAppCallWebApi`/`BlazorWebAssemblyCallWebApi`): [Call a web API from ASP.NET Core Blazor](https://learn.microsoft.com/aspnet/core/blazor/call-web-api)
-* .NET MAUI Blazor Hybrid app with a Blazor Web App and a shared UI RCL: [Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app)
+* .NET MAUI Blazor Hybrid app with a Blazor Web App and a shared UI RCL (`MauiBlazorWeb`)<br>[Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app)
+
+* Blazor with SignalR (`BlazorSignalRApp`)<br>[Use ASP.NET Core SignalR with Blazor](https://learn.microsoft.com/aspnet/core/blazor/tutorials/signalr-blazor)
+
+* Blazor Web App movie database app tutorial (`BlazorWebAppMovies`)<br>[Build a Blazor movie database app](https://learn.microsoft.com/aspnet/core/blazor/tutorials/movie-database-app)
+
+* Blazor Web App with EF Core (`BlazorWebAppEFCore`)<br>[ASP.NET Core Blazor with Entity Framework Core (EF Core)](https://learn.microsoft.com/aspnet/core/blazor/blazor-ef-core)
+
+* Blazor Web App with Microsoft Entra ID (`BlazorWebAppEntra`)<br>[Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra)
+
+* Blazor Web App with OIDC and Aspire (`BlazorWebAppOidcBff`/`BlazorWebAppOidc`)<br>[Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc)
+
+* Call a web API (`BlazorWebAppCallWebApi`/`BlazorWebAssemblyCallWebApi`/`BlazorWebAppCallWebApi_Weather`)<br>[Call a web API from ASP.NET Core Blazor](https://learn.microsoft.com/aspnet/core/blazor/call-web-api)
+
+* Blazor WebAssembly scopes-enabled logging (`BlazorWebAssemblyScopesLogger`)<br>[ASP.NET Core Blazor logging: Client-side log scopes](https://learn.microsoft.com/aspnet/core/blazor/fundamentals/logging#client-side-log-scopes)
+
+* Blazor WebAssembly with ASP.NET Core Identity (`BlazorWebAssemblyStandaloneWithIdentity`)<br>[Blazor WebAssembly with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/standalone-with-identity)
+
+* Blazor WebAssembly with app roles, built-in Azure Administrator roles, and Azure security groups (`BlazorWebAssemblyEntraGroupsAndRoles`)<br>[Microsoft Entra (ME-ID) groups, Administrator Roles, and App Roles](https://learn.microsoft.com/aspnet/core/blazor/security/webassembly/microsoft-entra-id-groups-and-roles)
+
+* WebAssembly Browser App import-export interop (`WASMBroswerAppImportExportInterop`)<br>[JavaScript [JSImport]/[JSExport] interop with a WebAssembly Browser App project](https://learn.microsoft.com/aspnet/core/client-side/dotnet-interop/wasm-browser-app)
 
 ## Snippet sample apps for article code examples
 

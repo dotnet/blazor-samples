@@ -1,10 +1,8 @@
 # JavaScript Import-Export Interop WebAssembly Browser App
 
-This sample app demonstrates JavaScript `[JSImport]`/`[JSExport]` interop in .NET WebAssembly with a WebAssembly Browser App.
+This sample app demonstrates JavaScript `[JSImport]`/`[JSExport]` interop in .NET WebAssembly with a WebAssembly Browser App
 
-<!-- Enable link after publishing article
-For more information, see [JavaScript `[JSImport]`/`[JSExport]` interop in .NET WebAssembly](https://learn.microsoft.com/aspnet/core/client-side/dotnet-interop/).
--->
+For more information, see [JavaScript `[JSImport]`/`[JSExport]` interop with a WebAssembly Browser App project](https://learn.microsoft.com/aspnet/core/client-side/dotnet-interop/wasm-browser-app).
 
 ## Steps to run the sample
 
