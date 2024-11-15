@@ -38,7 +38,6 @@
 @code {
     private BlazorWebAppMoviesContext context = default!;
     private PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
-
     private string titleFilter = string.Empty;
 
     private IQueryable<Movie> FilteredMovies =>
