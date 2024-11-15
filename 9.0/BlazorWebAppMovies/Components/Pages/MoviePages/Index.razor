@@ -4,16 +4,16 @@
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using BlazorWebAppMovies.Models
 @using BlazorWebAppMovies.Data
-@inject IDbContextFactory<BlazorWebAppMovies.Data.BlazorWebAppMoviesContext> DbFactory
 @implements IAsyncDisposable
+@inject IDbContextFactory<BlazorWebAppMovies.Data.BlazorWebAppMoviesContext> DbFactory
 
 <PageTitle>Index</PageTitle>
 
 <h1>Index</h1>
 
-<p>
+<div>
     <input type="search" @bind="titleFilter" @bind:event="oninput" />
-</p>
+</div>
 
 <p>
     <a href="movies/create">Create New</a>
@@ -36,17 +36,18 @@
 <Paginator State="pagination" />
 
 @code {
-    private PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
-    private string titleFilter = string.Empty;
     private BlazorWebAppMoviesContext context = default!;
+    private PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+
+    private string titleFilter = string.Empty;
+
+    private IQueryable<Movie> FilteredMovies =>
+        context.Movie.Where(m => m.Title!.Contains(titleFilter));
 
     protected override void OnInitialized()
     {
         context = DbFactory.CreateDbContext();
     }
-
-    private IQueryable<Movie> FilteredMovies => 
-        context.Movie.Where(m => m.Title!.Contains(titleFilter));
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
 }
