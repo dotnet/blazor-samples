@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.11.35017.193
+VisualStudioVersion = 17.13.35507.96 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppMovies", "BlazorWebAppMovies.csproj", "{479B0EE4-B630-471F-B978-C6F151411267}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppMovies", "BlazorWebAppMovies.csproj", "{CBD0A073-A91F-4D3B-B944-7FE075360187}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{479B0EE4-B630-471F-B978-C6F151411267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{479B0EE4-B630-471F-B978-C6F151411267}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{479B0EE4-B630-471F-B978-C6F151411267}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{479B0EE4-B630-471F-B978-C6F151411267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBD0A073-A91F-4D3B-B944-7FE075360187}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBD0A073-A91F-4D3B-B944-7FE075360187}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBD0A073-A91F-4D3B-B944-7FE075360187}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBD0A073-A91F-4D3B-B944-7FE075360187}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {5C56671E-3719-47B0-B877-BB852A8290E8}
+		SolutionGuid = {CC1651A4-7652-4C58-A1EB-CD1C58C5A574}
 	EndGlobalSection
 EndGlobal
