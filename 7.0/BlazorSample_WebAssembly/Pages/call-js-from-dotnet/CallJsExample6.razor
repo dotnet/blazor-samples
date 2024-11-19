@@ -38,13 +38,7 @@
     {
         if (module is not null)
         {
-            try
-            {
-                await module.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-            }
+            await module.DisposeAsync();
         }
     }
 }

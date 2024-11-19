@@ -39,24 +39,12 @@
     {
         if (mapInstance is not null)
         {
-            try
-            {
-                await mapInstance.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-            }
+            await mapInstance.DisposeAsync();
         }
 
         if (mapModule is not null)
         {
-            try
-            {
-                await mapModule.DisposeAsync();
-            }
-            catch (JSDisconnectedException)
-            {
-            }
+            await mapModule.DisposeAsync();
         }
     }
 }
