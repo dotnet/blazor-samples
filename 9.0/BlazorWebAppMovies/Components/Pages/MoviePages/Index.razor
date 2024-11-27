@@ -19,25 +19,27 @@
     <a href="movies/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="FilteredMovies" Pagination="pagination">
-    <PropertyColumn Property="movie => movie.Title" Sortable="true" />
-    <PropertyColumn Property="movie => movie.ReleaseDate" Title="Release Date" />
-    <PropertyColumn Property="movie => movie.Genre" />
-    <PropertyColumn Property="movie => movie.Price" />
-    <PropertyColumn Property="movie => movie.Rating" />
+<div>
+    <QuickGrid Class="table" Items="FilteredMovies" Pagination="pagination">
+        <PropertyColumn Property="movie => movie.Title" Sortable="true" />
+        <PropertyColumn Property="movie => movie.ReleaseDate" Title="Release Date" />
+        <PropertyColumn Property="movie => movie.Genre" />
+        <PropertyColumn Property="movie => movie.Price" />
+        <PropertyColumn Property="movie => movie.Rating" />
 
-    <TemplateColumn Context="movie">
-        <a href="@($"movies/edit?id={movie.Id}")">Edit</a> |
-        <a href="@($"movies/details?id={movie.Id}")">Details</a> |
-        <a href="@($"movies/delete?id={movie.Id}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+        <TemplateColumn Context="movie">
+            <a href="@($"movies/edit?id={movie.Id}")">Edit</a> |
+            <a href="@($"movies/details?id={movie.Id}")">Details</a> |
+            <a href="@($"movies/delete?id={movie.Id}")">Delete</a>
+        </TemplateColumn>
+    </QuickGrid>
+</div>
 
 <Paginator State="pagination" />
 
 @code {
     private BlazorWebAppMoviesContext context = default!;
-    private PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+    private PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
     private string titleFilter = string.Empty;
 
     private IQueryable<Movie> FilteredMovies =>
