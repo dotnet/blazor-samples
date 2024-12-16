@@ -1,0 +1,8 @@
+@code {
+    [CascadingParameter] private ThemeProvider ThemeProvider { get; set; }
+}
+
+<div style="margin-top: 20px;">
+    <h2>Child Component</h2>
+    <p>The theme from the parent is: <strong>@ThemeProvider.ThemeName</strong>.</p>
+</div>

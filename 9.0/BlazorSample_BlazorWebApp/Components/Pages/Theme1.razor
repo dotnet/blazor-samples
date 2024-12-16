@@ -1,0 +1,39 @@
+@page "/theme-1"
+
+<PageTitle>Theme1</PageTitle>
+
+<div class="@currentTheme" style="height: 100vh;">
+    <h1>Blazor Theme Example</h1>
+    <p>The current theme is <strong>@themeName</strong>.</p>
+
+    <button class="theme-toggle-button" @onclick="ChangeTheme">
+        Change Theme (Current: @themeName)
+    </button>
+</div>
+
+@code {
+    private readonly string[] themes = new string[] { "light-theme", "dark-theme", "blue-theme" };
+
+    private int currentThemeIndex = 0;
+    private string currentTheme = string.Empty;
+    private string themeName => currentTheme switch
+    {
+        "light-theme" => "Light",
+        "dark-theme" => "Dark",
+        "blue-theme" => "Blue",
+        _ => "Light"
+    };
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        currentTheme = themes[currentThemeIndex];
+    }
+
+    private void ChangeTheme()
+    {
+        currentThemeIndex = (currentThemeIndex + 1) % themes.Length;
+
+        currentTheme = themes[currentThemeIndex];
+    }
+}

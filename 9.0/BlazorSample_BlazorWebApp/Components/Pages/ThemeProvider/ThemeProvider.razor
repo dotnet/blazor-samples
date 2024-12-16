@@ -1,0 +1,43 @@
+<CascadingValue Value="this">
+    <div class="@CurrentTheme" style="height: 100vh; padding: 40px">
+        <h1>Blazor Theme Example</h1>
+        <p>The current theme is <strong>@ThemeName</strong>.</p>
+
+        <button class="theme-toggle-button" @onclick="ChangeTheme">
+            Change Theme (Current: @ThemeName)
+        </button>
+
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    private readonly string[] themes = new string[] { "light-theme", "dark-theme", "blue-theme" };
+
+    private int currentThemeIndex = 0;
+    public string CurrentTheme => themes[currentThemeIndex];
+    public string ThemeName => CurrentTheme switch
+    {
+        "light-theme" => "Light",
+        "dark-theme" => "Dark",
+        "blue-theme" => "Blue",
+        _ => "Light"
+    };
+
+    // protected override void OnInitialized()
+    // {
+    //     base.OnInitialized();
+    //     currentTheme = themes[currentThemeIndex];
+    // }
+
+    private void ChangeTheme()
+    {
+        currentThemeIndex = (currentThemeIndex + 1) % themes.Length;
+
+        // currentTheme = themes[currentThemeIndex];
+        StateHasChanged();
+    }
+}

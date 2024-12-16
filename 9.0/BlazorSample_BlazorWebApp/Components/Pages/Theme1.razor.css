@@ -1,0 +1,28 @@
+.light-theme {
+    background-color: #f3f3f3;
+    color: #1e1e1e;
+}
+
+.dark-theme {
+    background-color: #1e1e1e;
+    color: #f3f3f3;
+}
+
+.blue-theme {
+    background-color: #052e4e;
+    color: #f3f3f3;
+}
+
+.theme-toggle-button {
+    margin: 10px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #005499;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+    .theme-toggle-button:hover {
+        background-color: #003d73;
+    }
