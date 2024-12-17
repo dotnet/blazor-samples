@@ -32,7 +32,7 @@ public class TimerService : IDisposable
     {
         elapsedCount += 1;
         await notifier.Update("elapsedCount", elapsedCount);
-        logger.LogInformation($"elapsedCount: {elapsedCount}");
+        logger.LogInformation("elapsedCount: {ElapsedCount}", elapsedCount);
     }
 
     public void Dispose()
