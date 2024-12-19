@@ -39,16 +39,7 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         // ........................................................................
         // The following paths must match the redirect and post logout redirect 
         // paths configured when registering the application with the OIDC provider. 
-        // For Microsoft Entra ID, this is accomplished through the "Authentication" 
-        // blade of the application's registration in the Azure portal. Both the
-        // signin and signout paths must be registered as Redirect URIs. The default 
-        // values are "/signin-oidc" and "/signout-callback-oidc".
-        // Microsoft Identity currently only redirects back to the 
-        // SignedOutCallbackPath if authority is 
-        // https://login.microsoftonline.com/{TENANT ID}/v2.0/ as it is above. 
-        // You can use the "common" authority instead, and logout redirects back to 
-        // the Blazor app. For more information, see 
-        // https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/5783
+        // The default values are "/signin-oidc" and "/signout-callback-oidc".
 
         //oidcOptions.CallbackPath = new PathString("/signin-oidc");
         //oidcOptions.SignedOutCallbackPath = new PathString("/signout-callback-oidc");
