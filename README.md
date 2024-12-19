@@ -26,8 +26,11 @@ In the following example, the `git sparse-checkout set` command specifies the pa
 * Replace the `{VERSION}` placeholder with the version folder.
 * Replace the `{SAMPLE FOLDER}` placeholder with the sample app's folder.
 
+In a command shell, navigate to the folder where you would like to clone the sample. Execute the following commands in the command shell:
+
 ```cli
 git clone --depth 1 --filter=blob:none https://github.com/dotnet/blazor-samples.git --sparse
+cd blazor-samples
 git sparse-checkout init --cone
 git sparse-checkout set {VERSION}/{SAMPLE FOLDER}
 ```
