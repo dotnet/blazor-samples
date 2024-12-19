@@ -21,16 +21,16 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 
 To obtain a single sample app and the last commit, use [`git sparse-checkout`](https://git-scm.com/docs/git-sparse-checkout).
 
-In the following example:
+In the following example, the `git sparse-checkout set` command specifies the path to the sample folder:
 
-* Replace the `{VERSION}` placeholder with the version folder. The directory is changed with the `cd` command to the version folder.
-* Replace the `{SAMPLE FOLDER}` placeholder with the sample app's folder. The `git sparse-checkout set` command specifies the path to the sample folder.
+* Replace the `{VERSION}` placeholder with the version folder.
+* Replace the `{SAMPLE FOLDER}` placeholder with the sample app's folder.
 
 ```cli
 git clone --depth 1 --filter=blob:none https://github.com/dotnet/blazor-samples.git --sparse
-cd {VERSION}
+cd blazor-samples
 git sparse-checkout init --cone
-git sparse-checkout set {SAMPLE FOLDER}
+git sparse-checkout set {VERSION}/{SAMPLE FOLDER}
 ```
 
 ## Sample app article links (latest release)
