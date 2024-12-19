@@ -23,16 +23,26 @@ To obtain a single sample app and only its last commit, use [`git sparse-checkou
 
 In the following example, the `git sparse-checkout set` command specifies the path to the sample folder:
 
-* Replace the `{VERSION}` placeholder with the version folder.
-* Replace the `{SAMPLE FOLDER}` placeholder with the sample app's folder.
+* Replace the `{VERSION FOLDER}` placeholder with the version folder.
+* Replace the `{SAMPLE FOLDER}` placeholder with the sample folder.
 
-In a command shell, navigate to the folder where you would like to clone the sample. Execute the following commands in the command shell:
+In a command shell, navigate to the folder where you would like to clone the sample. Execute the following commands in the command shell passing the version/sample folder path to the `git sparse-checkout set` command:
 
 ```cli
 git clone --depth 1 --filter=blob:none https://github.com/dotnet/blazor-samples.git --sparse
 cd blazor-samples
 git sparse-checkout init --cone
-git sparse-checkout set {VERSION}/{SAMPLE FOLDER}
+git sparse-checkout set {VERSION FOLDER}/{SAMPLE FOLDER}
+```
+
+The following [PowerShell](https://learn.microsoft.com/powershell/) example obtains the 9.0 Blazor Web App sample and places it in the user's `Documents` folder using PowerShell's handy `~/documents` path for the change directory (`cd`) command:
+
+```powershell
+cd "~/documents"
+git clone --depth 1 --filter=blob:none https://github.com/dotnet/blazor-samples.git --sparse
+cd blazor-samples
+git sparse-checkout init --cone
+git sparse-checkout set 9.0/BlazorSample_BlazorWebApp
 ```
 
 ## Sample app article links (latest release)
