@@ -19,6 +19,20 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 * [Fork this repository](https://docs.github.com/get-started/quickstart/fork-a-repo) and [clone it](https://docs.github.com/repositories/creating-and-managing-repositories/cloning-a-repository) to your local system.
 * Select the **Code** button. Select **Download ZIP** to save the repository locally. Extract the saved Zip archive (`.zip`) to access the sample apps.
 
+To obtain a single sample app, use [`git sparse-checkout`](https://git-scm.com/docs/git-sparse-checkout) to only download the sample subfolder and the last commit.
+
+Example:
+
+```
+git clone --depth 1 --filter=blob:none https://github.com/dotnet/blazor-samples.git --sparse
+cd 9.0
+git sparse-checkout init --cone
+git sparse-checkout set BlazorSample_BlazorWebApp
+```
+
+In the preceding example, the directory is changed with the `cd` command to the `9.0` folder. The `git sparse-checkout set` command specifies the path to the sample folder that you want to download. Replace 
+`BlazorSample_BlazorWebApp` with the sample folder that you want to download.
+
 ## Sample app article links (latest release)
 
 * General Blazor samples referenced by the full Blazor documentation set (`BlazorSample_BlazorWebApp`/`BlazorSample_BlazorWebAssembly`)
