@@ -19,7 +19,7 @@ To obtain a local copy of the sample apps in this repository, use ***either*** o
 * [Fork this repository](https://docs.github.com/get-started/quickstart/fork-a-repo) and [clone it](https://docs.github.com/repositories/creating-and-managing-repositories/cloning-a-repository) to your local system.
 * Select the **Code** button. Select **Download ZIP** to save the repository locally. Extract the saved Zip archive (`.zip`) to access the sample apps.
 
-To obtain a single sample app and the last commit, use [`git sparse-checkout`](https://git-scm.com/docs/git-sparse-checkout).
+To obtain a single sample app and only its last commit, use [`git sparse-checkout`](https://git-scm.com/docs/git-sparse-checkout).
 
 In the following example, the `git sparse-checkout set` command specifies the path to the sample folder:
 
