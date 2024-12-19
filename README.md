@@ -28,7 +28,6 @@ In the following example, the `git sparse-checkout set` command specifies the pa
 
 ```cli
 git clone --depth 1 --filter=blob:none https://github.com/dotnet/blazor-samples.git --sparse
-cd blazor-samples
 git sparse-checkout init --cone
 git sparse-checkout set {VERSION}/{SAMPLE FOLDER}
 ```
