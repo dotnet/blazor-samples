@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4.2.2
 
     - name: Publish app
       run: dotnet publish -c Release
@@ -24,7 +24,7 @@ jobs:
 
     - name: GitHub Pages
       if: success()
-      uses: crazy-max/ghaction-github-pages@v4
+      uses: crazy-max/ghaction-github-pages@v4.1.0
       with:
         target_branch: gh-pages
         build_dir: ${{ env.PUBLISH_DIR }}
