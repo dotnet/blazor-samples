@@ -38,11 +38,11 @@ jobs:
       - name: Publish app
         run: dotnet publish 9.0/BlazorWebAssemblyXrefGenerator -c Release
 
-      # name: Rewrite base href
-      #  uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
-      #  with:
-      #    html_path: ${{ env.PUBLISH_DIR }}/index.html
-      #    base_href: /9.0/BlazorWebAssemblyXrefGenerator/
+      - name: Rewrite base href
+        uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
+        with:
+          html_path: ${{ env.PUBLISH_DIR }}/index.html
+          base_href: /blazor-samples/9.0/BlazorWebAssemblyXrefGenerator/
         
       - name: Setup Pages
         uses: actions/configure-pages@v5
