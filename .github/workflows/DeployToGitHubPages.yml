@@ -11,14 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-    - task: DotNetCoreCLI@2
-      displayName: 'dotnet workload restore'
-      inputs:
-        command: 'custom'
-        custom: 'workload'
-        arguments: 'restore
-      
+    steps:  
     - uses: actions/checkout@v4.2.2
 
     - name: Publish app
