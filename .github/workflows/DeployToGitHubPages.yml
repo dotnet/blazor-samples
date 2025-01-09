@@ -25,9 +25,12 @@ jobs:
 
     - name: GitHub Pages
       if: success()
-      uses: crazy-max/ghaction-github-pages@v1.5.1
+      uses: crazy-max/ghaction-github-pages@v4.1.0
       with:
         target_branch: gh-pages
-        build_dir: ${{ env.PUBLISH_DIR }}
+        build_dir: /home/runner/work/blazor-samples/blazor-samples/9.0/BlazorWebAssemblyXrefGenerator/bin/Release/net8.0/publish/wwwroot
+        absolute_build_dir: true
+        jekyll: false
+        verbose: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
