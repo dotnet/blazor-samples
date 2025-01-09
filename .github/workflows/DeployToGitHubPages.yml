@@ -1,6 +1,6 @@
 name: DeployToGitHubPages
 env:
-  PUBLISH_DIR: 9.0\BlazorWebAssemblyXrefGenerator\bin\Release\net9.0\browser-wasm\publish\wwwroot
+  PUBLISH_DIR: /home/runner/work/blazor-samples/blazor-samples/9.0/BlazorWebAssemblyXrefGenerator/bin/Release/net8.0/publish/wwwroot
 
 # Controls when the action will run
 on:
