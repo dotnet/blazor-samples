@@ -1,0 +1,32 @@
+name: DeployToGitHubPages
+env:
+  PUBLISH_DIR: bin/Release/netstandard2.1/publish/wwwroot
+
+# Controls when the action will run
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Publish app
+      run: dotnet publish -c Release
+
+    - name: Rewrite base href
+      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
+      with:
+        html_path: ${{ env.PUBLISH_DIR }}/index.html
+        base_href: /XrefGenerator/
+
+    - name: GitHub Pages
+      if: success()
+      uses: crazy-max/ghaction-github-pages@v4
+      with:
+        target_branch: gh-pages
+        build_dir: ${{ env.PUBLISH_DIR }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
