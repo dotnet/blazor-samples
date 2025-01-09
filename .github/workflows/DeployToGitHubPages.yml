@@ -14,12 +14,20 @@ jobs:
     steps:  
     - uses: actions/checkout@v4.2.2
 
+    - name: Publish app
+      run: dotnet publish 9.0/BlazorWebAssemblyXrefGenerator -c Release
+
+    - name: Rewrite base href
+      uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
+      with:
+        html_path: ${{ env.PUBLISH_DIR }}/index.html
+        base_href: /9.0/BlazorWebAssemblyXrefGenerator/
+
     - name: GitHub Pages
       if: success()
       uses: crazy-max/ghaction-github-pages@v4.1.0
       with:
         target_branch: gh-pages
         build_dir: ${{ env.PUBLISH_DIR }}
-        jekyll: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
