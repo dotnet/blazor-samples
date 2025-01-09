@@ -31,5 +31,6 @@ jobs:
       with:
         target_branch: gh-pages
         build_dir: ${{ env.PUBLISH_DIR }}
+        jekyll: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
