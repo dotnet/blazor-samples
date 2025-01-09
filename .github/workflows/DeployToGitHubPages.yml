@@ -29,7 +29,7 @@ jobs:
       if: success()
       uses: crazy-max/ghaction-github-pages@v4.1.0
       with:
-        target_branch: gh-pages
+        target_branch: github-pages
         build_dir: ${{ env.PUBLISH_DIR }}
         jekyll: false
       env:
