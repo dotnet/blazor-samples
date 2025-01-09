@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: '9.0/BlazorWebAssemblyXrefGenerator/bin/Release/net8.0/publish/wwwroot'
+          path: '/9.0/BlazorWebAssemblyXrefGenerator/bin/Release/net8.0/publish/wwwroot'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
