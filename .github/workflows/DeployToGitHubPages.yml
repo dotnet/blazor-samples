@@ -28,8 +28,8 @@ jobs:
       uses: crazy-max/ghaction-github-pages@v4.1.0
       with:
         target_branch: gh-pages
-        build_dir: 9.0/BlazorWebAssemblyXrefGenerator/bin/Release/net8.0/publish/wwwroot
-        absolute_build_dir: true
+        build_dir: '9.0/BlazorWebAssemblyXrefGenerator/bin/Release/net8.0/publish/wwwroot'
+        absolute_build_dir: false
         jekyll: false
         verbose: true
       env:
