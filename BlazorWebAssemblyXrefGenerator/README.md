@@ -24,9 +24,9 @@ GitHub settings:
   * **Custom domain**: Set if you intend to use a custom domain.
   * **Enforce HTTPS**> Enabled (selected)
 
-The GitHub-hosted Ubuntu (latest) server has a version of the .NET SDK installed. You can remove the [`actions/setup-dotnet` Action](https://github.com/actions/setup-dotnet) script step that installs the .NET SDK if the SDK pre-installed with the GitHub image is sufficient to compile the app. To determine the .NET SDK installed for `ubuntu-latest`:
+The GitHub-hosted Ubuntu (latest) server has a version of the .NET SDK pre-installed installed. You can remove the [`actions/setup-dotnet` Action](https://github.com/actions/setup-dotnet) step from the `static.yml` script if the pre-installed .NET SDK is sufficient to compile the app. To determine the .NET SDK installed for `ubuntu-latest`:
 
 1. Go to the [**Available Images** section of the `actions/runner-images` GitHub repository](https://github.com/actions/runner-images?tab=readme-ov-file#available-images).
 1. Locate the `ubuntu-latest` image, which is the first table row.
 1. Select the link in the `Included Software` column.
-1. Scroll down to the [*.NET Tools* section](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#net-tools) to see the .NET Core SDK installed with the image.
+1. Scroll down to the *.NET Tools* section to see the .NET Core SDK installed with the image.
