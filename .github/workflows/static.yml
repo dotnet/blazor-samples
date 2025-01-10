@@ -40,7 +40,7 @@ jobs:
       - name: Get latest .NET SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0.0'
+          dotnet-version: '9.0'
 
       - name: Publish app
         run: dotnet publish BlazorWebAssemblyXrefGenerator -c Release
