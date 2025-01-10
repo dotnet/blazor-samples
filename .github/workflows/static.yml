@@ -1,13 +1,13 @@
 # Simple workflow for deploying static content to GitHub Pages
 name: Deploy static content to Pages
 env:
-  PUBLISH_DIR: 9.0/BlazorWebAssemblyXrefGenerator/bin/Release/net8.0/publish/wwwroot
+  PUBLISH_DIR: BlazorWebAssemblyXrefGenerator/bin/Release/net8.0/publish/wwwroot
 
 on:
   # Runs on pushes targeting the default branch
   push:
     paths:
-      - 9.0/BlazorWebAssemblyXrefGenerator/**
+      - BlazorWebAssemblyXrefGenerator/**
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -30,13 +30,20 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Get latest .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.0'
+
       - name: Publish app
-        run: dotnet publish 9.0/BlazorWebAssemblyXrefGenerator -c Release
+        run: dotnet publish BlazorWebAssemblyXrefGenerator -c Release
 
       - name: Rewrite base href
         uses: SteveSandersonMS/ghaction-rewrite-base-href@v1
@@ -46,10 +53,12 @@ jobs:
         
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.PUBLISH_DIR }}
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
