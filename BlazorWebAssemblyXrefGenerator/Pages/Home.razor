@@ -1,16 +1,14 @@
 @page "/"
-@using Microsoft.Extensions.Http
+@using System.Net
+@using System.Text.RegularExpressions
 @inject IHttpClientFactory ClientFactory
 
-<div>
+<div style="margin-bottom:15px">
     <h1>Namespace/Member</h1>
-
-    <label for="searchText"></label>
-    <input id="searchText" style="width:300px" @bind="searchText" class="form-control" />
-    <button type="button" @onclick="GetSearchResults" class="btn btn-default">Search</button>
-    <button type="button" class="btn btn-default" onclick="document.getElementById('searchText').value=''">Clear</button>
+    <input id="searchText" @bind="searchText" class="form-control" aria-label="Search Text" />
+    <button type="button" @onclick="GetSearchResults" class="btn btn-primary">Search</button>
+    <button type="button" class="btn btn-secondary" onclick="document.getElementById('searchText').value=''">Clear</button>
 </div>
-
 
 <h1>Links</h1>
 
@@ -21,32 +19,20 @@
         {
             <li style="margin-bottom:5px">
                 <div style="font-size:1.4em;color:green;font-weight:bold">@result.Data.DisplayName</div>
-                <div><b>Item Type:</b> @result.Data.ItemType <b>Item Kind:</b> @result.Data.ItemKind</div>
+                <div><b>Item Type:</b> @result.Data.ItemType</div>
                 <div><b>Description:</b> @result.Data.Description</div>
-
-                @if (result.Data.ItemKind == "Constructor")
-                {
-
-                    <div><input style="margin-bottom:3px;width:100%" id="m@(result.Index)0" value="[LINK_TEXT](@result.Data.Link)"></div>
-                    <div><input style="margin-bottom:3px;width:100%" id="m@(result.Index)1" value="@result.Data.Link"></div>
-                    <div>
-                        <button type="button" class="btn" onclick=@("copyToClipboard('m" + result.Index + "')0")>Copy (Custom Link Text)</button>
-                        <button type="button" class="btn" onclick=@($"copyToClipboard('m" + result.Index + "')1")>Copy (Member Only)</button>
-                    </div>
-                }
-                else
-                {
-                    <div><input style="margin-bottom:3px;width:100%" id="m@(result.Index)0" value="<xref:@result.Data.Link>"></div>
-                    <div><input style="margin-bottom:3px;width:100%" id="m@(result.Index)1" value="<xref:@result.Data.Link?displayProperty=fullName>"></div>
-                    <div><input style="margin-bottom:3px;width:100%" id="m@(result.Index)2" value="[LINK_TEXT](xref:@result.Data.Link)"></div>
-                    <div><input style="margin-bottom:3px;width:100%" id="m@(result.Index)3" value="xref:@result.Data.Link"></div>
-                    <div>
-                        <button type="button" class="btn" onclick=@($"copyToClipboard('m" + result.Index + "0')")>Copy</button>
-                        <button type="button" class="btn" onclick=@($"copyToClipboard('m" + result.Index + "1')")>Copy (Full Name)</button>
-                        <button type="button" class="btn" onclick=@($"copyToClipboard('m" + result.Index + "2')")>Copy (Custom Link Text)</button>
-                        <button type="button" class="btn" onclick=@($"copyToClipboard('m" + result.Index + "3')")>Copy (Member Only)</button>
-                    </div>
-                }
+                <div><input id="m@(result.Index)0" value="<xref:@result.Data.Link>"></div>
+                <div><input id="m@(result.Index)1" value="<xref:@result.Data.Link?displayProperty=fullName>"></div>
+                <div><input id="m@(result.Index)2" value="<xref:@result.Data.Link?displayProperty=nameWithType>"></div>
+                <div><input id="m@(result.Index)3" value="[LINK_TEXT](xref:@result.Data.Link)"></div>
+                <div><input id="m@(result.Index)4" value="xref:@result.Data.Link"></div>
+                <div>
+                    <button type="button" class="btn btn-primary" onclick=@($"copyToClipboard('m{result.Index}0')")>Copy</button>
+                    <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}1')")>Copy (Full Name)</button>
+                    <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}2')")>Copy (Name with Type)</button>
+                    <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}3')")>Copy (Custom Link Text)</button>
+                    <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}4')")>Copy (Member Only)</button>
+                </div>
             </li>
         }
     </ol>
@@ -56,42 +42,36 @@
 
 @code {
     private string? searchText;
-
     private SearchResults? SearchResultItems { get; set; }
-
     public string? message;
 
     public async Task GetSearchResults()
     {
-        var client = ClientFactory.CreateClient("APIClient");
+        message = string.Empty;
+        var apiClient = ClientFactory.CreateClient("APIClient");
 
-        if (searchText == null)
+        if (string.IsNullOrEmpty(searchText) || apiClient == null)
         {
             return;
         }
 
-        SearchResultItems = await client.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={searchText}");
-
-        Console.WriteLine("HERE 1 !!!!!!!!!!!!");
+        SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={searchText}");
 
         if (SearchResultItems?.Results != null)
         {
             foreach (var result in SearchResultItems.Results)
             {
-                if (result.ItemType == "Constructor")
-                {
-                    result.Link = "/dotnet/api/" + result?.DisplayName?.Substring(0, result.DisplayName.Length - 2).ToLowerInvariant() + ".-ctor";
-                }
-                else if (result.ItemType == "Method")
-                {
-                    message = $"DisplayName: {result.DisplayName} Length: {result.DisplayName?.Length}";
+                var client = ClientFactory.CreateClient();
 
-                    result.Link = result?.DisplayName?.Substring(0, result.DisplayName.Length - 2) + "%2A";
-                }
-                else
-                {
-                    result.Link = result.DisplayName;
-                }
+                var urlEncodedRequestUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view=aspnetcore-9.0");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{urlEncodedRequestUrl}");
+
+                var apiBrowserPage = await client.SendAsync(request);
+
+                var metaTag = new Regex("<meta name=\"ms.assetid\" content=\"(.+?)\" />");
+                var match = metaTag.Match(await apiBrowserPage.Content.ReadAsStringAsync()).Groups[1].Value;
+
+                result.Link = match.Replace("*", "%2A").Replace("`", "%60");
             }
         }
         else
@@ -99,16 +79,9 @@
             message = "Request failed.";
         }
 
-        Console.WriteLine("HERE 2 !!!!!!!!!!!!");
-
         searchText = string.Empty;
-        message = string.Empty;
 
         StateHasChanged();
-
-        Console.WriteLine("HERE 3 !!!!!!!!!!!!");
-
-
     }
 
     public class SearchResults
@@ -119,12 +92,9 @@
     public class Result
     {
         public string? DisplayName { get; set; }
+        public string? Url { get; set; }
         public string? ItemType { get; set; }
-        public string? ItemKind { get; set; }
         public string? Description { get; set; }
         public string? Link { get; set; }
-        public string? Id1 { get; set; }
-        public string? Id2 { get; set; }
-        public string? Id3 { get; set; }
     }
 }
