@@ -3,24 +3,33 @@
 @using System.Text.RegularExpressions
 @inject IHttpClientFactory ClientFactory
 
-<div style="margin-bottom:15px">
-    <h1>Namespace/Member</h1>
-    <input id="searchText" @bind="searchText" class="form-control" aria-label="Search Text" />
-    <button type="button" @onclick="GetSearchResults" class="btn btn-primary">Search</button>
-    <button type="button" class="btn btn-secondary" onclick="document.getElementById('searchText').value=''">Clear</button>
-</div>
-
-<h1>Links</h1>
+<EditForm Model="Model" OnSubmit="GetSearchResults" FormName="SearchForm">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Search</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <p>Provide a namespace, class, member, or <code>/dotnet/api/...</code> relative link.</p>
+                <InputText id="searchText" @bind-Value="Model!.SearchText" aria-label="Search Text" onfocus="this.value=''" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('searchText').value=''">Clear</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
 
 @if (SearchResultItems?.Results?.Count() > 0)
 {
-    <ol>
+    <ol style="margin-top:20px">
         @foreach (var result in SearchResultItems.Results.Select((x, i) => new { Data = x, Index = i }))
         {
             <li style="margin-bottom:5px">
                 <div style="font-size:1.4em;color:green;font-weight:bold">@result.Data.DisplayName</div>
                 <div><b>Item Type:</b> @result.Data.ItemType</div>
-                <div><b>Description:</b> @result.Data.Description</div>
+                <div style="width:90%"><b>Description:</b> @result.Data.Description</div>
                 <div><input id="m@(result.Index)0" value="<xref:@result.Data.Link>"></div>
                 <div><input id="m@(result.Index)1" value="<xref:@result.Data.Link?displayProperty=fullName>"></div>
                 <div><input id="m@(result.Index)2" value="<xref:@result.Data.Link?displayProperty=nameWithType>"></div>
@@ -41,21 +50,25 @@
 @message
 
 @code {
-    private string? searchText;
+    [SupplyParameterFromForm]
+    private FormModel? Model { get; set; }
+
     private SearchResults? SearchResultItems { get; set; }
     public string? message;
+
+    protected override void OnInitialized() => Model ??= new();
 
     public async Task GetSearchResults()
     {
         message = string.Empty;
         var apiClient = ClientFactory.CreateClient("APIClient");
 
-        if (string.IsNullOrEmpty(searchText) || apiClient == null)
+        if (string.IsNullOrEmpty(Model?.SearchText) || apiClient == null)
         {
             return;
         }
 
-        SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={searchText}");
+        SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={Model.SearchText}");
 
         if (SearchResultItems?.Results != null)
         {
@@ -79,9 +92,14 @@
             message = "Request failed.";
         }
 
-        searchText = string.Empty;
+        Model.SearchText = string.Empty;
 
-        StateHasChanged();
+        //StateHasChanged();
+    }
+
+    public class FormModel
+    {
+        public string? SearchText { get; set; } = string.Empty;
     }
 
     public class SearchResults
