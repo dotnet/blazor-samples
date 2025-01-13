@@ -2,12 +2,21 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+h1 {
+    font-size: 2.0em;
+}
+
 h1:focus {
     outline: none;
 }
 
 a, .btn-link {
     color: #0071c1;
+}
+
+input {
+    margin-bottom: 5px;
+    width: 100%
 }
 
 .btn-primary {

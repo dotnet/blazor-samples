@@ -80,6 +80,13 @@
             }
         });
     </script>
+    <script>
+        function copyToClipboard(e) {
+            var copyText = document.getElementById(e);
+            copyText.select();
+            navigator.clipboard.writeText(copyText.value);
+        }
+    </script>
 </body>
 
 </html>
