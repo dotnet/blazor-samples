@@ -152,6 +152,7 @@
 
         if (SearchResultItems?.Results != null)
         {
+            await ClearUI();
             var index = 0;
 
             foreach (var result in SearchResultItems.Results)
@@ -259,6 +260,39 @@
         {
             message = "No results returned.";
         }
+    }
+
+    private async Task ClearUI()
+    {
+        var dictionary = new Dictionary<string, object?>
+        {
+            { "DisplayName", string.Empty },
+        };
+
+        var parameters = ParameterView.FromDictionary(dictionary);
+
+        await apiResult1.SetParametersAsync(parameters);
+        await apiResult2.SetParametersAsync(parameters);
+        await apiResult3.SetParametersAsync(parameters);
+        await apiResult4.SetParametersAsync(parameters);
+        await apiResult5.SetParametersAsync(parameters);
+        await apiResult6.SetParametersAsync(parameters);
+        await apiResult7.SetParametersAsync(parameters);
+        await apiResult8.SetParametersAsync(parameters);
+        await apiResult9.SetParametersAsync(parameters);
+        await apiResult10.SetParametersAsync(parameters);
+        await apiResult11.SetParametersAsync(parameters);
+        await apiResult12.SetParametersAsync(parameters);
+        await apiResult13.SetParametersAsync(parameters);
+        await apiResult14.SetParametersAsync(parameters);
+        await apiResult15.SetParametersAsync(parameters);
+        await apiResult16.SetParametersAsync(parameters);
+        await apiResult17.SetParametersAsync(parameters);
+        await apiResult18.SetParametersAsync(parameters);
+        await apiResult19.SetParametersAsync(parameters);
+        await apiResult20.SetParametersAsync(parameters);
+        await apiResult21.SetParametersAsync(parameters);
+        await apiResult22.SetParametersAsync(parameters);
     }
 
     public class FormModel
