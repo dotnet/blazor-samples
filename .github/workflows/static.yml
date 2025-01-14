@@ -4,10 +4,12 @@ env:
   PUBLISH_DIR: BlazorWebAssemblyXrefGenerator/bin/Release/net9.0/publish/wwwroot
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting the default branch for the app's folder path
   push:
     paths:
       - BlazorWebAssemblyXrefGenerator/**
+    branches:
+      - main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
