@@ -1,0 +1,37 @@
+@if (!string.IsNullOrEmpty(DisplayName))
+{
+    <li style="margin-bottom:5px">
+        <div style="font-size:1.4em;color:green;font-weight:bold">@DisplayName</div>
+        <div><b>Item Type:</b> @ItemType</div>
+        <div style="width:90%"><b>Description:</b> @Description</div>
+        <div><input id="m@(Index)0" value="<xref:@Link>"></div>
+        <div><input id="m@(Index)1" value="<xref:@Link?displayProperty=fullName>"></div>
+        <div><input id="m@(Index)2" value="<xref:@Link?displayProperty=nameWithType>"></div>
+        <div><input id="m@(Index)3" value="[LINK_TEXT](xref:@Link)"></div>
+        <div><input id="m@(Index)4" value="xref:@Link"></div>
+        <div>
+            <button type="button" class="btn btn-primary" onclick=@($"copyToClipboard('m{Index}0')")>Copy</button>
+            <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{Index}1')")>Copy (Full Name)</button>
+            <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{Index}2')")>Copy (Name with Type)</button>
+            <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{Index}3')")>Copy (Custom Link Text)</button>
+            <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{Index}4')")>Copy (Member Only)</button>
+        </div>
+    </li>
+}
+
+@code {
+    [Parameter]
+    public string? DisplayName { get; set; }
+
+    [Parameter]
+    public string? ItemType { get; set; }
+
+    [Parameter]
+    public string? Description { get; set; }
+
+    [Parameter]
+    public string? Link { get; set; }
+
+    [Parameter]
+    public int Index { get; set; }
+}
