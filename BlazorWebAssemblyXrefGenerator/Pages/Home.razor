@@ -3,51 +3,69 @@
 @using System.Text.RegularExpressions
 @inject IHttpClientFactory ClientFactory
 
-<EditForm Model="Model" OnSubmit="GetSearchResults" FormName="SearchForm">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Search</h3>
-        </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <p>Provide a namespace, class, member, or <code>/dotnet/api/...</code> relative link.</p>
-                <InputText id="searchText" @bind-Value="Model!.SearchText" aria-label="Search Text" onfocus="this.value=''" />
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary">Search</button>
-                <button type="button" class="btn btn-secondary" onclick="document.getElementById('searchText').value=''">Clear</button>
-            </div>
-        </div>
-    </div>
-</EditForm>
-
-@if (SearchResultItems?.Results?.Count() > 0)
-{
-    <ol style="margin-top:20px">
-        @foreach (var result in SearchResultItems.Results.Select((x, i) => new { Data = x, Index = i }))
-        {
-            <li style="margin-bottom:5px">
-                <div style="font-size:1.4em;color:green;font-weight:bold">@result.Data.DisplayName</div>
-                <div><b>Item Type:</b> @result.Data.ItemType</div>
-                <div style="width:90%"><b>Description:</b> @result.Data.Description</div>
-                <div><input id="m@(result.Index)0" value="<xref:@result.Data.Link>"></div>
-                <div><input id="m@(result.Index)1" value="<xref:@result.Data.Link?displayProperty=fullName>"></div>
-                <div><input id="m@(result.Index)2" value="<xref:@result.Data.Link?displayProperty=nameWithType>"></div>
-                <div><input id="m@(result.Index)3" value="[LINK_TEXT](xref:@result.Data.Link)"></div>
-                <div><input id="m@(result.Index)4" value="xref:@result.Data.Link"></div>
-                <div>
-                    <button type="button" class="btn btn-primary" onclick=@($"copyToClipboard('m{result.Index}0')")>Copy</button>
-                    <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}1')")>Copy (Full Name)</button>
-                    <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}2')")>Copy (Name with Type)</button>
-                    <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}3')")>Copy (Custom Link Text)</button>
-                    <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}4')")>Copy (Member Only)</button>
+<div class="page">
+    <main>
+        <article class="content px-4">
+            <EditForm Model="Model" OnSubmit="GetSearchResults" FormName="SearchForm">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Search</h3>
+                        <span style="float:right">
+                            <InputSelect @bind-Value="dotNetVersion">
+                                <option>aspnetcore-9.0</option>
+                                <option>aspnetcore-8.0</option>
+                                <option>aspnetcore-7.0</option>
+                                <option>aspnetcore-6.0</option>
+                                <option>aspnetcore-5.0</option>
+                                <option>aspnetcore-3.1</option>
+                            </InputSelect>
+                        </span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <p>Provide a namespace, class, member, or <code>/dotnet/api/...</code> relative link.</p>
+                            <InputText id="searchText" @bind-Value="Model!.SearchText" aria-label="Search Text" onfocus="this.value=''" />
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('searchText').value=''">Clear</button>
+                        </div>
+                    </div>
                 </div>
-            </li>
-        }
-    </ol>
-}
+            </EditForm>
 
-@message
+            @if (SearchResultItems?.Results?.Count() > 0)
+            {
+                <ol style="margin-top:20px">
+                    @foreach (var result in SearchResultItems.Results.Select((x, i) => new { Data = x, Index = i }))
+                    {
+                        <li style="margin-bottom:5px">
+                            <div style="font-size:1.4em;color:green;font-weight:bold">@result.Data.DisplayName</div>
+                            <div><b>Item Type:</b> @result.Data.ItemType</div>
+                            <div style="width:90%"><b>Description:</b> @result.Data.Description</div>
+                            <div><input id="m@(result.Index)0" value="<xref:@result.Data.Link>"></div>
+                            <div><input id="m@(result.Index)1" value="<xref:@result.Data.Link?displayProperty=fullName>"></div>
+                            <div><input id="m@(result.Index)2" value="<xref:@result.Data.Link?displayProperty=nameWithType>"></div>
+                            <div><input id="m@(result.Index)3" value="[LINK_TEXT](xref:@result.Data.Link)"></div>
+                            <div><input id="m@(result.Index)4" value="xref:@result.Data.Link"></div>
+                            <div>
+                                <button type="button" class="btn btn-primary" onclick=@($"copyToClipboard('m{result.Index}0')")>Copy</button>
+                                <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}1')")>Copy (Full Name)</button>
+                                <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}2')")>Copy (Name with Type)</button>
+                                <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}3')")>Copy (Custom Link Text)</button>
+                                <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}4')")>Copy (Member Only)</button>
+                            </div>
+                        </li>
+                    }
+                </ol>
+            }
+
+            <div style="margin-top:20px">
+                @message
+            </div>
+        </article>
+    </main>
+</div>
 
 @code {
     [SupplyParameterFromForm]
@@ -55,6 +73,7 @@
 
     private SearchResults? SearchResultItems { get; set; }
     public string? message;
+    private string? dotNetVersion;
 
     protected override void OnInitialized() => Model ??= new();
 
@@ -68,33 +87,37 @@
             return;
         }
 
-        SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={Model.SearchText}");
+        try
+        {
+            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={Model.SearchText}");
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode == HttpStatusCode.BadRequest)
+            {
+                message = "Bad Request! No results returned.";
+            }
+
+            return;
+        }
 
         if (SearchResultItems?.Results != null)
         {
             foreach (var result in SearchResultItems.Results)
             {
                 var client = ClientFactory.CreateClient();
-
-                var urlEncodedRequestUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view=aspnetcore-9.0");
+                var urlEncodedRequestUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{urlEncodedRequestUrl}");
-
                 var apiBrowserPage = await client.SendAsync(request);
-
                 var metaTag = new Regex("<meta name=\"ms.assetid\" content=\"(.+?)\" />");
                 var match = metaTag.Match(await apiBrowserPage.Content.ReadAsStringAsync()).Groups[1].Value;
-
                 result.Link = match.Replace("*", "%2A").Replace("`", "%60");
             }
         }
         else
         {
-            message = "Request failed.";
+            message = "No results returned.";
         }
-
-        Model.SearchText = string.Empty;
-
-        //StateHasChanged();
     }
 
     public class FormModel
