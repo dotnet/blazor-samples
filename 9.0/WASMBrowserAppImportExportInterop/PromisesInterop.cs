@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
+
+namespace WASMBrowserApp;
 
 public partial class PromisesInterop
 {

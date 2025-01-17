@@ -1,5 +1,7 @@
-﻿using System;
+using System;
 using System.Diagnostics;
+
+namespace WASMBrowserApp;
 
 public static class JSObjectBenchmark
 {

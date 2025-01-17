@@ -2,6 +2,8 @@ using System;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 
+namespace WASMBrowserApp;
+
 public partial class DateInterop
 {
     [JSImport("incrementDay", "DateShim")]
