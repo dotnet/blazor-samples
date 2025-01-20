@@ -2,6 +2,8 @@ using System;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 
+namespace WASMBrowserApp;
+
 public partial class EventsInterop
 {
     [JSImport("subscribeEventById", "EventsShim")]
@@ -37,7 +39,7 @@ public static class EventsUsage
     {
         await JSHost.ImportAsync("EventsShim", "/EventsShim.js");
 
-        Action<string, string> listenerFunc = (eventName, elementId) =>
+        static void listenerFunc(string eventName, string elementId) =>
             Console.WriteLine(
                 $"In C# event listener: Event {eventName} from ID {elementId}");
 
@@ -59,14 +61,14 @@ public static class EventsUsage
         // EventsInterop.UnsubscribeEventById("btn1", "click", listenerHandler2);
 
         // With JSObject as event target and event object.
-        Action<JSObject> listenerFuncForElement = (eventObj) =>
+        static void listenerFuncForElement(JSObject eventObj)
         {
             string eventType = eventObj.GetPropertyAsString("type");
             JSObject target = eventObj.GetPropertyAsJSObject("target");
             Console.WriteLine(
                 $"In C# event listener: Event {eventType} from " +
                 $"ID {target.GetPropertyAsString("id")}");
-        };
+        }
 
         JSObject htmlElement = EventsInterop.GetElementById("btn1");
         JSObject listenerHandler3 = EventsInterop.SubscribeEvent(
