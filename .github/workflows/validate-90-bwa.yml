@@ -2,8 +2,6 @@ name: Validate 9.0 BWA sample updates
 
 on:
   push:
-    paths:
-      - 9.0/BlazorSample_BlazorWebApp/**
     branches:
       - main
 
