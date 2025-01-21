@@ -23,13 +23,10 @@ jobs:
         id: filter
         with:
           filters: |
-            90_BlazorSample_BlazorWebApp90:
+            test1:
               - '9.0/BlazorSample_BlazorWebApp/**'
-            80_BlazorSample_BlazorWebApp80:
+            test2:
               - '8.0/BlazorSample_BlazorWebApp/**'
-
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - name: Get latest .NET SDK
         uses: actions/setup-dotnet@v4
@@ -37,9 +34,9 @@ jobs:
           dotnet-version: '9.0'
 
       - name: Restore/build 9.0/BlazorSample_BlazorWebApp
-        if: steps.filter.outputs.90_BlazorSample_BlazorWebApp == 'true'
+        if: steps.filter.outputs.test1 == 'true'
         run: dotnet build 9.0/BlazorSample_BlazorWebApp
 
       - name: Restore/build 8.0/BlazorSample_BlazorWebApp
-        if: steps.filter.outputs.80_BlazorSample_BlazorWebApp == 'true'
+        if: steps.filter.outputs.test2 == 'true'
         run: dotnet build 8.0/BlazorSample_BlazorWebApp
