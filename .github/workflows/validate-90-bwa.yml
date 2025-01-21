@@ -1,0 +1,27 @@
+name: Validate 9.0 BWA sample updates
+
+on:
+  push:
+    paths:
+      - 9.0/BlazorSample_BlazorWebApp/**
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get latest .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0'
+          
+      - name: Restore/build sample app
+        run: dotnet build 9.0/BlazorSample_BlazorWebApp
