@@ -23,10 +23,10 @@ jobs:
         id: filter
         with:
           filters: |
-            90BlazorSampleBlazorWebApp:
-              - '9.0/BlazorSample_BlazorWebApp'
-            80BlazorSampleBlazorWebApp:
-              - '8.0/BlazorSample_BlazorWebApp'
+            90_BlazorSample_BlazorWebApp90:
+              - '9.0/BlazorSample_BlazorWebApp/**'
+            80_BlazorSample_BlazorWebApp80:
+              - '8.0/BlazorSample_BlazorWebApp/**'
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,9 +37,9 @@ jobs:
           dotnet-version: '9.0'
 
       - name: Restore/build 9.0/BlazorSample_BlazorWebApp
-        if: steps.filter.outputs.90BlazorSampleBlazorWebApp == 'true'
+        if: steps.filter.outputs.90_BlazorSample_BlazorWebApp == 'true'
         run: dotnet build 9.0/BlazorSample_BlazorWebApp
 
       - name: Restore/build 8.0/BlazorSample_BlazorWebApp
-        if: steps.filter.outputs.80BlazorSampleBlazorWebApp == 'true'
+        if: steps.filter.outputs.80_BlazorSample_BlazorWebApp == 'true'
         run: dotnet build 8.0/BlazorSample_BlazorWebApp
