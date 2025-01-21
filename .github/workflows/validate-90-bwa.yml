@@ -23,8 +23,5 @@ jobs:
         with:
           dotnet-version: '9.0'
 
-      - name: Restore dependencies
-        run: dotnet restore 9.0/BlazorSample_BlazorWebApp
-
-      - name: Build app
-        run: dotnet build 9.0/BlazorSample_BlazorWebApp --no-restore
+      - name: Restore/build app
+        run: dotnet build 9.0/BlazorSample_BlazorWebApp
