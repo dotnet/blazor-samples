@@ -1,4 +1,4 @@
-name: Validate 9.0 BWA sample updates
+name: Validate sample apps
 
 on:
   push:
@@ -16,30 +16,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJson(job) }}
-        run: echo "$JOB_CONTEXT"
-      - name: Dump steps context
-        env:
-          STEPS_CONTEXT: ${{ toJson(steps) }}
-        run: echo "$STEPS_CONTEXT"
-      - name: Dump runner context
-        env:
-          RUNNER_CONTEXT: ${{ toJson(runner) }}
-        run: echo "$RUNNER_CONTEXT"
-      - name: Dump strategy context
-        env:
-          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-        run: echo "$STRATEGY_CONTEXT"
-      - name: Dump matrix context
-        env:
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        run: echo "$MATRIX_CONTEXT"
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            90_BlazorSample_BlazorWebApp:
+              - '9.0/BlazorSample_BlazorWebApp'
+            80_BlazorSample_BlazorWebApp:
+              - '8.0/BlazorSample_BlazorWebApp'
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,5 +33,10 @@ jobs:
         with:
           dotnet-version: '9.0'
 
-      - name: Restore/build app
+      - name: Restore/build 9.0/BlazorSample_BlazorWebApp
+        if: steps.filter.outputs.90_BlazorSample_BlazorWebApp == 'true'
         run: dotnet build 9.0/BlazorSample_BlazorWebApp
+
+      - name: Restore/build 8.0/BlazorSample_BlazorWebApp
+        if: steps.filter.outputs.80_BlazorSample_BlazorWebApp == 'true'
+        run: dotnet build 8.0/BlazorSample_BlazorWebApp
