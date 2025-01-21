@@ -1,0 +1,42 @@
+name: Validate samples
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            path1:
+              - '9.0/BlazorSample_BlazorWebApp/**'
+            path2:
+              - '8.0/BlazorSample_BlazorWebApp/**'
+
+      - name: Get latest .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0'
+
+      - name: Restore/build 9.0/BlazorSample_BlazorWebApp
+        if: steps.filter.outputs.path1 == 'true'
+        run: dotnet build 9.0/BlazorSample_BlazorWebApp
+
+      - name: Restore/build 8.0/BlazorSample_BlazorWebApp
+        if: steps.filter.outputs.path2 == 'true'
+        run: dotnet build 8.0/BlazorSample_BlazorWebApp
