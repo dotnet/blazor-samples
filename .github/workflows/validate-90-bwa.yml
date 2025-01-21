@@ -22,6 +22,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0'
-          
-      - name: Restore/build sample app
-        run: dotnet build 9.0/BlazorSample_BlazorWebApp
+
+      - name: Restore dependencies
+        run: dotnet restore 9.0/BlazorSample_BlazorWebApp
+
+      - name: Build app
+        run: dotnet build 9.0/BlazorSample_BlazorWebApp --no-restore
