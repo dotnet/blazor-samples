@@ -16,13 +16,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
-            90BlazorSampleBlazorWebApp:
+            90_BlazorSample_BlazorWebApp:
               - '9.0/BlazorSample_BlazorWebApp'
-            80BlazorSampleBlazorWebApp:
+            80_BlazorSample_BlazorWebApp:
               - '8.0/BlazorSample_BlazorWebApp'
 
       - name: Checkout
@@ -34,9 +37,9 @@ jobs:
           dotnet-version: '9.0'
 
       - name: Restore/build 9.0/BlazorSample_BlazorWebApp
-        if: steps.filter.outputs.90BlazorSampleBlazorWebApp == 'true'
+        if: steps.filter.outputs.90_BlazorSample_BlazorWebApp == 'true'
         run: dotnet build 9.0/BlazorSample_BlazorWebApp
 
       - name: Restore/build 8.0/BlazorSample_BlazorWebApp
-        if: steps.filter.outputs.80BlazorSampleBlazorWebApp == 'true'
+        if: steps.filter.outputs.80_BlazorSample_BlazorWebApp == 'true'
         run: dotnet build 8.0/BlazorSample_BlazorWebApp
