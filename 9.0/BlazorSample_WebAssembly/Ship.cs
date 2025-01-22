@@ -1,4 +1,4 @@
-﻿namespace BlazorSample
+namespace BlazorSample
 {
     public class Ship
     {
