@@ -1,4 +1,4 @@
-﻿@page "/empty-content"
+@page "/empty-content"
 
 <PageTitle>Empty Content</PageTitle>
 
@@ -20,5 +20,5 @@
 @code {
     private List<string>? stringList;
 
-    protected override void OnInitialized() => stringList ??= new();
+    protected override void OnInitialized() => stringList ??= [];
 }

@@ -48,7 +48,7 @@
         [MinLength(2, ErrorMessage = "Select at least two classifications.")]
         [MaxLength(3, ErrorMessage = "Select no more than three classifications.")]
         public Classification[]? SelectedClassification { get; set; } =
-            new[] { Classification.None };
+            [ Classification.None ];
     }
 
     private enum Classification { None, Exploration, Diplomacy, Defense, Research }
