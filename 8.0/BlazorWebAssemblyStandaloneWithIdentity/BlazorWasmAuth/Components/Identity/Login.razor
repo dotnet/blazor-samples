@@ -1,6 +1,9 @@
 @page "/login"
+@using System.ComponentModel.DataAnnotations
 @using BlazorWasmAuth.Identity
+@using BlazorWasmAuth.Identity.Models
 @inject IAccountManagement Acct
+@inject NavigationManager Navigation
 
 <PageTitle>Login</PageTitle>
 
@@ -11,71 +14,91 @@
         <div class="alert alert-success">You're logged in as @context.User.Identity?.Name.</div>
     </Authorized>
     <NotAuthorized>
-        @if (errors)
+        @foreach (var error in formResult.ErrorList)
         {
-            @foreach (var error in errorList)
-            {
-                <div class="alert alert-danger">@error</div>
-            }
+            <div class="alert alert-danger">@error</div>
         }
-        <div class="flex-outer">
-            <div>
-                <label for="email">
-                    Email:
-                </label>
-                <input required id="email" name="emailInput" placeholder="Enter your email address" type="email" @bind-value="email" />
-            </div>
-            <div>
-                <label for="password">
-                    Password:
-                </label>
-                <input required id="password" name="passwordInput" placeholder="Enter your password" type="password" @bind-value="password" />
-            </div>
-            <div>
-                <button class="btn btn-primary" @onclick="DoLoginAsync">Login</button>
+        <div class="row">
+            <div class="col">
+                <section>
+                    <EditForm Model="Input" method="post" OnValidSubmit="LoginUserAsync"
+                              FormName="login" Context="editform_context">
+                        <DataAnnotationsValidator />
+                        <h2>Use a local account to log in.</h2>
+                        <hr />
+                        <div class="form-floating mb-3">
+                            <InputText @bind-Value="Input.Email"
+                                       id="Input.Email"
+                                       class="form-control"
+                                       autocomplete="username"
+                                       aria-required="true"
+                                       placeholder="name@example.com" />
+                            <label for="Input.Email" class="form-label">
+                                Email
+                            </label>
+                            <ValidationMessage For="() => Input.Email"
+                                               class="text-danger" />
+                        </div>
+                        <div class="form-floating mb-3">
+                            <InputText type="password"
+                                       @bind-Value="Input.Password"
+                                       id="Input.Password"
+                                       class="form-control"
+                                       autocomplete="current-password"
+                                       aria-required="true"
+                                       placeholder="password" />
+                            <label for="Input.Password" class="form-label">
+                                Password
+                            </label>
+                            <ValidationMessage For="() => Input.Password"
+                                               class="text-danger" />
+                        </div>
+                        <div>
+                            <button type="submit" class="w-100 btn btn-lg btn-primary">
+                                Log in
+                            </button>
+                        </div>
+                        <div class="mt-3">
+                            <p>
+                                <a href="register">Register as a new user</a>
+                            </p>
+                        </div>
+                    </EditForm>
+                </section>
             </div>
         </div>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
-    private bool success, errors;
-    private string email = string.Empty;
-    private string password = string.Empty;
-    private string[] errorList = [];
+    private FormResult formResult = new();
 
-    public async Task DoLoginAsync()
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    public async Task LoginUserAsync()
     {
-        success = errors = false;
-        errorList = [];
+        formResult = await Acct.LoginAsync(Input.Email, Input.Password);
 
-        if (string.IsNullOrWhiteSpace(email))
+        if (formResult.Succeeded && !string.IsNullOrEmpty(ReturnUrl))
         {
-            errors = true;
-            errorList = ["Email is required."];
-
-            return;
+            Navigation.NavigateTo(ReturnUrl);
         }
+    }
 
-        if (string.IsNullOrWhiteSpace(password))
-        {
-            errors = true;
-            errorList = ["Password is required."];
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = string.Empty;
 
-            return;
-        }
-
-        var result = await Acct.LoginAsync(email, password);
-
-        if (result.Succeeded)
-        {
-            success = true;
-            email = password = string.Empty;
-        }
-        else
-        {
-            errors = true;
-            errorList = result.ErrorList;
-        }
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; } = string.Empty;
     }
 }
