@@ -1,5 +1,7 @@
 @page "/register"
+@using System.ComponentModel.DataAnnotations
 @using BlazorWasmAuth.Identity
+@using BlazorWasmAuth.Identity.Models
 @inject IAccountManagement Acct
 
 <PageTitle>Register</PageTitle>
@@ -11,7 +13,7 @@
         <div class="alert alert-success">You're already logged in as @context.User.Identity?.Name.</div>
     </Authorized>
     <NotAuthorized>
-        @if (success)
+        @if (formResult.Succeeded)
         {
             <div class="alert alert-success">
                 You successfully registered. Now you can <a href="login">login</a>.
@@ -19,34 +21,66 @@
         }
         else
         {
-            if (errors)
+            @foreach (var error in formResult.ErrorList)
             {
-                foreach (var error in errorList)
-                {
-                    <div class="alert alert-danger">@error</div>
-                }
+                <div class="alert alert-danger">@error</div>
             }
-            <div class="flex-outer">
-                <div>
-                    <label for="email">
-                        Email:
-                    </label>
-                    <input autofocus autocomplete="on" required id="email" name="emailInput" placeholder="Enter your email address" type="email" @bind-value="email" />
-                </div>
-                <div>
-                    <label for="password">
-                        Password:
-                    </label>
-                    <input required id="password" name="passwordInput" placeholder="Enter your password" type="password" @bind-value="password" /><br />
-                </div>
-                <div>
-                    <label for="confirmPassword">
-                        Retype password:
-                    </label>
-                    <input required id="confirmPassword" name="confirmPasswordInput" placeholder="Re-enter your password" type="password" @bind-value="confirmPassword" />
-                </div>
-                <div>
-                    <button class="btn btn-primary" @onclick="DoRegisterAsync">Register</button>
+            <div class="row">
+                <div class="col">
+                    <section>
+                        <EditForm Model="Input" method="post" OnValidSubmit="RegisterUserAsync"
+                                  FormName="register" Context="editform_context">
+                            <DataAnnotationsValidator />
+                            <h2>Register as a new user.</h2>
+                            <hr />
+                            <div class="form-floating mb-3">
+                                <InputText @bind-Value="Input.Email"
+                                           id="Input.Email"
+                                           class="form-control"
+                                           autocomplete="username"
+                                           aria-required="true"
+                                           placeholder="name@example.com" />
+                                <label for="Input.Email" class="form-label">
+                                    Email
+                                </label>
+                                <ValidationMessage For="() => Input.Email"
+                                                   class="text-danger" />
+                            </div>
+                            <div class="form-floating mb-3">
+                                <InputText type="password"
+                                           @bind-Value="Input.Password"
+                                           id="Input.Password"
+                                           class="form-control"
+                                           autocomplete="new-password"
+                                           aria-required="true"
+                                           placeholder="password" />
+                                <label for="Input.Password" class="form-label">
+                                    Password
+                                </label>
+                                <ValidationMessage For="() => Input.Password"
+                                                   class="text-danger" />
+                            </div>
+                            <div class="form-floating mb-3">
+                                <InputText type="password"
+                                           @bind-Value="Input.ConfirmPassword"
+                                           id="Input.ConfirmPassword"
+                                           class="form-control"
+                                           autocomplete="new-password"
+                                           aria-required="true"
+                                           placeholder="confirm password" />
+                                <label for="Input.ConfirmPassword" class="form-label">
+                                    Confirm Password
+                                </label>
+                                <ValidationMessage For="() => Input.ConfirmPassword"
+                                                   class="text-danger" />
+                            </div>
+                            <div>
+                                <button type="submit" class="w-100 btn btn-lg btn-primary">
+                                    Register
+                                </button>
+                            </div>
+                        </EditForm>
+                    </section>
                 </div>
             </div>
         }
@@ -54,60 +88,32 @@
 </AuthorizeView>
 
 @code {
-    private bool success, errors;
-    private string email = string.Empty;
-    private string password = string.Empty;
-    private string confirmPassword = string.Empty;
-    private string[] errorList = [];
+    private FormResult formResult = new();
 
-    public async Task DoRegisterAsync()
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    public async Task RegisterUserAsync()
     {
-        success = errors = false;
-        errorList = [];
+        formResult = await Acct.RegisterAsync(Input.Email, Input.Password);
+    }
 
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            errors = true;
-            errorList = ["Email is required."];
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = string.Empty;
 
-            return;
-        }
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; } = string.Empty;
 
-        if (string.IsNullOrWhiteSpace(password))
-        {
-            errors = true;
-            errorList = ["Password is required."];
-
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(confirmPassword))
-        {
-            errors = true;
-            errorList = ["Please confirm your password."];
-
-            return;
-        }
-
-        if (password != confirmPassword)
-        {
-            errors = true;
-            errorList = ["Passwords don't match."];
-
-            return;
-        }
-
-        var result = await Acct.RegisterAsync(email, password);
-
-        if (result.Succeeded)
-        {
-            success = true;
-            email = password = confirmPassword = string.Empty;
-        }
-        else
-        {
-            errors = true;
-            errorList = result.ErrorList;
-        }
+        [Required]
+        [DataType(DataType.Password)]
+        [Compare("Password")]
+        [Display(Name = "Confirm Password")]
+        public string ConfirmPassword { get; set; } = string.Empty;
     }
 }
