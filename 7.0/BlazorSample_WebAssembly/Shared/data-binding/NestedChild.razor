@@ -16,7 +16,7 @@
     public string? ChildMessage { get; set; }
 
     [Parameter]
-    public EventCallback<string> ChildMessageChanged { get; set; }
+    public EventCallback<string?> ChildMessageChanged { get; set; }
 
     private async Task ChangeValue()
     {

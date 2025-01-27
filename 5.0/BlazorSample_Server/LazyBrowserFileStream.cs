@@ -11,7 +11,7 @@ internal sealed class LazyBrowserFileStream : Stream
 {
     private readonly IBrowserFile file;
     private readonly int maxAllowedSize;
-    private Stream? underlyingStream;
+    private Stream underlyingStream;
     private bool isDisposed;
 
     public override bool CanRead => true;

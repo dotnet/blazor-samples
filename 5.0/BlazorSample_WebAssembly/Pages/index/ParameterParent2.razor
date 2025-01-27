@@ -8,9 +8,12 @@
 
 <ParameterChild Title="@panelData.Title" />
 
+<ParameterChild Title="String literal title" Count="count" />
+
 @code {
     private string title = "From Parent field";
     private PanelData panelData = new();
+    private int count = 12345;
 
     private string GetTitle()
     {

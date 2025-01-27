@@ -1,16 +1,19 @@
-﻿@page "/parameter-parent-2"
+@page "/parameter-parent-2"
 
-<ParameterChild Title="title" />
+<ParameterChild Title="@title" />
 
 <ParameterChild Title="@GetTitle()" />
 
-<ParameterChild Title="DateTime.Now.ToLongDateString()" />
+<ParameterChild Title="@DateTime.Now.ToLongDateString()" />
 
-<ParameterChild Title="panelData.Title" />
+<ParameterChild Title="@panelData.Title" />
+
+<ParameterChild Title="String literal title" Count="count" />
 
 @code {
     private string title = "From Parent field";
     private PanelData panelData = new PanelData();
+    private int count = 12345;
 
     private string GetTitle()
     {
