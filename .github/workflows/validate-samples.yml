@@ -61,42 +61,42 @@ jobs:
         if: steps.filter.outputs.bwa80 == 'true'
         run: dotnet build 8.0/BlazorSample_BlazorWebApp
 
-      - name: Restore/build 7.0/BlazorSample_BlazorServer
+      - name: Restore/build 7.0/BlazorSample_Server
         if: steps.filter.outputs.bs70 == 'true'
-        run: dotnet build 7.0/BlazorSample_BlazorServer
+        run: dotnet build 7.0/BlazorSample_Server
 
-      - name: Restore/build 6.0/BlazorSample_BlazorServer
+      - name: Restore/build 6.0/BlazorSample_Server
         if: steps.filter.outputs.bs60 == 'true'
-        run: dotnet build 6.0/BlazorSample_BlazorServer
+        run: dotnet build 6.0/BlazorSample_Server
 
-      - name: Restore/build 5.0/BlazorSample_BlazorServer
+      - name: Restore/build 5.0/BlazorSample_Server
         if: steps.filter.outputs.bs50 == 'true'
-        run: dotnet build 5.0/BlazorSample_BlazorServer
+        run: dotnet build 5.0/BlazorSample_Server
 
-      - name: Restore/build 3.1/BlazorSample_BlazorServer
+      - name: Restore/build 3.1/BlazorSample_Server
         if: steps.filter.outputs.bs31 == 'true'
-        run: dotnet build 3.1/BlazorSample_BlazorServer
+        run: dotnet build 3.1/BlazorSample_Server
 
-      - name: Restore/build 9.0/BlazorSample_BlazorWebAssembly
+      - name: Restore/build 9.0/BlazorSample_WebAssembly
         if: steps.filter.outputs.bw90 == 'true'
-        run: dotnet build 9.0/BlazorSample_BlazorWebAssembly
+        run: dotnet build 9.0/BlazorSample_WebAssembly
 
-      - name: Restore/build 8.0/BlazorSample_BlazorWebAssembly
+      - name: Restore/build 8.0/BlazorSample_WebAssembly
         if: steps.filter.outputs.bw80 == 'true'
-        run: dotnet build 8.0/BlazorSample_BlazorWebAssembly
+        run: dotnet build 8.0/BlazorSample_WebAssembly
 
-      - name: Restore/build 7.0/BlazorSample_BlazorWebAssembly
+      - name: Restore/build 7.0/BlazorSample_WebAssembly
         if: steps.filter.outputs.bw70 == 'true'
-        run: dotnet build 7.0/BlazorSample_BlazorWebAssembly
+        run: dotnet build 7.0/BlazorSample_WebAssembly
 
-      - name: Restore/build 6.0/BlazorSample_BlazorWebAssembly
+      - name: Restore/build 6.0/BlazorSample_WebAssembly
         if: steps.filter.outputs.bw60 == 'true'
-        run: dotnet build 6.0/BlazorSample_BlazorWebAssembly
+        run: dotnet build 6.0/BlazorSample_WebAssembly
 
-      - name: Restore/build 5.0/BlazorSample_BlazorWebAssembly
+      - name: Restore/build 5.0/BlazorSample_WebAssembly
         if: steps.filter.outputs.bw50 == 'true'
-        run: dotnet build 5.0/BlazorSample_BlazorWebAssembly
+        run: dotnet build 5.0/BlazorSample_WebAssembly
 
-      - name: Restore/build 3.1/BlazorSample_BlazorWebAssembly
+      - name: Restore/build 3.1/BlazorSample_WebAssembly
         if: steps.filter.outputs.bw31 == 'true'
-        run: dotnet build 3.1/BlazorSample_BlazorWebAssembly
+        run: dotnet build 3.1/BlazorSample_WebAssembly
