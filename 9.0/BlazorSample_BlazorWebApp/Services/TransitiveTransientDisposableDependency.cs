@@ -13,4 +13,9 @@ public interface ITransitiveTransientDisposableDependency
 public class TransientDependency(ITransitiveTransientDisposableDependency
     transitiveTransientDisposableDependency)
 {
+    private readonly ITransitiveTransientDisposableDependency
+        transitiveTransientDisposableDependency;
+        
+    this.transitiveTransientDisposableDependency =
+            transitiveTransientDisposableDependency;
 }
