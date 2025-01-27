@@ -28,25 +28,25 @@ jobs:
             bwa80:
               - '8.0/BlazorSample_BlazorWebApp/**'
             bs70:
-              - '7.0/BlazorSample_BlazorServer/**'
+              - '7.0/BlazorSample_Server/**'
             bs60:
-              - '6.0/BlazorSample_BlazorServer/**'
+              - '6.0/BlazorSample_Server/**'
             bs50:
-              - '5.0/BlazorSample_BlazorServer/**'
+              - '5.0/BlazorSample_Server/**'
             bs31:
-              - '3.1/BlazorSample_BlazorServer/**'
+              - '3.1/BlazorSample_Server/**'
             bw90:
-              - '9.0/BlazorSample_BlazorWebAssembly/**'
+              - '9.0/BlazorSample_WebAssembly/**'
             bw80:
-              - '8.0/BlazorSample_BlazorWebAssembly/**'
+              - '8.0/BlazorSample_WebAssembly/**'
             bw70:
-              - '7.0/BlazorSample_BlazorWebAssembly/**'
+              - '7.0/BlazorSample_WebAssembly/**'
             bw60:
-              - '6.0/BlazorSample_BlazorWebAssembly/**'
+              - '6.0/BlazorSample_WebAssembly/**'
             bw50:
-              - '5.0/BlazorSample_BlazorWebAssembly/**'
+              - '5.0/BlazorSample_WebAssembly/**'
             bw31:
-              - '3.1/BlazorSample_BlazorWebAssembly/**'
+              - '3.1/BlazorSample_WebAssembly/**'
 
       - name: Get latest .NET SDK
         uses: actions/setup-dotnet@v4
