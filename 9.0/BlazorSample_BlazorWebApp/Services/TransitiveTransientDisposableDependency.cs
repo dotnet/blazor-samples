@@ -10,12 +10,9 @@ public interface ITransitiveTransientDisposableDependency
 {
 }
 
+#pragma warning disable CS9113
 public class TransientDependency(ITransitiveTransientDisposableDependency
     transitiveTransientDisposableDependency)
 {
-    private readonly ITransitiveTransientDisposableDependency
-        transitiveTransientDisposableDependency;
-        
-    this.transitiveTransientDisposableDependency =
-            transitiveTransientDisposableDependency;
 }
+#pragma warning restore CS9113
