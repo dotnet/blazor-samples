@@ -37,7 +37,7 @@ public partial class SurveyPrompt :
     public void OnNext(ElementReference value)
     {
         JS?.InvokeAsync<object>(
-            "setElementClass", new object[] { value, "red" });
+            "setElementClass", [ value, "red" ]);
     }
 
     public void Dispose()
