@@ -36,7 +36,7 @@ namespace BlazorSample.Shared
         public void OnNext(ElementReference value)
         {
             JS?.InvokeAsync<object>(
-                "setElementClass", [ value, "red" ]);
+                "setElementClass", new object[] { value, "red" });
         }
 
         public void Dispose()
