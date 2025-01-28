@@ -27,7 +27,7 @@ public partial class SurveyPrompt :
     public void OnError(Exception error) => subscription = null;
 
     public void OnNext(ElementReference value) =>
-        _ = (JS?.InvokeAsync<object>("setElementClass", [value, "red"]));
+        _ = (JS?.InvokeAsync<object>("setElementClass", [ value, "red" ]));
 
     public void Dispose()
     {
