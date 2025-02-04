@@ -1,0 +1,25 @@
+@inherits LayoutComponentBase
+@layout BlazorWebAppAreaOfStaticSsrComponents.Components.Layout.MainLayout
+@inject NavigationManager Navigation
+
+@if (HttpContext is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @Body
+}
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (HttpContext is null)
+        {
+            Navigation.Refresh(forceReload: true);
+        }
+    }
+}
