@@ -128,10 +128,6 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-//builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthenticationStateProvider>();
-
-//builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
-
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
