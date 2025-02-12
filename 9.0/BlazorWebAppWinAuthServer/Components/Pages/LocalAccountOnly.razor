@@ -1,0 +1,10 @@
+@page "/local-account-only"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize("LocalAccount")]
+
+<h1>Local Account Only</h1>
+
+<p>
+    You can only reach this page by satisfying the
+    <code>LocalAccount</code> authorization policy.
+</p>
