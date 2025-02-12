@@ -14,14 +14,12 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddCascadingAuthenticationState();
 
-builder.Services.AddAuthorization();
-
-builder.Services.AddHttpContextAccessor();
-
 // https://learn.microsoft.com/windows-server/identity/ad-ds/manage/understand-security-identifiers
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("LocalAccount", policy =>
-        policy.RequireClaim("http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid", "S-1-5-113"));   
+        policy.RequireClaim(
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid",
+            "S-1-5-113"));   
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -45,7 +43,5 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
-
-app.MapGroup("/authentication").MapLoginAndLogout();
 
 app.Run();
