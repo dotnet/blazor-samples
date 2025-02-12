@@ -59,6 +59,8 @@ git sparse-checkout set 9.0/BlazorSample_BlazorWebApp
 
 * Blazor Web App with OIDC and Aspire (`BlazorWebAppOidcBff`/`BlazorWebAppOidc`)<br>[Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc)
 
+* Blazor Web App with Windows Authentication<br>[Secure an ASP.NET Core Blazor Web App with Windows Authentication](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-windows-authentication)
+
 * Call a web API (`BlazorWebAppCallWebApi`/`BlazorWebAssemblyCallWebApi`/`BlazorWebAppCallWebApi_Weather`)<br>[Call a web API from ASP.NET Core Blazor](https://learn.microsoft.com/aspnet/core/blazor/call-web-api)
 
 * Blazor WebAssembly scopes-enabled logging (`BlazorWebAssemblyScopesLogger`)<br>[ASP.NET Core Blazor logging: Client-side log scopes](https://learn.microsoft.com/aspnet/core/blazor/fundamentals/logging#client-side-log-scopes)
