@@ -1,0 +1,8 @@
+@inject NavigationManager Navigation
+
+@code {
+    protected override void OnInitialized()
+    {
+        Navigation.Refresh(forceReload: true);
+    }
+}
