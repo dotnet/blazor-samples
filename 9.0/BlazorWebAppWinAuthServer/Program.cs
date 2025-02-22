@@ -7,10 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
     .AddNegotiate();
 
+// To require authentication for all users for the
+// entire app, use the following code.
+/*
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = options.DefaultPolicy;
 });
+*/
 
 builder.Services.AddCascadingAuthenticationState();
 
