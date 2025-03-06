@@ -1,16 +1,14 @@
 [
   {
-    "Name": "New Profile",
+    "Name": "Start Solution",
     "Projects": [
       {
-        "Name": "Backend\\Backend.csproj",
-        "Action": "StartWithoutDebugging",
-        "DebugTarget": ""
+        "Path": "Backend\\Backend.csproj",
+        "Action": "StartWithoutDebugging"
       },
       {
-        "Name": "BlazorApp\\BlazorApp\\BlazorApp.csproj",
-        "Action": "Start",
-        "DebugTarget": ""
+        "Path": "BlazorApp\\BlazorApp\\BlazorApp.csproj",
+        "Action": "Start"
       }
     ]
   }
