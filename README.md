@@ -52,6 +52,8 @@ git sparse-checkout set 9.0/BlazorSample_BlazorWebApp
 
 * .NET MAUI Blazor Hybrid app with a Blazor Web App and a shared UI RCL (`MauiBlazorWeb`)<br>[Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app)
 
+* .NET MAUI Blazor Hybrid app with a Blazor Web App and ASP.NET Core Identity (`MauiBlazorWebIdentity`)<br>[.NET MAUI Blazor Hybrid with a Blazor Web App and ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/hybrid/security/maui-blazor-web-identity)
+
 * Blazor with SignalR (`BlazorSignalRApp`)<br>[Use ASP.NET Core SignalR with Blazor](https://learn.microsoft.com/aspnet/core/blazor/tutorials/signalr-blazor)
 
 * Blazor Web App movie database app tutorial (`BlazorWebAppMovies`)<br>[Build a Blazor movie database app](https://learn.microsoft.com/aspnet/core/blazor/tutorials/movie-database-app)
