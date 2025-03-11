@@ -4,8 +4,8 @@ This sample demonstrates .NET MAUI Blazor Hybrid with a Blazor Web App that shar
 
 The sample:	
 
-* Sets up the UI to show/hide pages if a user is/is not authenticated.
-* Sets up the ASP.NET Identity endpoints so they can be called by remote clients.
+* Sets up the UI to show or hide pages based on user authentication.
+* Sets up ASP.NET Identity endpoints for remote clients.
 * Logs users in, logs users out, and refreshes tokens from the MAUI client.
 * Saves and retrieves tokens in secure device storage.
 * Calls a secure endpoint (`/api/weather`) from the client.
