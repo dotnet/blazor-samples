@@ -1,14 +1,16 @@
-# .NET MAUI Blazor Hybrid with Blazor Web App and ASP.NET Core Identity sample app (`MauiBlazorWeb`)
+# .NET MAUI Blazor Hybrid with a Blazor Web App and ASP.NET Core Identity sample app (`MauiBlazorWeb`)
 
-This sample demonstrates how to build .NET MAUI Blazor Hybrid and Blazor Web App that shares common UI and also provides *authentication*. It uses ASP.NET Core Identity local accounts, but you can use this pattern for any authentication provider from a MAUI Blazor Hybrid client. This sample demonstrates the following:	
+This sample demonstrates .NET MAUI Blazor Hybrid with a Blazor Web App that shares common UI and *authentication*. The sample uses ASP.NET Core Identity local accounts, but you can use this pattern for any authentication provider from a MAUI Blazor Hybrid client.
 
-* Setting up the UI to show/hide pages if a user is/is not authenticated.
-* Setting up the ASP.NET Identity endpoints so they can be called by remote clients.
-* Logging in, Logging out, and refreshing tokens from the MAUI client.
-* Saving and retrieving tokens in secure device storage.
-* Calling a secure endpoint (`/api/weather`) from the client.
+The sample:	
 
-For more information, see [.NET MAUI Blazor Hybrid with Blazor Web App and ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app-identity).
+* Sets up the UI to show or hide pages based on user authentication.
+* Sets up ASP.NET Identity endpoints for remote clients.
+* Logs users in, logs users out, and refreshes tokens from the MAUI client.
+* Saves and retrieves tokens in secure device storage.
+* Calls a secure endpoint (`/api/weather`) from the client.
+
+For more information, see [.NET MAUI Blazor Hybrid with a Blazor Web App and ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app-identity).
 
 ## Steps to run the sample
 
