@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="_content/MauiBlazorWeb.Shared/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="_content/MauiBlazorWeb.Shared/app.css" />
+    <link rel="stylesheet" href="MauiBlazorWeb.Web.styles.css" />
+    <link rel="icon" type="image/png" href="_content/MauiBlazorWeb.Shared/favicon.png" />
+    <HeadOutlet @rendermode="PageRenderMode" />
+</head>
+
+<body>
+    <Routes @rendermode="PageRenderMode" />
+    <script src="_framework/blazor.web.js"></script>
+</body>
+
+</html>
+
+@code {
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private IComponentRenderMode? PageRenderMode =>
+        HttpContext.AcceptsInteractiveRouting() ? InteractiveServer : null;
+}
