@@ -1,6 +1,6 @@
-# .NET MAUI Blazor Hybrid with a Blazor Web App and ASP.NET Core Identity sample app (`MauiBlazorWeb`)
+# .NET MAUI Blazor Hybrid and Web App with ASP.NET Core Identity sample app (`MauiBlazorWeb`)
 
-This sample demonstrates .NET MAUI Blazor Hybrid with a Blazor Web App that shares common UI and *authentication*. The sample uses ASP.NET Core Identity local accounts, but you can use this pattern for any authentication provider from a MAUI Blazor Hybrid client.
+This sample demonstrates .NET MAUI Blazor Hybrid and Web App that shares common UI and *authentication*. The sample uses ASP.NET Core Identity local accounts, but you can use this pattern for any authentication provider from a MAUI Blazor Hybrid client.
 
 The sample:	
 
@@ -10,7 +10,7 @@ The sample:
 * Saves and retrieves tokens in secure device storage.
 * Calls a secure endpoint (`/api/weather`) from the client.
 
-For more information, see [.NET MAUI Blazor Hybrid with a Blazor Web App and ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app-identity).
+For more information, see [.NET MAUI Blazor Hybrid and Web App with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app-identity).
 
 ## Steps to run the sample
 
