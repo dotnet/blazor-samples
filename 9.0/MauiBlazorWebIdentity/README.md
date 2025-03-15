@@ -10,7 +10,7 @@ The sample:
 * Saves and retrieves tokens in secure device storage.
 * Calls a secure endpoint (`/api/weather`) from the client.
 
-For more information, see [.NET MAUI Blazor Hybrid and Web App with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app-identity).
+For more information, see [.NET MAUI Blazor Hybrid and Web App with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/hybrid/security/maui-blazor-web-identity).
 
 ## Steps to run the sample
 
