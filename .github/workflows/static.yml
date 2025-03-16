@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Get latest .NET SDK
-        uses: actions/setup-dotnet@83c0c1a6c843e2d7e6b14cc940a4a8c77243829b # v4.3.0
+        uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab # v4.3.0
         with:
           dotnet-version: '9.0'
 
