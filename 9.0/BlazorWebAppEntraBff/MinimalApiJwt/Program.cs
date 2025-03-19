@@ -6,9 +6,7 @@ builder.AddServiceDefaults();
 builder.Services.AddAuthentication()
     .AddJwtBearer("Bearer", jwtOptions =>
     {
-        // The following should match the authority configured for the BlazorWebAppEntraBff server project,
-        // which the Microsoft Identity Web API creates from the 'Instance' and 'TenantId' entries in 
-        // the appsettings.json file. {TENANT ID} in the following examples is the directory (tenant) ID.
+        // {TENANT ID} in the following examples is the directory (tenant) ID.
         //
         // Authority format '{AUTHORITY}' matches the issurer (`iss`) of the JWT returned by the identity provider.
         //
