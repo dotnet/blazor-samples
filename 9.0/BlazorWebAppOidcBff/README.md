@@ -7,7 +7,7 @@ This sample features:
     server and client Blazor apps respectively to capture authentication state and flow it between the server and client.
 - OIDC authentication with Microsoft Entra without using Entra-specific packages.
   - The goal is that this sample can be used as a starting point for any OIDC authentication flow.
-- A minimal API backend using the JwtBearerHandler to validate JWT tokens saved by the Blazor app in the sign-in cookie.
+- A minimal API backend using the `JwtBearerHandler` to validate JWT tokens saved by the Blazor app in the sign-in cookie.
 - The BFF pattern using Aspire service discovery and YARP for proxying the requests to `/weatherforecast` on the backend with the `access_token` stored in the cookie.
 - Automatic non-interactive token refresh with the help of a custom `CookieOidcRefresher`.
 
@@ -19,7 +19,7 @@ If you need to open an issue that pertains to the coding of the sample app, open
 
 ## Configure the sample
 
-Configure the OIDC provider using the comments in the Program.cs file and guidance in [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc?view=aspnetcore-8.0&pivots=with-bff-pattern).
+Configure the OIDC provider using the comments in the `Program.cs` file and guidance in [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc?view=aspnetcore-8.0&pivots=with-bff-pattern).
 
 ## Run the sample
 

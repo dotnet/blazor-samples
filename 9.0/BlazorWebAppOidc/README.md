@@ -17,7 +17,7 @@ If you need to open an issue that pertains to the coding of the sample app, open
 
 ## Configure the sample
 
-Configure the OIDC provider using the comments in the Program.cs file.
+Configure the OIDC provider using the comments in the `Program.cs` file.
 
 ## Run the sample
 

@@ -25,6 +25,7 @@ builder.Services.AddAuthentication()
         //
         //jwtOptions.Audience = "{AUDIENCE}";
     });
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
