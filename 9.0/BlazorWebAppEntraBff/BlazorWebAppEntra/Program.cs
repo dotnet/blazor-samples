@@ -17,13 +17,6 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddInMemoryTokenCaches();
 
-// ConfigureCookieOidcRefresh attaches a cookie OnValidatePrincipal callback to get
-// a new access token when the current one expires, and reissue a cookie with the
-// new access token saved inside. If the refresh fails, the user will be signed
-// out. OIDC connect options are set for saving tokens and the offline access
-// scope.
-//builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme);
-
 builder.Services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme).Configure(oidcOptions =>
 {
     oidcOptions.Scope.Add(OpenIdConnectScope.OfflineAccess);
@@ -78,7 +71,7 @@ app.MapForwarder("/weather-forecast", "https://weatherapi", transformBuilder =>
     {
         var tokenAcquisition = transformContext.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
         var configuration = transformContext.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
-        var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync([$"{configuration["AzureAd:AppIdUri"]}/Weather.Get"]);
+        var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync([$"{configuration["AzureAd:AppIdUri"]}/{configuration["DownstreamApis:Weather:Scope"]}"]);
         transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
     });
 }).RequireAuthorization();

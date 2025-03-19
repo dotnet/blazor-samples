@@ -7,7 +7,7 @@ internal sealed class ServerWeatherForecaster(HttpClient httpClient, ITokenAcqui
 {
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync()
     {
-        var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync([$"{configuration["AzureAd:AppIdUri"]}/Weather.Get"]);
+        var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync([$"{configuration["AzureAd:AppIdUri"]}/{configuration["DownstreamApis:Weather:Scope"]}"]);
 
         using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/weather-forecast");
         requestMessage.Headers.Authorization = new("Bearer", accessToken);
