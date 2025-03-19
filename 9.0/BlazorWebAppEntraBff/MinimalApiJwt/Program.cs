@@ -15,7 +15,7 @@ builder.Services.AddAuthentication()
         // Authority format '{AUTHORITY}' for ME-ID tenant type: https://sts.windows.net/{TENANT ID}/
         // Authority format '{AUTHORITY}' for B2C tenant type: https://login.microsoftonline.com/{TENANT ID}/v2.0/
         //
-        //jwtOptions.Audience = "{AUTHORITY}";
+        //jwtOptions.Authority = "{AUTHORITY}";
         //
         // The following should match just the path of the Application ID URI configured when adding the "Weather.Get" scope
         // under "Expose an API" in the Azure or Entra portal. {CLIENT ID} is the application (client) ID of this 
