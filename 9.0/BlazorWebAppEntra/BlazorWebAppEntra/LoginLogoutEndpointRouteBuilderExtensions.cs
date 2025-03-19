@@ -34,38 +34,3 @@ internal static class LoginLogoutEndpointRouteBuilderExtensions
             }
         };
 }
-
-
-"AzureAd": {
-  "Domain": "XXXXXXXXXX.onmicrosoft.com",
-  "CallbackPath": "/signin-oidc",
-  "ClientId": "00001111-aaaa-2222-bbbb-3333cccc4444",
-  "Instance": "https://login.microsoftonline.com/",
-  "ResponseType": "code",
-  "TenantId": "aaaabbbb-0000-cccc-1111-dddd2222eeee",
-  "VaultUri": "https://XXXXXXXXXX.vault.azure.net/",
-  "SecretName": "XXXXXXXXXX"
-},
-
-I can't reproduce that error here, but it looks like you aren't configuring the app and the app's registration correctly.
-
-In the app's registration in Entra ...
-
-* The ID tokens checkbox should ***not*** be selected.
-
-In the app's `AzureAd` config is ...
-
-```json
-"AzureAd": {
-  "Domain": "XXXXXXXXXX.onmicrosoft.com",
-  "CallbackPath": "/signin-oidc",
-  "ClientId": "00001111-aaaa-2222-bbbb-3333cccc4444",
-  "Instance": "https://login.microsoftonline.com/",
-  "ResponseType": "code",
-  "TenantId": "aaaabbbb-0000-cccc-1111-dddd2222eeee",
-  "VaultUri": "https://XXXXXXXXXX.vault.azure.net/",
-  "SecretName": "XXXXXXXXXX"
-},
-```
-
-... and that assumes that the secret is being supplied via Azure Key Vault. If you're using the Secret Manager Tool locally, you wouldn't have the `VaultUri` and `SecretName` there.
