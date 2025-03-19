@@ -6,13 +6,14 @@ builder.AddServiceDefaults();
 builder.Services.AddAuthentication()
     .AddJwtBearer("Bearer", jwtOptions =>
     {
-        // The following should match the authority configured for the OIDC handler in BlazorWebAppEntraBff/Program.cs.
-        // {TENANT ID} is the directory (tenant) ID.
+        // The following should match the authority configured for the BlazorWebAppEntraBff server project,
+        // which the Microsoft Identity Web API creates from the 'Instance' and 'TenantId' entries in 
+        // the appsettings.json file. {TENANT ID} in the following examples is the directory (tenant) ID.
         //
-        // Authority format {AUTHORITY} matches the issurer (`iss`) of the JWT returned by the identity provider.
+        // Authority format '{AUTHORITY}' matches the issurer (`iss`) of the JWT returned by the identity provider.
         //
-        // Authority format {AUTHORITY} for ME-ID tenant type: https://sts.windows.net/{TENANT ID}/
-        // Authority format {AUTHORITY} for B2C tenant type: https://login.microsoftonline.com/{TENANT ID}/v2.0/
+        // Authority format '{AUTHORITY}' for ME-ID tenant type: https://sts.windows.net/{TENANT ID}/
+        // Authority format '{AUTHORITY}' for B2C tenant type: https://login.microsoftonline.com/{TENANT ID}/v2.0/
         //
         //jwtOptions.Audience = "{AUTHORITY}";
         //
@@ -20,8 +21,8 @@ builder.Services.AddAuthentication()
         // under "Expose an API" in the Azure or Entra portal. {CLIENT ID} is the application (client) ID of this 
         // app's registration in the Azure portal.
         // 
-        // Audience format {AUDIENCE} for ME-ID tenant type: api://{CLIENT ID}
-        // Audience format {AUDIENCE} for B2C tenant type: https://{DIRECTORY NAME}.onmicrosoft.com/{CLIENT ID}
+        // Audience format '{AUDIENCE}' for ME-ID tenant type: api://{CLIENT ID}
+        // Audience format '{AUDIENCE}' for B2C tenant type: https://{DIRECTORY NAME}.onmicrosoft.com/{CLIENT ID}
         //
         //jwtOptions.Audience = "{AUDIENCE}";
     });
