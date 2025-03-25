@@ -7,14 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
     .AddNegotiate();
 
-// To require authentication for all users for the
-// entire app, use the following code.
-/*
+// Require authentication for all users for the entire app.
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = options.DefaultPolicy;
 });
-*/
 
 builder.Services.AddCascadingAuthenticationState();
 
@@ -23,7 +20,7 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy("LocalAccount", policy =>
         policy.RequireClaim(
             "http://schemas.microsoft.com/ws/2008/06/identity/claims/groupsid",
-            "S-1-5-113"));   
+            "S-1-5-113"));
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
