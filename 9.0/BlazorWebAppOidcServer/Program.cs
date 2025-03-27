@@ -18,6 +18,19 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         // remove the line if you wish.
 
         // ........................................................................
+        // Pushed Authorization Requests (PAR) support. By default, the setting is
+        // to use PAR if the identity provider's discovery document (usually found 
+        // at '.well-known/openid-configuration') advertises support for PAR. If 
+        // you wish to require PAR support for the app, you can assign 
+        // 'PushedAuthorizationBehavior.Require' to 'PushedAuthorizationBehavior'.
+        //
+        // Note that PAR isn't supported by Microsoft Entra, and there are no plans
+        // for Entra to ever support it in the future.
+
+        //oidcOptions.PushedAuthorizationBehavior = PushedAuthorizationBehavior.UseIfAvailable;
+        // ........................................................................
+
+        // ........................................................................
         // The OIDC handler must use a sign-in scheme capable of persisting 
         // user credentials across requests.
 
