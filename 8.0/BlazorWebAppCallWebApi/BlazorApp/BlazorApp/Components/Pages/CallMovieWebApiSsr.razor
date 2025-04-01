@@ -90,6 +90,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        // Call at the end to avoid a potential race condition at app shutdown
         persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
 
         if (!ApplicationState.TryTakeFromJson<Movie[]>(nameof(movies), out var restoredData))

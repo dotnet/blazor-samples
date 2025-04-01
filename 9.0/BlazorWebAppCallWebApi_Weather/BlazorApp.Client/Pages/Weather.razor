@@ -48,12 +48,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        persistingSubscription = PersistentComponentState.RegisterOnPersisting(PersistData);
-
         if (!PersistentComponentState.TryTakeFromJson<WeatherForecast[]>(nameof(forecasts), out forecasts))
         {
             forecasts = await WeatherService.GetWeather();
         }
+
+        // Call at the end to avoid a potential race condition at app shutdown
+        persistingSubscription = PersistentComponentState.RegisterOnPersisting(PersistData);
     }
 
     private Task PersistData()

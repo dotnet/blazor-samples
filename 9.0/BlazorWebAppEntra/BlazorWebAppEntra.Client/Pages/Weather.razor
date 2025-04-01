@@ -47,6 +47,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        // Call at the end to avoid a potential race condition at app shutdown
         persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
 
         if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>(nameof(forecasts), out var restoredData))
