@@ -17,9 +17,6 @@
 
     protected override void OnInitialized()
     {
-        persistingSubscription =
-            ApplicationState.RegisterOnPersisting(PersistCount);
-
         if (!ApplicationState.TryTakeFromJson<int>(
             nameof(currentCount), out var restoredCount))
         {
@@ -31,6 +28,9 @@
             currentCount = restoredCount!;
             Logger.LogInformation("currentCount restored to {Count}", currentCount);
         }
+
+        // Call at the end to avoid a potential race condition at app shutdown
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistCount);
     }
 
     private Task PersistCount()

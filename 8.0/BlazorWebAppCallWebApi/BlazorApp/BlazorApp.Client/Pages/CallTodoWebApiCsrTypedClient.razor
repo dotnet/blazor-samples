@@ -35,8 +35,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
-
         if (!ApplicationState.TryTakeFromJson<TodoItem[]>(nameof(todoItems), out var restoredData))
         {
             todoItems = await Http.GetTodoItemsAsync();
@@ -45,6 +43,9 @@ else
         {
             todoItems = restoredData!;
         }
+
+        // Call at the end to avoid a potential race condition at app shutdown
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
     }
 
     private Task PersistData()

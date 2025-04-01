@@ -47,7 +47,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         client = ClientFactory.CreateClient("WebAPI");
-        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
 
         if (!ApplicationState.TryTakeFromJson<TodoItem[]>(nameof(todoItems), out var restoredData))
         {
@@ -57,6 +56,9 @@ else
         {
             todoItems = restoredData!;
         }
+
+        // Call at the end to avoid a potential race condition at app shutdown
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
     }
 
     private async Task GetTodoItems()
