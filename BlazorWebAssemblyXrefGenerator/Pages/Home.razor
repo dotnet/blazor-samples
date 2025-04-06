@@ -28,7 +28,7 @@
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Search</button>
-                            <button type="button" class="btn btn-secondary" @onclick="() => ClearUI(clearSearchText: true)">Clear</button>
+                            <button type="button" class="btn btn-secondary" @onclick="() => ClearUI(clearEverything: true)">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -265,11 +265,12 @@
         }
     }
 
-    private async Task ClearUI(bool clearSearchText = false)
+    private async Task ClearUI(bool clearEverything = false)
     {
-        if (clearSearchText)
+        if (clearEverything)
         {
-            Model!.SearchText = string.Empty;    
+            Model!.SearchText = string.Empty;
+            message = string.Empty;
         }
 
         var dictionary = new Dictionary<string, object?>
