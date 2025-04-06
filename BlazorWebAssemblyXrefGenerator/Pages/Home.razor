@@ -154,15 +154,13 @@
         {
             await ClearUI();
             var index = 0;
+            var proxyClient = ClientFactory.CreateClient("ProxyClient");
 
             foreach (var result in SearchResultItems.Results)
             {
                 index++;
 
-                var client = ClientFactory.CreateClient();
-                var urlEncodedRequestUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
-                var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{urlEncodedRequestUrl}");
-                var apiBrowserPage = await client.SendAsync(request);
+                var apiBrowserPage = await proxyClient.GetAsync($"?https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
                 var metaTag = new Regex("<meta name=\"ms.assetid\" content=\"(.+?)\" />");
                 var match = metaTag.Match(await apiBrowserPage.Content.ReadAsStringAsync()).Groups[1].Value;
                 result.Link = match.Replace("*", "%2A").Replace("`", "%60");
