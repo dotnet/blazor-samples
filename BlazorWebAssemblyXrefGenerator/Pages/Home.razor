@@ -28,7 +28,7 @@
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Search</button>
-                            <button type="button" class="btn btn-secondary" @onclick="() => ClearUI(clearEverything: true)">Clear</button>
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('searchText').value=''">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -128,12 +128,6 @@
 
     public async Task GetSearchResults()
     {
-        // If the first result is not empty then we will clear the UI
-        if (!string.IsNullOrEmpty(apiResult1.DisplayName))
-        {
-            await ClearUI();
-        }
-
         message = string.Empty;
         var apiClient = ClientFactory.CreateClient("APIClient");
 
@@ -156,16 +150,19 @@
             return;
         }
 
-        if (SearchResultItems?.Results?.Any() == true)
+        if (SearchResultItems?.Results != null)
         {
+            await ClearUI();
             var index = 0;
-            var proxyClient = ClientFactory.CreateClient("ProxyClient");
 
             foreach (var result in SearchResultItems.Results)
             {
                 index++;
 
-                var apiBrowserPage = await proxyClient.GetAsync($"?https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
+                var client = ClientFactory.CreateClient();
+                var urlEncodedRequestUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{urlEncodedRequestUrl}");
+                var apiBrowserPage = await client.SendAsync(request);
                 var metaTag = new Regex("<meta name=\"ms.assetid\" content=\"(.+?)\" />");
                 var match = metaTag.Match(await apiBrowserPage.Content.ReadAsStringAsync()).Groups[1].Value;
                 result.Link = match.Replace("*", "%2A").Replace("`", "%60");
@@ -265,14 +262,8 @@
         }
     }
 
-    private async Task ClearUI(bool clearEverything = false)
+    private async Task ClearUI()
     {
-        if (clearEverything)
-        {
-            Model!.SearchText = string.Empty;
-            message = string.Empty;
-        }
-
         var dictionary = new Dictionary<string, object?>
         {
             { "DisplayName", string.Empty },
