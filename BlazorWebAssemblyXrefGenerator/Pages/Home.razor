@@ -28,7 +28,7 @@
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Search</button>
-                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('searchText').value=''">Clear</button>
+                            <button type="button" class="btn btn-secondary" @onclick="() => ClearUI(clearSearchText: true)">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -128,6 +128,12 @@
 
     public async Task GetSearchResults()
     {
+        // If the first result is not empty then we will clear the UI
+        if (!string.IsNullOrEmpty(apiResult1.DisplayName))
+        {
+            await ClearUI();
+        }
+
         message = string.Empty;
         var apiClient = ClientFactory.CreateClient("APIClient");
 
@@ -150,9 +156,8 @@
             return;
         }
 
-        if (SearchResultItems?.Results != null)
+        if (SearchResultItems?.Results?.Any() == true)
         {
-            await ClearUI();
             var index = 0;
             var proxyClient = ClientFactory.CreateClient("ProxyClient");
 
@@ -260,8 +265,13 @@
         }
     }
 
-    private async Task ClearUI()
+    private async Task ClearUI(bool clearSearchText = false)
     {
+        if (clearSearchText)
+        {
+            Model!.SearchText = string.Empty;    
+        }
+
         var dictionary = new Dictionary<string, object?>
         {
             { "DisplayName", string.Empty },
