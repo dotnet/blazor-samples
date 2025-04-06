@@ -10,6 +10,4 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 builder.Services.AddHttpClient("APIClient", client => client.BaseAddress = new Uri("https://learn.microsoft.com"));
 
-builder.Services.AddHttpClient("APIBrowserPageClient", client => client.BaseAddress = new Uri("https://learn.microsoft.com/en-us"));
-
 await builder.Build().RunAsync();
