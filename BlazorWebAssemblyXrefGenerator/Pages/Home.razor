@@ -28,7 +28,7 @@
                         </div>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Search</button>
-                            <button type="button" class="btn btn-secondary" @onclick="() => ClearUI(clearEverything: true)">Clear</button>
+                            <button type="button" class="btn btn-secondary" @onclick="() => ClearUI()">Clear</button>
                         </div>
                     </div>
                 </div>
@@ -127,14 +127,11 @@
         }
     }
 
-    private void ClearUI(bool clearEverything = false)
+    private void ClearUI()
     {
         ResultsToRender.Clear();
-        if (clearEverything)
-        {
-            Model!.SearchText = string.Empty;
-            message = string.Empty;
-        }
+        Model!.SearchText = string.Empty;
+        message = string.Empty;
     }
 
     public class FormModel
