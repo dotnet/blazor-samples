@@ -34,59 +34,26 @@
                 </div>
             </EditForm>
 
-            <ol style="margin-top:20px">
-                <ApiResult @ref="apiResult1" />
-                <ApiResult @ref="apiResult2" />
-                <ApiResult @ref="apiResult3" />
-                <ApiResult @ref="apiResult4" />
-                <ApiResult @ref="apiResult5" />
-                <ApiResult @ref="apiResult6" />
-                <ApiResult @ref="apiResult7" />
-                <ApiResult @ref="apiResult8" />
-                <ApiResult @ref="apiResult9" />
-                <ApiResult @ref="apiResult10" />
-                <ApiResult @ref="apiResult11" />
-                <ApiResult @ref="apiResult12" />
-                <ApiResult @ref="apiResult13" />
-                <ApiResult @ref="apiResult14" />
-                <ApiResult @ref="apiResult15" />
-                <ApiResult @ref="apiResult16" />
-                <ApiResult @ref="apiResult17" />
-                <ApiResult @ref="apiResult18" />
-                <ApiResult @ref="apiResult19" />
-                <ApiResult @ref="apiResult20" />
-                <ApiResult @ref="apiResult21" />
-                <ApiResult @ref="apiResult22" />
-            </ol>
-            @*
-            @if (SearchResultItems?.Results?.Count() > 0)
+            @if (isSearching)
             {
-                <ol style="margin-top:20px">
-                    @foreach (var result in SearchResultItems.Results.Select((x, i) => new { Data = x, Index = i }))
-                    {
-                        <li style="margin-bottom:5px">
-                            <div style="font-size:1.4em;color:green;font-weight:bold">@result.Data.DisplayName</div>
-                            <div><b>Item Type:</b> @result.Data.ItemType</div>
-                            <div style="width:90%"><b>Description:</b> @result.Data.Description</div>
-                            <div><input id="m@(result.Index)0" value="<xref:@result.Data.Link>"></div>
-                            <div><input id="m@(result.Index)1" value="<xref:@result.Data.Link?displayProperty=fullName>"></div>
-                            <div><input id="m@(result.Index)2" value="<xref:@result.Data.Link?displayProperty=nameWithType>"></div>
-                            <div><input id="m@(result.Index)3" value="[LINK_TEXT](xref:@result.Data.Link)"></div>
-                            <div><input id="m@(result.Index)4" value="xref:@result.Data.Link"></div>
-                            <div>
-                                <button type="button" class="btn btn-primary" onclick=@($"copyToClipboard('m{result.Index}0')")>Copy</button>
-                                <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}1')")>Copy (Full Name)</button>
-                                <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}2')")>Copy (Name with Type)</button>
-                                <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}3')")>Copy (Custom Link Text)</button>
-                                <button type="button" class="btn btn-secondary" onclick=@($"copyToClipboard('m{result.Index}4')")>Copy (Member Only)</button>
-                            </div>
-                        </li>
-                    }
-                </ol>
+                <div class="d-flex justify-content-center my-3">
+                    <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+                </div>
             }
-            *@
 
-            <div style="margin-top:20px">
+            <ol class="my-3">
+               
+                @foreach (var item in ResultsToRender)
+                {
+                    <ApiResult DisplayName="@item.DisplayName"
+                               Description="@item.Description"
+                               ItemType="@item.ItemType"
+                               Link="@item.Link"
+                               Index="@item.Index" />
+                }
+            </ol>
+
+            <div class="my-3">
                 @message
             </div>
         </article>
@@ -94,216 +61,80 @@
 </div>
 
 @code {
-    private ApiResult apiResult1 = default!;
-    private ApiResult apiResult2 = default!;
-    private ApiResult apiResult3 = default!;
-    private ApiResult apiResult4 = default!;
-    private ApiResult apiResult5 = default!;
-    private ApiResult apiResult6 = default!;
-    private ApiResult apiResult7 = default!;
-    private ApiResult apiResult8 = default!;
-    private ApiResult apiResult9 = default!;
-    private ApiResult apiResult10 = default!;
-    private ApiResult apiResult11 = default!;
-    private ApiResult apiResult12 = default!;
-    private ApiResult apiResult13 = default!;
-    private ApiResult apiResult14 = default!;
-    private ApiResult apiResult15 = default!;
-    private ApiResult apiResult16 = default!;
-    private ApiResult apiResult17 = default!;
-    private ApiResult apiResult18 = default!;
-    private ApiResult apiResult19 = default!;
-    private ApiResult apiResult20 = default!;
-    private ApiResult apiResult21 = default!;
-    private ApiResult apiResult22 = default!;
-
     [SupplyParameterFromForm]
-    private FormModel? Model { get; set; }
+    private FormModel? Model { get; set; } = new();
 
     private SearchResults? SearchResultItems { get; set; }
+    private List<Result> ResultsToRender { get; set; } = new();
     public string? message;
     private string? dotNetVersion;
 
-    protected override void OnInitialized() => Model ??= new();
+    private const int MaxResults = 22;
+
+    private bool isSearching = false;
 
     public async Task GetSearchResults()
     {
-        // If the first result is not empty then we will clear the UI
-        if (!string.IsNullOrEmpty(apiResult1.DisplayName))
-        {
-            await ClearUI();
-        }
-
+        isSearching = true;
+        ResultsToRender.Clear();
         message = string.Empty;
-        var apiClient = ClientFactory.CreateClient("APIClient");
 
+        var apiClient = ClientFactory.CreateClient("APIClient");
         if (string.IsNullOrEmpty(Model?.SearchText) || apiClient == null)
         {
+            isSearching = false;
             return;
         }
 
         try
         {
             SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={Model.SearchText}");
-        }
-        catch (HttpRequestException ex)
-        {
-            if (ex.StatusCode == HttpStatusCode.BadRequest)
+
+            if (SearchResultItems?.Results?.Any() == true)
             {
-                message = "Bad Request! No results returned.";
-            }
-
-            return;
-        }
-
-        if (SearchResultItems?.Results?.Any() == true)
-        {
-            var index = 0;
-
-            foreach (var result in SearchResultItems.Results)
-            {
-                index++;
-
-                var client = ClientFactory.CreateClient();
-                var urlEncodedRequestUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
-                var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{urlEncodedRequestUrl}");
-                var apiBrowserPage = await client.SendAsync(request);
-                var metaTag = new Regex("<meta name=\"ms.assetid\" content=\"(.+?)\" />");
-                var match = metaTag.Match(await apiBrowserPage.Content.ReadAsStringAsync()).Groups[1].Value;
-                result.Link = match.Replace("*", "%2A").Replace("`", "%60");
-
-                var dictionary = new Dictionary<string, object?>
+                var index = 1;
+                foreach (var result in SearchResultItems.Results.Take(MaxResults))
                 {
-                    { "DisplayName", result.DisplayName },
-                    { "ItemType", result.ItemType },
-                    { "Description", result.Description },
-                    { "Link", result.Link },
-                    { "Index", index },
-                };
+                    var client = ClientFactory.CreateClient();
+                    var encodedUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
+                    var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{encodedUrl}");
+                    var response = await client.SendAsync(request);
+                    var content = await response.Content.ReadAsStringAsync();
 
-                var parameters = ParameterView.FromDictionary(dictionary);
+                    var match = Regex.Match(content, "<meta name=\"ms.assetid\" content=\"(.+?)\" />");
+                    if (match.Success)
+                    {
+                        result.Link = match.Groups[1].Value.Replace("*", "%2A").Replace("`", "%60");
+                    }
 
-                switch(index)
-                {
-                    case 1:
-                        await apiResult1.SetParametersAsync(parameters);
-                        break;
-                    case 2:
-                        await apiResult2.SetParametersAsync(parameters);
-                        break;
-                    case 3:
-                        await apiResult3.SetParametersAsync(parameters);
-                        break;
-                    case 4:
-                        await apiResult4.SetParametersAsync(parameters);
-                        break;
-                    case 5:
-                        await apiResult5.SetParametersAsync(parameters);
-                        break;
-                    case 6:
-                        await apiResult6.SetParametersAsync(parameters);
-                        break;
-                    case 7:
-                        await apiResult7.SetParametersAsync(parameters);
-                        break;
-                    case 8:
-                        await apiResult8.SetParametersAsync(parameters);
-                        break;
-                    case 9:
-                        await apiResult9.SetParametersAsync(parameters);
-                        break;
-                    case 10:
-                        await apiResult10.SetParametersAsync(parameters);
-                        break;
-                    case 11:
-                        await apiResult11.SetParametersAsync(parameters);
-                        break;
-                    case 12:
-                        await apiResult12.SetParametersAsync(parameters);
-                        break;
-                    case 13:
-                        await apiResult13.SetParametersAsync(parameters);
-                        break;
-                    case 14:
-                        await apiResult14.SetParametersAsync(parameters);
-                        break;
-                    case 15:
-                        await apiResult15.SetParametersAsync(parameters);
-                        break;
-                    case 16:
-                        await apiResult16.SetParametersAsync(parameters);
-                        break;
-                    case 17:
-                        await apiResult17.SetParametersAsync(parameters);
-                        break;
-                    case 18:
-                        await apiResult18.SetParametersAsync(parameters);
-                        break;
-                    case 19:
-                        await apiResult19.SetParametersAsync(parameters);
-                        break;
-                    case 20:
-                        await apiResult20.SetParametersAsync(parameters);
-                        break;
-                    case 21:
-                        await apiResult21.SetParametersAsync(parameters);
-                        break;
-                    case 22:
-                        await apiResult22.SetParametersAsync(parameters);
-                        break;
-                }
-
-                StateHasChanged();
-
-                if (index == 22)
-                {
-                    break;
+                    result.Index = index++;
+                    ResultsToRender.Add(result);
+                    StateHasChanged();
                 }
             }
+            else
+            {
+                message = "No results returned.";
+            }
         }
-        else
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
         {
-            message = "No results returned.";
+            message = "Bad Request! No results returned.";
+        }
+        finally
+        {
+            isSearching = false;
         }
     }
 
-    private async Task ClearUI(bool clearEverything = false)
+    private void ClearUI(bool clearEverything = false)
     {
+        ResultsToRender.Clear();
         if (clearEverything)
         {
             Model!.SearchText = string.Empty;
             message = string.Empty;
         }
-
-        var dictionary = new Dictionary<string, object?>
-        {
-            { "DisplayName", string.Empty },
-        };
-
-        var parameters = ParameterView.FromDictionary(dictionary);
-
-        await apiResult1.SetParametersAsync(parameters);
-        await apiResult2.SetParametersAsync(parameters);
-        await apiResult3.SetParametersAsync(parameters);
-        await apiResult4.SetParametersAsync(parameters);
-        await apiResult5.SetParametersAsync(parameters);
-        await apiResult6.SetParametersAsync(parameters);
-        await apiResult7.SetParametersAsync(parameters);
-        await apiResult8.SetParametersAsync(parameters);
-        await apiResult9.SetParametersAsync(parameters);
-        await apiResult10.SetParametersAsync(parameters);
-        await apiResult11.SetParametersAsync(parameters);
-        await apiResult12.SetParametersAsync(parameters);
-        await apiResult13.SetParametersAsync(parameters);
-        await apiResult14.SetParametersAsync(parameters);
-        await apiResult15.SetParametersAsync(parameters);
-        await apiResult16.SetParametersAsync(parameters);
-        await apiResult17.SetParametersAsync(parameters);
-        await apiResult18.SetParametersAsync(parameters);
-        await apiResult19.SetParametersAsync(parameters);
-        await apiResult20.SetParametersAsync(parameters);
-        await apiResult21.SetParametersAsync(parameters);
-        await apiResult22.SetParametersAsync(parameters);
     }
 
     public class FormModel
@@ -323,5 +154,6 @@
         public string? ItemType { get; set; }
         public string? Description { get; set; }
         public string? Link { get; set; }
+        public int Index { get; set; }
     }
 }
