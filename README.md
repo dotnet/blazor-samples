@@ -74,6 +74,8 @@ git sparse-checkout set 9.0/BlazorSample_BlazorWebApp
 
 * WebAssembly Browser App import-export interop (`WASMBroswerAppImportExportInterop`)<br>[JavaScript [JSImport]/[JSExport] interop with a WebAssembly Browser App project](https://learn.microsoft.com/aspnet/core/client-side/dotnet-interop/wasm-browser-app)
 
+* Blazor WebAssembly Xref Generator (`BlazorWebAssemblyXrefGenerator`)<br>[Host and deploy ASP.NET Core Blazor WebAssembly with GitHub Pages](https://learn.microsoft.com/aspnet/core/blazor/host-and-deploy/webassembly/github-pages)
+
 ## Snippet sample apps for article code examples
 
 **WARNING**: Always follow an article's security guidance when implementing sample code.
