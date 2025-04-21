@@ -1,8 +1,11 @@
-@page "/weather"
+@page "/weather-insecure"
+@using Microsoft.AspNetCore.Authorization
+@inject IConfiguration Config
+@inject IHttpClientFactory ClientFactory
 
-<PageTitle>Weather</PageTitle>
+<PageTitle>Weather (Insecure)</PageTitle>
 
-<h1>Weather</h1>
+<h1>Weather (Insecure)</h1>
 
 <p>This component demonstrates showing data.</p>
 
@@ -40,24 +43,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // Simulate asynchronous loading to demonstrate a loading indicator
-        await Task.Delay(500);
+        var request = new HttpRequestMessage(HttpMethod.Get, Config["WeatherForecastInsecureUrl"]);
+        var client = ClientFactory.CreateClient();
 
-        var startDate = DateOnly.FromDateTime(DateTime.Now);
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-        {
-            Date = startDate.AddDays(index),
-            TemperatureC = Random.Shared.Next(-20, 55),
-            Summary = summaries[Random.Shared.Next(summaries.Length)]
-        }).ToArray();
-    }
+        var response = await client.SendAsync(request);
 
-    private class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        response.EnsureSuccessStatusCode();
+
+        forecasts = await response.Content.ReadFromJsonAsync<WeatherForecast[]>() ??
+            throw new IOException("No weather forecast!");
     }
 }

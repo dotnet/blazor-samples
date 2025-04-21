@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35716.79 d17.13
+VisualStudioVersion = 17.13.35716.79
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppOidcServer", "BlazorWebAppOidcServer.csproj", "{A52F8977-0BFE-42D8-A112-7AA30C5BB061}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppOidcServer", "BlazorWebAppOidcServer\BlazorWebAppOidcServer.csproj", "{A52F8977-0BFE-42D8-A112-7AA30C5BB061}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiJwt", "MinimalApiJwt\MinimalApiJwt.csproj", "{02B2EF75-0ED3-7B54-3753-8E8DD6236369}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A52F8977-0BFE-42D8-A112-7AA30C5BB061}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A52F8977-0BFE-42D8-A112-7AA30C5BB061}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A52F8977-0BFE-42D8-A112-7AA30C5BB061}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02B2EF75-0ED3-7B54-3753-8E8DD6236369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02B2EF75-0ED3-7B54-3753-8E8DD6236369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02B2EF75-0ED3-7B54-3753-8E8DD6236369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02B2EF75-0ED3-7B54-3753-8E8DD6236369}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

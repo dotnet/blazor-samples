@@ -2,10 +2,10 @@
 
 This sample features:
 
-- A Blazor Web App with global Server interactivity.
-- OIDC authentication with Microsoft Entra without using Entra-specific packages.
-  - The goal is that this sample can be used as a starting point for any OIDC authentication flow.
-- Automatic non-interactive token refresh with the help of a custom `CookieOidcRefresher`.
+* A Blazor Web App with global Server interactivity.
+* OIDC authentication with Microsoft Entra without using Entra-specific packages. This sample can be used as a starting point for any OIDC authentication flow.
+* Automatic non-interactive token refresh with the help of a custom `CookieOidcRefresher`.
+* Both secure and insecure web API calls for weather data to a separate web API project. The access token is obtained from the server-side `HttpContext` and attached to outgoing requests with a `DelegatingHandler` service.
 
 ## Article for this sample app
 
@@ -15,15 +15,24 @@ If you need to open an issue that pertains to the coding of the sample app, open
 
 ## Configure the sample
 
-Configure the OIDC provider using the comments in the `Program.cs` file.
+Configure the OIDC provider using the comments in the `Program.cs` file and the article.
 
 ## Run the sample
 
 ### Visual Studio
 
 1. Open the `BlazorWebAppOidcServer` solution file in Visual Studio.
-1. Start the app with either Visual Studio's Run button or by selecting **Start Debugging** from the **Debug** menu.
+1. Open the **Start** button menu with the small triangle next to the **Start** button.
+1. Select **Configure Startup Projects**.
+1. Select **Multiple startup projects**.
+1. Name the launch profile (for example, "Start Projects").
+1. Select the start Action for the two projects. You can start either or both projects with or without debugging depending on if you plan to debug app code.
+1. Save the launch profile with the **OK** button.
+1. With the multiple projects launch profile showing next to the **Start** button, select the **Start** button to start the projects.
 
 ### .NET CLI
 
-In a command shell, navigate to the `BlazorWebAppOidcServer` project folder and use the `dotnet run` command to run the sample.
+In a command shell:
+
+1. Navigate to the `MinimalApiJwt` project folder and use the `dotnet run` or `dotnet watch` command to run the project.
+1. Navigate to the `BlazorWebAppOidcServer` project folder and use the `dotnet run` or `dotnet watch` command to run the project.
