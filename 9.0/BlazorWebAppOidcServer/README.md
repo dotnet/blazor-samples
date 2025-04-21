@@ -22,12 +22,13 @@ Configure the OIDC provider using the comments in the `Program.cs` file and the 
 ### Visual Studio
 
 1. Open the `BlazorWebAppOidcServer` solution file in Visual Studio.
-1. Open the **Start** button menu with the small triangle next to the **Start** button.
-1. Select **Configure Startup Projects**.
-1. Select **Multiple startup projects**.
-1. Name the launch profile (for example, "Start Projects").
-1. Select the start Action for the two projects. You can start either or both projects with or without debugging depending on if you plan to debug app code.
-1. Save the launch profile with the **OK** button.
+1. If the **Start Projects** launch profile isn't present, use the following guidance to create one.
+   * Open the **Start** button menu with the small triangle next to the **Start** button.
+   * Select **Configure Startup Projects**.
+   * Select **Multiple startup projects**.
+   * Name the launch profile (for example, "Start Projects").
+   * Select the start Action for the two projects. You can start either or both projects with or without debugging depending on if you plan to debug app code.
+   * Save the launch profile with the **OK** button.
 1. With the multiple projects launch profile showing next to the **Start** button, select the **Start** button to start the projects.
 
 ### .NET CLI
