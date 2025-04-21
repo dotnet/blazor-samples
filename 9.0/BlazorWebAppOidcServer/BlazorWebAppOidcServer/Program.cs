@@ -1,8 +1,8 @@
-using BlazorWebAppOidcServer;
-using BlazorWebAppOidcServer.Components;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using BlazorWebAppOidcServer;
+using BlazorWebAppOidcServer.Components;
 
 const string MS_OIDC_SCHEME = "MicrosoftOidc";
 
