@@ -1,0 +1,9 @@
+@MinimalApiJwt_HostAddress = http://localhost:5163
+
+GET {{MinimalApiJwt_HostAddress}}/weather-forecast-insecure/
+Accept: application/json
+
+GET {{MinimalApiJwt_HostAddress}}/weather-forecast-secure/
+Accept: application/json
+
+###
