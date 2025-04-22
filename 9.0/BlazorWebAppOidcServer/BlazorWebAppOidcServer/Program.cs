@@ -154,8 +154,8 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<TokenHandler>();
 
-builder.Services.AddHttpClient("ExternalAPI",
-      client => client.BaseAddress = new Uri(builder.Configuration["AppBaseUri"] ?? 
+builder.Services.AddHttpClient("ExternalApi",
+      client => client.BaseAddress = new Uri(builder.Configuration["ExternalApiUri"] ?? 
           throw new Exception("Missing base address!")))
       .AddHttpMessageHandler<TokenHandler>();
 
