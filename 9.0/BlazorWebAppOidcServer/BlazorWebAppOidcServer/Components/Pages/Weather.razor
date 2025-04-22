@@ -44,8 +44,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"{Config["ExternalApiUri"]}/weather-forecast");
-        var client = ClientFactory.CreateClient("ExternalAPI");
+        var request = new HttpRequestMessage(HttpMethod.Get, "weather-forecast");
+        var client = ClientFactory.CreateClient("ExternalApi");
 
         var response = await client.SendAsync(request);
 
