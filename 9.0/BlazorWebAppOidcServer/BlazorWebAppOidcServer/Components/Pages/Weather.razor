@@ -1,11 +1,12 @@
-@page "/weather-insecure"
+@page "/weather"
 @using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 @inject IConfiguration Config
 @inject IHttpClientFactory ClientFactory
 
-<PageTitle>Weather (Insecure)</PageTitle>
+<PageTitle>Weather</PageTitle>
 
-<h1>Weather (Insecure)</h1>
+<h1>Weather</h1>
 
 <p>This component demonstrates showing data.</p>
 
@@ -43,8 +44,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, Config["WeatherForecastInsecureUrl"]);
-        var client = ClientFactory.CreateClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, $"{Config["ExternalApiUrl"]}/weather-forecast");
+        var client = ClientFactory.CreateClient("ExternalAPI");
 
         var response = await client.SendAsync(request);
 

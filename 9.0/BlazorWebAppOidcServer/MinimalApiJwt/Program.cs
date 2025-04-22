@@ -33,12 +33,7 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-// Secure web API for weather forecast data
-// The following MapGet call chains a call to
-// RequireAuthorization. This endpoint only
-// returns data when a user is signed into the
-// app.
-app.MapGet("/weather-forecast-secure", () =>
+app.MapGet("/weather-forecast", () =>
 {
     var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
@@ -50,23 +45,6 @@ app.MapGet("/weather-forecast-secure", () =>
         .ToArray();
     return forecast;
 }).RequireAuthorization();
-
-// Insecure web API for weather forebase data
-// The following MapGet call doesn't chain a call to
-// RequireAuthorization. This endpoint returns data
-// when a user isn't signed into the app.
-app.MapGet("/weather-forecast-insecure", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-});
 
 app.Run();
 
