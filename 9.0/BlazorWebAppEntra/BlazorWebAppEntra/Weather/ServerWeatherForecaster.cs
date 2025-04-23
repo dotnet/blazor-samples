@@ -1,26 +1,19 @@
 using BlazorWebAppEntra.Client.Weather;
+using Microsoft.Identity.Abstractions;
 
 namespace BlazorWebAppEntra.Weather;
 
-public class ServerWeatherForecaster() : IWeatherForecaster
+public class ServerWeatherForecaster(IDownstreamApi downstreamApi) : IWeatherForecaster
 {
-    public readonly string[] summaries =
-    [
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    ];
-
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync()
     {
-        // Simulate asynchronous loading to demonstrate streaming rendering
-        await Task.Delay(500);
+        var response = await downstreamApi.CallApiForUserAsync("DownstreamApi",
+            options =>
+            {
+                options.RelativePath = "/weather-forecast";
+            });
 
-        return Enumerable.Range(1, 5).Select(index =>
-            new WeatherForecast
-            (
-                DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                Random.Shared.Next(-20, 55),
-                summaries[Random.Shared.Next(summaries.Length)]
-            ))
-        .ToArray();
+        return await response.Content.ReadFromJsonAsync<WeatherForecast[]>() ??
+            throw new IOException("No weather forecast!");
     }
 }
