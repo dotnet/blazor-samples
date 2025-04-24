@@ -3,7 +3,7 @@ using Microsoft.Identity.Abstractions;
 
 namespace BlazorWebAppEntra.Weather;
 
-public class ServerWeatherForecaster(IDownstreamApi downstreamApi) : IWeatherForecaster
+internal sealed ServerWeatherForecaster(IDownstreamApi downstreamApi) : IWeatherForecaster
 {
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync()
     {

@@ -2,24 +2,21 @@
 
 This sample features:
 
-- A Blazor Web App with global Auto interactivity.
-  - This adds a `PersistingAuthenticationStateProvider` and `PersistentAuthenticationStateProvider` services to the
-    server and client Blazor apps respectively to capture authentication state and flow it between the server and client.
-- OIDC authentication with Microsoft Entra without using Entra-specific packages.
-  - The goal is that this sample can be used as a starting point for any OIDC authentication flow.
-- A minimal API backend using the `JwtBearerHandler` to validate JWT tokens saved by the Blazor app in the sign-in cookie.
-- The BFF pattern using Aspire service discovery and YARP for proxying the requests to `/weatherforecast` on the backend with the `access_token` stored in the cookie.
-- Automatic non-interactive token refresh with the help of a custom `CookieOidcRefresher`.
+* A Blazor Web App with global Auto interactivity. `PersistingAuthenticationStateProvider` and `PersistentAuthenticationStateProvider` services are added to the server and client Blazor apps to capture authentication state and flow it between the server and client.
+* OIDC authentication with Microsoft Entra without using Entra-specific packages. This sample can be used as a starting point for any OIDC authentication flow.
+* A minimal API backend using the `JwtBearerHandler` to validate JWT tokens saved by the Blazor app in the sign-in cookie.
+* The BFF pattern using Aspire service discovery and YARP for proxying the requests to /weatherforecast on the backend with the access_token stored in the cookie.
+* Automatic non-interactive token refresh with the help of a custom `CookieOidcRefresher`.
 
 ## Article for this sample app
 
-The article for this sample app is [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc?pivots=with-bff-pattern).
+The article for this sample app is [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc?pivots=bff-pattern).
 
-If you need to open an issue that pertains to the coding of the sample app, open [an issue on this samples repo](https://github.com/dotnet/blazor-samples/issues). Otherwise, open an issue using the **Open a documentation issue** link/feedback form at the bottom of [the article](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc?pivots=with-bff-pattern).
+If you need to open an issue that pertains to the coding of the sample app, open [an issue on this samples repo](https://github.com/dotnet/blazor-samples/issues). Otherwise, open an issue using the **Open a documentation issue** link/feedback form at the bottom of [the article](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc?pivots=bff-pattern).
 
 ## Configure the sample
 
-Configure the OIDC provider using the comments in the `Program.cs` file and guidance in [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc?view=aspnetcore-8.0&pivots=with-bff-pattern).
+Configure the solution following the guidance in [Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc?view=aspnetcore-8.0&pivots=bff-pattern).
 
 ## Run the sample
 
