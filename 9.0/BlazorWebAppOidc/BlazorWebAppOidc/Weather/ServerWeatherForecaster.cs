@@ -2,7 +2,7 @@ using BlazorWebAppOidc.Client.Weather;
 
 namespace BlazorWebAppOidc.Weather;
 
-public class ServerWeatherForecaster() : IWeatherForecaster
+internal sealed ServerWeatherForecaster() : IWeatherForecaster
 {
     public readonly string[] summaries =
     [

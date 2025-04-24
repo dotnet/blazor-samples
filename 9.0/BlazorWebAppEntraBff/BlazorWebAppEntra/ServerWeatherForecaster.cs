@@ -1,19 +1,17 @@
 using BlazorWebAppEntra.Client.Weather;
-using Microsoft.Identity.Web;
+using Microsoft.Identity.Abstractions;
 
 namespace BlazorWebAppEntra;
 
-internal sealed class ServerWeatherForecaster(HttpClient httpClient, ITokenAcquisition tokenAcquisition, IConfiguration configuration) : IWeatherForecaster
+internal sealed class ServerWeatherForecaster(IDownstreamApi downstreamApi) : IWeatherForecaster
 {
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync()
     {
-        var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync([$"{configuration["AzureAd:AppIdUri"]}/{configuration["DownstreamApis:Weather:Scope"]}"]);
-
-        using var requestMessage = new HttpRequestMessage(HttpMethod.Get, "/weather-forecast");
-        requestMessage.Headers.Authorization = new("Bearer", accessToken);
-        using var response = await httpClient.SendAsync(requestMessage);
-
-        response.EnsureSuccessStatusCode();
+        var response = await downstreamApi.CallApiForUserAsync("DownstreamApi",
+            options =>
+            {
+                options.RelativePath = "/weather-forecast";
+            });
 
         return await response.Content.ReadFromJsonAsync<WeatherForecast[]>() ??
             throw new IOException("No weather forecast!");

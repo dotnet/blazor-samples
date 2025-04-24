@@ -15,6 +15,7 @@ builder.AddServiceDefaults();
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
     .EnableTokenAcquisitionToCallDownstreamApi()
+    .AddDownstreamApi("DownstreamApi", builder.Configuration.GetSection("DownstreamApi"))
     .AddInMemoryTokenCaches();
 
 builder.Services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme).Configure(oidcOptions =>
@@ -71,7 +72,9 @@ app.MapForwarder("/weather-forecast", "https://weatherapi", transformBuilder =>
     {
         var tokenAcquisition = transformContext.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
         var configuration = transformContext.HttpContext.RequestServices.GetRequiredService<IConfiguration>();
-        var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync([$"{configuration["AzureAd:AppIdUri"]}/{configuration["DownstreamApis:Weather:Scope"]}"]);
+        var scopes = configuration.GetSection("DownstreamApi:Scopes").Get<IEnumerable<string>>();
+        var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync(scopes ??
+            throw new IOException("No downstream API scopes!"));
         transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
     });
 }).RequireAuthorization();
