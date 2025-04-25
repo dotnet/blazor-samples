@@ -68,17 +68,13 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         // ........................................................................
 
         // ........................................................................
-        // The "Weather.Get" scope is configured in the Azure or Entra portal under 
-        // "Expose an API". This is necessary for backend web API (MinimalApiJwt)
-        // to validate the access token with AddBearerJwt. The following code example
-        // uses a scope format of the App ID URI for an AAD B2C tenant type. If your
-        // tenant is an ME-ID tenant, the App ID URI format is different:
-        // api://{CLIENT ID}, so the full scope with an API name of "Weather.Get" is:
-        // api://{CLIENT ID}/Weather.Get
-        // The {CLIENT ID} is the application (client) ID of the MinimalApiJwt app 
-        // registration.
+        // The "Weather.Get" scope for accessing the external web API for weather
+        // data. The following example is based on using Microsoft Entra ID in 
+        // an ME-ID tenant domain (the {APP ID URI} placeholder is found in
+        // the Entra or Azure portal where the web API is exposed). For any other
+        // identity provider, use the appropriate scope.
 
-        oidcOptions.Scope.Add("https://{DIRECTORY NAME}.onmicrosoft.com/{CLIENT ID}/Weather.Get");
+        oidcOptions.Scope.Add("{APP ID URI}/Weather.Get");
         // ........................................................................
 
         // ........................................................................
