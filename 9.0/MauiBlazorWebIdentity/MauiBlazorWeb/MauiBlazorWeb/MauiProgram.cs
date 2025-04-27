@@ -28,7 +28,7 @@ namespace MauiBlazorWeb
             // This is the core functionality
             builder.Services.AddAuthorizationCore();
             // This is our custom provider
-            builder.Services.AddScoped<MauiAuthenticationStateProvider, MauiAuthenticationStateProvider>();
+            builder.Services.AddScoped<MauiAuthenticationStateProvider>();
             // Use our custom provider when the app needs an AuthenticationStateProvider
             builder.Services.AddScoped<AuthenticationStateProvider>(s
                 => (MauiAuthenticationStateProvider)s.GetRequiredService<MauiAuthenticationStateProvider>());
