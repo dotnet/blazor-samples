@@ -35,5 +35,5 @@ Configure the OIDC provider using the comments in the `Program.cs` file and the 
 
 In a command shell:
 
-1. Navigate to the `MinimalApiJwt` project folder and use the `dotnet run` or `dotnet watch` command to run the project.
-1. Navigate to the `BlazorWebAppOidcServer` project folder and use the `dotnet run` or `dotnet watch` command to run the project.
+1. Navigate to the `MinimalApiJwt` project folder and use the `dotnet run` command to run the project.
+1. Navigate to the `BlazorWebAppOidcServer` project folder and use the `dotnet watch` command to run the project.

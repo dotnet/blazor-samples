@@ -1,5 +1,4 @@
 using BlazorWebAppOidc.Client.Weather;
-using Microsoft.AspNetCore.Components;
 
 namespace BlazorWebAppOidc.Weather;
 
