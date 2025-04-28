@@ -20,4 +20,4 @@ If you need to open an issue that pertains to the coding of the sample app, open
 
 ### .NET CLI
 
-In a command shell, navigate to the `BlazorWebAppWinAuthServer` project folder and use the `dotnet run` command to run the sample.
+In a command shell, navigate to the `BlazorWebAppWinAuthServer` project folder and use the `dotnet watch` command to run the sample.

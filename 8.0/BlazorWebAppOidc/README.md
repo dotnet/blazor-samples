@@ -2,12 +2,11 @@
 
 This sample features:
 
-- A Blazor Web App with global Auto interactivity.
-  - This adds a `PersistingAuthenticationStateProvider` and `PersistentAuthenticationStateProvider` services to the
-    server and client Blazor apps respectively to capture authentication state and flow it between the server and client.
-- OIDC authentication with Microsoft Entra without using Entra-specific packages.
-  - The goal is that this sample can be used as a starting point for any OIDC authentication flow.
-- Automatic non-interactive token refresh with the help of a custom `CookieOidcRefresher`.
+* A Blazor Web App with global Auto interactivity.
+* `PersistingAuthenticationStateProvider` and `PersistentAuthenticationStateProvider` services are added to the server and client Blazor apps respectively to capture authentication state and flow it between the server and client.
+* OIDC authentication with Microsoft Entra without using Entra-specific packages. This sample can be used as a starting point for any OIDC authentication flow.
+* Automatic non-interactive token refresh with the help of a custom `CookieOidcRefresher`.
+* Secure web API call for weather data to a separate web API project. The access token is obtained from the server-side `HttpContext` and attached to outgoing requests with a custom `DelegatingHandler` service.
 
 ## Article for this sample app
 
@@ -24,8 +23,11 @@ Configure the OIDC provider using the comments in the `Program.cs` file.
 ### Visual Studio
 
 1. Open the `BlazorWebAppOidc` solution file in Visual Studio.
-1. Select the `BlazorWebAppOidc` project in **Solution Explorer** and start the app with either Visual Studio's Run button or by selecting **Start Debugging** from the **Debug** menu.
+1. Use the **Start Projects** launch profile to start the web API app and Blazor apps.
 
 ### .NET CLI
 
-In a command shell, navigate to the `BlazorWebAppOidc` project folder and use the `dotnet run` command to run the sample.
+In a command shell:
+
+* Navigate to the `MinimalApiJwt` project folder and use the `dotnet run` command to run the project.
+* Navigate to the `BlazorWebAppOidc` project folder and use the `dotnet watch` command to run the project.

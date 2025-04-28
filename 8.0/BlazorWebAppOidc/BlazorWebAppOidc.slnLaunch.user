@@ -8,7 +8,7 @@
         "DebugTarget": "https"
       },
       {
-        "Path": "BlazorWebAppOidcServer\\BlazorWebAppOidcServer.csproj",
+        "Path": "BlazorWebAppOidc\\BlazorWebAppOidc.csproj",
         "Action": "Start",
         "DebugTarget": "https"
       }
