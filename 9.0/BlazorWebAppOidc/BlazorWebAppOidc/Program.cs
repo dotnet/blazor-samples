@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using BlazorWebAppOidc;
 using BlazorWebAppOidc.Client.Weather;
 using BlazorWebAppOidc.Components;
 using BlazorWebAppOidc.Weather;
@@ -44,6 +45,16 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         // configuration because configuration may overwrite the scopes collection.
 
         //oidcOptions.Scope.Add(OpenIdConnectScope.OpenIdProfile);
+        // ........................................................................
+
+        // ........................................................................
+        // The "Weather.Get" scope for accessing the external web API for weather
+        // data. The following example is based on using Microsoft Entra ID in 
+        // an ME-ID tenant domain (the {APP ID URI} placeholder is found in
+        // the Entra or Azure portal where the web API is exposed). For any other
+        // identity provider, use the appropriate scope.
+
+        oidcOptions.Scope.Add("{APP ID URI}/Weather.Get");
         // ........................................................................
 
         // ........................................................................
@@ -146,6 +157,13 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<TokenHandler>();
+
+builder.Services.AddHttpClient("ExternalApi",
+      client => client.BaseAddress = new Uri(builder.Configuration["ExternalApiUri"] ?? 
+          throw new Exception("Missing base address!")))
+      .AddHttpMessageHandler<TokenHandler>();
 
 var app = builder.Build();
 

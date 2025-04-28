@@ -37,6 +37,16 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         // ........................................................................
 
         // ........................................................................
+        // The "Weather.Get" scope for accessing the external web API for weather
+        // data. The following example is based on using Microsoft Entra ID in 
+        // an ME-ID tenant domain (the {APP ID URI} placeholder is found in
+        // the Entra or Azure portal where the web API is exposed). For any other
+        // identity provider, use the appropriate scope.
+
+        oidcOptions.Scope.Add("{APP ID URI}/Weather.Get");
+        // ........................................................................
+
+        // ........................................................................
         // The following paths must match the redirect and post logout redirect 
         // paths configured when registering the application with the OIDC provider. 
         // The default values are "/signin-oidc" and "/signout-callback-oidc".
@@ -137,6 +147,13 @@ builder.Services.AddScoped<AuthenticationStateProvider, PersistingAuthentication
 builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
 
 builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<TokenHandler>();
+
+builder.Services.AddHttpClient("ExternalApi",
+      client => client.BaseAddress = new Uri(builder.Configuration["ExternalApiUri"] ?? 
+          throw new Exception("Missing base address!")))
+      .AddHttpMessageHandler<TokenHandler>();
 
 var app = builder.Build();
 

@@ -5,7 +5,7 @@ This sample features:
 * A Blazor Web App with global Server interactivity.
 * OIDC authentication with Microsoft Entra without using Entra-specific packages. This sample can be used as a starting point for any OIDC authentication flow.
 * Automatic non-interactive token refresh with the help of a custom `CookieOidcRefresher`.
-* Secure web API call for weather data to a separate web API project. The access token is obtained from the server-side `HttpContext` and attached to outgoing requests with a `DelegatingHandler` service.
+* Secure web API call for weather data to a separate web API project. The access token is obtained from the server-side `HttpContext` and attached to outgoing requests with a custom `DelegatingHandler` service.
 
 ## Article for this sample app
 
