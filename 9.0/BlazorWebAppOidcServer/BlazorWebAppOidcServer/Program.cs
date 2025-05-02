@@ -124,7 +124,7 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
         // ........................................................................
 
         // ........................................................................
-        // OIDC connect options set later via ConfigureCookieOidcRefresh
+        // OIDC connect options set later via ConfigureCookieOidc
         //
         // (1) The "offline_access" scope is required for the refresh token.
         //
@@ -136,12 +136,12 @@ builder.Services.AddAuthentication(MS_OIDC_SCHEME)
     })
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
 
-// ConfigureCookieOidcRefresh attaches a cookie OnValidatePrincipal callback to get
+// ConfigureCookieOidc attaches a cookie OnValidatePrincipal callback to get
 // a new access token when the current one expires, and reissue a cookie with the
 // new access token saved inside. If the refresh fails, the user will be signed
 // out. OIDC connect options are set for saving tokens and the offline access
 // scope.
-builder.Services.ConfigureCookieOidcRefresh(CookieAuthenticationDefaults.AuthenticationScheme, MS_OIDC_SCHEME);
+builder.Services.ConfigureCookieOidc(CookieAuthenticationDefaults.AuthenticationScheme, MS_OIDC_SCHEME);
 
 builder.Services.AddAuthorization();
 

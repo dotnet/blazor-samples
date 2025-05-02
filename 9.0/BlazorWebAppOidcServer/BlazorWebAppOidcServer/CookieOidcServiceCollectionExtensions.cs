@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 internal static partial class CookieOidcServiceCollectionExtensions
 {
-    public static IServiceCollection ConfigureCookieOidcRefresh(this IServiceCollection services, string cookieScheme, string oidcScheme)
+    public static IServiceCollection ConfigureCookieOidc(this IServiceCollection services, string cookieScheme, string oidcScheme)
     {
         services.AddSingleton<CookieOidcRefresher>();
 
