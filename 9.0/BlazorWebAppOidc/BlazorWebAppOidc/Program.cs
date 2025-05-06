@@ -149,10 +149,12 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddCascadingAuthenticationState();
 
+// Remove or set 'SerializeAllClaims' to 'false' if you only want to 
+// serialize name and role claims for CSR.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents()
-    .AddAuthenticationStateSerialization();
+    .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
 builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
 
