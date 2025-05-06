@@ -221,6 +221,13 @@ namespace BlazorWasmAuth.Identity
                     authenticated = true;
                 }
             }
+            catch (Exception ex) when (ex is HttpRequestException exception)
+            {
+                if (exception.StatusCode != HttpStatusCode.Unauthorized)
+                {
+                    logger.LogError(ex, "App error");
+                }
+            }
             catch (Exception ex)
             {
                 logger.LogError(ex, "App error");
