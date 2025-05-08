@@ -16,9 +16,21 @@ builder.Services.AddRazorComponents()
     .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
+    .AddMicrosoftIdentityWebApp(msIdentityOptions =>
+    {
+        msIdentityOptions.CallbackPath = "/signin-oidc";
+        msIdentityOptions.ClientId = "{CLIENT ID (BLAZOR APP)}";
+        msIdentityOptions.Domain = "{DIRECTORY NAME}.onmicrosoft.com";
+        msIdentityOptions.Instance = "https://login.microsoftonline.com/";
+        msIdentityOptions.ResponseType = "code";
+        msIdentityOptions.TenantId = "{TENANT ID}";
+    })
     .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddDownstreamApi("DownstreamApi", builder.Configuration.GetSection("DownstreamApi"))
+    .AddDownstreamApi("DownstreamApi", configOptions =>
+    {
+        configOptions.BaseUrl = "{BASE URL}";
+        configOptions.Scopes = [ "{APP ID URI}/Weather.Get" ];
+    })
     .AddInMemoryTokenCaches();
 
 builder.Services.AddAuthorization();
