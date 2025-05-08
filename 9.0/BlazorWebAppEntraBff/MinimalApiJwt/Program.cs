@@ -27,7 +27,21 @@ builder.Services.AddAuthentication()
 
 builder.Services.AddAuthorization();
 
+// Add OpenApi 
+builder.Services.AddOpenApi();
+
 var app = builder.Build();
+
+// Configure Swagger UI
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "v1");
+    });
+}
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
