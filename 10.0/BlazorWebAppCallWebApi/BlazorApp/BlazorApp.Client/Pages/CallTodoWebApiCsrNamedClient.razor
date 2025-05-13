@@ -1,0 +1,44 @@
+@page "/call-todo-web-api-csr-named-client"
+@rendermode InteractiveWebAssembly
+@using BlazorApp.Client.Models
+@inject IHttpClientFactory ClientFactory
+@inject IConfiguration Config
+
+<PageTitle>Call Todo web API (CSR, Named Client)</PageTitle>
+
+<h1>Call Todo web API Example (CSR, Named Client)</h1>
+
+@if (TodoItems == null)
+{
+    <p>No Todo Items found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in TodoItems)
+        {
+            <li>
+                @item.Name 
+                @if (item.IsComplete)
+                {
+                    <span style="padding-left:5px">✔</span>
+                }
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    [SupplyParameterFromPersistentComponentState]
+    public TodoItem[]? TodoItems { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = ClientFactory.CreateClient("WebAPI");
+
+        if (client is not null)
+        {
+            TodoItems ??= await client.GetFromJsonAsync<TodoItem[]>("todoitems") ?? [];
+        }
+    }
+}
