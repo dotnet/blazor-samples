@@ -1,0 +1,92 @@
+@page "/call-todo-web-api-csr-patch"
+@rendermode InteractiveWebAssembly
+@using System.Diagnostics.CodeAnalysis
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@using Microsoft.AspNetCore.JsonPatch.SystemTextJson
+@using BlazorApp.Client.Models
+@inject IHttpClientFactory ClientFactory
+
+<PageTitle>Call Todo web API (CSR, PATCH)</PageTitle>
+
+<h1>Call Todo web API Example (CSR, PATCH)</h1>
+
+@if (TodoItems == null)
+{
+    <p>No Todo Items found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in TodoItems)
+        {
+            <li>
+                @item.Name
+                <button class="btn btn-secondary" @onclick="_ => UpdateItemRaw(item.Id)">
+                    Mark 'Complete' raw body
+                </button>
+                <button class="btn btn-primary" @onclick="_ => UpdateItem(item.Id)">
+                    Mark 'Complete' PATCH doc
+                </button>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    JsonPatchDocument<TodoItem> patchDocument = new JsonPatchDocument<TodoItem>().Replace(p => p.IsComplete, true);
+    private HttpClient? client;
+
+    [SupplyParameterFromPersistentComponentState]
+    public TodoItem[]? TodoItems { get; set; }
+
+    [StringSyntax(StringSyntaxAttribute.Json)]
+    private const string patchOperation = """[{"operationType":2,"path":"/IsComplete","op":"replace","value":true}]""";
+
+    protected override async Task OnInitializedAsync()
+    {
+        client = ClientFactory.CreateClient("WebAPI");
+
+        TodoItems ??= await GetTodoItems();
+    }
+
+    private async Task<TodoItem[]?> GetTodoItems()
+    {
+        if (client is not null)
+        {
+            return await client.GetFromJsonAsync<TodoItem[]>("todoitems/incomplete") ?? [];
+        }
+
+        return [];
+    }
+
+    private async Task UpdateItemRaw(long id)
+    {
+        if (client is not null)
+        {
+            await client.PatchAsJsonAsync(
+                $"todoitems/{id}", 
+                patchOperation);
+
+            TodoItems = await GetTodoItems();
+        }
+    }
+
+    private async Task UpdateItem(long id)
+    {
+        if (client is not null)
+        {
+            // Set WriteIndented to 'true' to format JSON during debugging
+            await client.PatchAsJsonAsync(
+                $"todoitems/{id}",
+                patchDocument.Operations,
+                new JsonSerializerOptions()
+                {
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+                    WriteIndented = false
+                });
+
+            TodoItems = await GetTodoItems();
+        }
+    }
+}
