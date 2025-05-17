@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWebAppOidc", "BlazorW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWebAppOidc.Client", "BlazorWebAppOidc.Client\BlazorWebAppOidc.Client.csproj", "{7B3838A1-D145-479C-9B79-6D2CD1775B71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiJwt", "..\GitHub\blazor-samples\9.0\BlazorWebAppEntra\MinimalApiJwt\MinimalApiJwt.csproj", "{9C2046C8-7491-5AB5-AAA9-FB558DCE801E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiJwt", "MinimalApiJwt\MinimalApiJwt.csproj", "{9C2046C8-7491-5AB5-AAA9-FB558DCE801E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
