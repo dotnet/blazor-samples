@@ -19,7 +19,7 @@ Configure the solution following the guidance in [Secure an ASP.NET Core Blazor 
 
 ## Use distributed token caches in production
 
-The sample app uses in-memory token caches, but distributed token caches are recommended for production apps. For more information, see [Use distributed token caches in production](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=non-bff-pattern#use-distributed-token-caches-in-production).
+The sample app uses in-memory token caches, but distributed token caches are recommended for production apps. For more information, see [Use distributed token caches in production](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=bff-pattern#use-distributed-token-caches-in-production).
 
 ## Run the sample
 
