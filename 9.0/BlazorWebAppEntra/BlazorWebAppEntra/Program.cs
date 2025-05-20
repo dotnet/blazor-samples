@@ -31,7 +31,9 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         configOptions.BaseUrl = "{BASE URL}";
         configOptions.Scopes = [ "{APP ID URI}/Weather.Get" ];
     })
-    .AddInMemoryTokenCaches();
+    .AddDistributedTokenCaches();
+
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddAuthorization();
 
