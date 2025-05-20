@@ -17,6 +17,10 @@ If you need to open an issue that pertains to the coding of the sample app, open
 
 Configure the solution following the guidance in [Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID (BFF pattern)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=bff-pattern).
 
+## Use distributed token caches in production
+
+The sample app uses in-memory token caches, but distributed token caches are recommended for production apps. For more information, see [Use distributed token caches in production](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=non-bff-pattern#use-distributed-token-caches-in-production).
+
 ## Run the sample
 
 ### Visual Studio
