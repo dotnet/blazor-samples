@@ -35,6 +35,21 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 
 builder.Services.AddDistributedMemoryCache();
 
+builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
+    options =>
+    {
+        options.DisableL1Cache = false;
+        options.L1CacheOptions.SizeLimit = 1024 * 1024 * 1024;
+        options.Encrypt = true;
+        options.SlidingExpiration = TimeSpan.FromHours(1);
+    });
+
+/*
+builder.Services.AddDataProtection()
+    .PersistKeysToAzureBlobStorage(new Uri("{BLOB URI WITH SAS TOKEN}"))
+    .ProtectKeysWithAzureKeyVault(new Uri("{KEY IDENTIFIER}"), new DefaultAzureCredential());
+*/
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
