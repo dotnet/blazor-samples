@@ -49,11 +49,9 @@ builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
         options.SlidingExpiration = TimeSpan.FromHours(1);
     });
 
-/*
 builder.Services.AddDataProtection()
     .PersistKeysToAzureBlobStorage(new Uri("{BLOB URI WITH SAS TOKEN}"))
     .ProtectKeysWithAzureKeyVault(new Uri("{KEY IDENTIFIER}"), new DefaultAzureCredential());
-*/
 
 builder.Services.AddAuthorization();
 
