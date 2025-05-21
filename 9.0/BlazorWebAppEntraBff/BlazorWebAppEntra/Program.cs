@@ -1,10 +1,17 @@
+using System.Security.Claims;
+using Azure.Identity;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Yarp.ReverseProxy.Transforms;
 using BlazorWebAppEntra;
+using BlazorWebAppEntra.Client;
 using BlazorWebAppEntra.Client.Weather;
 using BlazorWebAppEntra.Components;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Identity.Web;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using BlazorWebAppEntra.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +38,21 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddDistributedTokenCaches();
 
 builder.Services.AddDistributedMemoryCache();
+
+builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
+    options => 
+    {
+      options.DisableL1Cache = false;
+      options.L1CacheOptions.SizeLimit = 1024 * 1024 * 1024;
+      options.Encrypt = true;
+      options.SlidingExpiration = TimeSpan.FromHours(1);
+    });
+
+/*
+builder.Services.AddDataProtection()
+    .PersistKeysToAzureBlobStorage(new Uri("{BLOB URI WITH SAS TOKEN}"))
+    .ProtectKeysWithAzureKeyVault(new Uri("{KEY IDENTIFIER}"), new DefaultAzureCredential());
+*/
 
 builder.Services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme).Configure(oidcOptions =>
 {
