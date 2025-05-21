@@ -1,11 +1,9 @@
-using System.Security.Claims;
 using Azure.Identity;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
-using BlazorWebAppEntra.Client;
 using BlazorWebAppEntra.Client.Weather;
 using BlazorWebAppEntra.Components;
 using BlazorWebAppEntra.Weather;
