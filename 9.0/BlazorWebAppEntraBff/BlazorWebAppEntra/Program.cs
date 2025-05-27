@@ -38,10 +38,14 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
     options => 
     {
-      options.DisableL1Cache = false;
-      options.L1CacheOptions.SizeLimit = 1024 * 1024 * 1024;
+      // Default: false
+      //options.DisableL1Cache = false;
+      // Default: 500 MB
+      //options.L1CacheOptions.SizeLimit = 500 * 1024 * 1024;
+      // Default: false
       options.Encrypt = true;
-      options.SlidingExpiration = TimeSpan.FromHours(1);
+      // Default: 1 hour
+      //options.SlidingExpiration = TimeSpan.FromHours(1);
     });
 
 builder.Services.AddDataProtection()
