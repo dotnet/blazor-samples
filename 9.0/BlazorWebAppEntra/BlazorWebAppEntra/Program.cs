@@ -1,9 +1,12 @@
+using Azure.Identity;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using BlazorWebAppEntra.Client.Weather;
 using BlazorWebAppEntra.Components;
 using BlazorWebAppEntra.Weather;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +34,29 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         configOptions.BaseUrl = "{BASE URL}";
         configOptions.Scopes = [ "{APP ID URI}/Weather.Get" ];
     })
-    .AddInMemoryTokenCaches();
+    .AddDistributedTokenCaches();
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
+    options =>
+    {
+        // Disable L1 Cache default: false
+        //options.DisableL1Cache = false;
+        
+        // L1 Cache Size Limit default: 500 MB
+        //options.L1CacheOptions.SizeLimit = 500 * 1024 * 1024;
+        
+        // Encrypt tokens at rest default: false
+        options.Encrypt = true;
+        
+        // Sliding Expiration default: 1 hour
+        //options.SlidingExpiration = TimeSpan.FromHours(1);
+    });
+
+builder.Services.AddDataProtection()
+    .PersistKeysToAzureBlobStorage(new Uri("{BLOB URI WITH SAS TOKEN}"))
+    .ProtectKeysWithAzureKeyVault(new Uri("{KEY IDENTIFIER}"), new DefaultAzureCredential());
 
 builder.Services.AddAuthorization();
 

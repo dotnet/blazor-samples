@@ -9,10 +9,13 @@
   <ItemGroup>
     <ProjectReference Include="..\Aspire\Aspire.ServiceDefaults\Aspire.ServiceDefaults.csproj" />
     <ProjectReference Include="..\BlazorWebAppEntra.Client\BlazorWebAppEntra.Client.csproj" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="3.8.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" Version="9.2.0" />
-    <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="3.8.3" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.5.0" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" Version="1.6.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.9.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" Version="9.3.0" />
+    <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="3.9.1" />
   </ItemGroup>
 
 </Project>
