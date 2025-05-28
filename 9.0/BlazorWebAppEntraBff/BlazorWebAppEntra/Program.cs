@@ -1,13 +1,15 @@
 using Azure.Identity;
+using BlazorWebAppEntra;
+using BlazorWebAppEntra.Client.Weather;
+using BlazorWebAppEntra.Components;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Yarp.ReverseProxy.Transforms;
-using BlazorWebAppEntra;
-using BlazorWebAppEntra.Client.Weather;
-using BlazorWebAppEntra.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,22 +40,35 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
     options => 
     {
-      // Disable L1 Cache default: false
-      //options.DisableL1Cache = false;
+        // Disable L1 Cache default: false
+        //options.DisableL1Cache = false;
         
-      // L1 Cache Size Limit default: 500 MB
-      //options.L1CacheOptions.SizeLimit = 500 * 1024 * 1024;
+        // L1 Cache Size Limit default: 500 MB
+        //options.L1CacheOptions.SizeLimit = 500 * 1024 * 1024;
         
-      // Encrypt tokens at rest default: false
-      options.Encrypt = true;
+        // Encrypt tokens at rest default: false
+        options.Encrypt = true;
         
-      // Sliding Expiration default: 1 hour
-      //options.SlidingExpiration = TimeSpan.FromHours(1);
+        // Sliding Expiration default: 1 hour
+        //options.SlidingExpiration = TimeSpan.FromHours(1);
     });
+
+/* When you move to web farm testing with tokens encrypted at rest while
+ * hosting multiple app instances and stop using AddDistributedMemoryCache 
+ * in favor of a production distributed token cache provider, enable the 
+ * following code, which configures Data Protection to protect keys with 
+ * Azure Key Vault and maintain keys in Azure Blob Storage.
+ * Other options, both within Azure and outside of Azure, are available for
+ * managing Data Protection keys across multiple app instances. See the 
+ * ASP.NET Core Data Protection documentation for details.
+
+// Requires the Microsoft.Extensions.Azure NuGet package
+builder.Services.TryAddSingleton<AzureEventSourceLogForwarder>();
 
 builder.Services.AddDataProtection()
     .PersistKeysToAzureBlobStorage(new Uri("{BLOB URI WITH SAS TOKEN}"))
     .ProtectKeysWithAzureKeyVault(new Uri("{KEY IDENTIFIER}"), new DefaultAzureCredential());
+*/
 
 builder.Services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme).Configure(oidcOptions =>
 {
