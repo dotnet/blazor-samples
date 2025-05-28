@@ -56,10 +56,11 @@ builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
         //options.SlidingExpiration = TimeSpan.FromHours(1);
     });
 
-/* When you move to web farm testing with multiple app instances and stop using 
- * AddDistributedMemoryCache in favor of a production distributed token cache 
- * provider, enable the following code, which configures Data Protection to 
- * protect keys with Azure Key Vault and maintain keys in Azure Blob Storage.
+/* When you move to web farm testing with tokens encrypted at rest while
+ * hosting multiple app instances and stop using AddDistributedMemoryCache 
+ * in favor of a production distributed token cache provider, enable the 
+ * following code, which configures Data Protection to protect keys with 
+ * Azure Key Vault and maintain keys in Azure Blob Storage.
  * Other options, both within Azure and outside of Azure, are available for
  * managing Data Protection keys. See the ASP.NET Core Data Protection
  * documentation for details.
