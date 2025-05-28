@@ -59,8 +59,8 @@ builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
  * following code, which configures Data Protection to protect keys with 
  * Azure Key Vault and maintain keys in Azure Blob Storage.
  * Other options, both within Azure and outside of Azure, are available for
- * managing Data Protection keys. See the ASP.NET Core Data Protection
- * documentation for details.
+ * managing Data Protection keys across multiple app instances. See the 
+ * ASP.NET Core Data Protection documentation for details.
 
 // Requires the Microsoft.Extensions.Azure NuGet package
 builder.Services.TryAddSingleton<AzureEventSourceLogForwarder>();
