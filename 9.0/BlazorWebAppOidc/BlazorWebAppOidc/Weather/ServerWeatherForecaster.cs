@@ -8,9 +8,7 @@ internal sealed class ServerWeatherForecaster(IHttpClientFactory clientFactory) 
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "/weather-forecast");
         var client = clientFactory.CreateClient("ExternalApi");
-
         using var response = await client.SendAsync(request);
-
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<WeatherForecast[]>() ??
