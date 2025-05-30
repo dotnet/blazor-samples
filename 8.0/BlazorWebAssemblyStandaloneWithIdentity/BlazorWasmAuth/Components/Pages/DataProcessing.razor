@@ -78,7 +78,7 @@
     {
         var client = ClientFactory.CreateClient("Auth");
 
-        var response = await client.PostAsJsonAsync<FormModel>(endpoint, model);
+        using var response = await client.PostAsJsonAsync<FormModel>(endpoint, model);
 
         if (response.IsSuccessStatusCode)
         {

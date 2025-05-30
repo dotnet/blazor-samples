@@ -7,7 +7,7 @@ internal sealed class ServerWeatherForecaster(IHttpClientFactory clientFactory) 
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync()
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, "/weather-forecast");
-        using var client = clientFactory.CreateClient("ExternalApi");
+        var client = clientFactory.CreateClient("ExternalApi");
 
         using var response = await client.SendAsync(request);
 
