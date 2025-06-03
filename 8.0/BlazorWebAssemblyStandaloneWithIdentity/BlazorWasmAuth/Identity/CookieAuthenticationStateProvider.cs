@@ -168,7 +168,7 @@ namespace BlazorWasmAuth.Identity
             try
             {
                 // the user info endpoint is secured, so if the user isn't logged in this will fail
-                var userResponse = await httpClient.GetAsync("manage/info");
+                using var userResponse = await httpClient.GetAsync("manage/info");
 
                 // throw if user info wasn't retrieved
                 userResponse.EnsureSuccessStatusCode();
@@ -192,7 +192,7 @@ namespace BlazorWasmAuth.Identity
                             .Select(c => new Claim(c.Key, c.Value)));
 
                     // request the roles endpoint for the user's roles
-                    var rolesResponse = await httpClient.GetAsync("roles");
+                    using var rolesResponse = await httpClient.GetAsync("roles");
 
                     // throw if request fails
                     rolesResponse.EnsureSuccessStatusCode();
