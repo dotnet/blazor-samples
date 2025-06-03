@@ -27,7 +27,7 @@
         var absoluteUrl = Navigation.ToAbsoluteUri(url);
         Console.WriteLine($"Downloading file from {absoluteUrl}");
 
-        var response = await Http.GetAsync(absoluteUrl);
+        using var response = await Http.GetAsync(absoluteUrl);
         string? contentType = null;
 
         if (response.Content.Headers.TryGetValues("Content-Type", out var values))

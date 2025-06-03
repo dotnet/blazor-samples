@@ -83,7 +83,7 @@ namespace MauiBlazorWeb.Services
                 //Call the Login endpoint and pass the email and password
                 var httpClient = HttpClientHelper.GetHttpClient();
                 var loginData = new { loginModel.Email, loginModel.Password };
-                var response = await httpClient.PostAsJsonAsync(HttpClientHelper.LoginUrl, loginData);
+                using var response = await httpClient.PostAsJsonAsync(HttpClientHelper.LoginUrl, loginData);
 
                 LoginStatus = response.IsSuccessStatusCode ? LoginStatus.Success : LoginStatus.Failed;
 
@@ -168,7 +168,7 @@ namespace MauiBlazorWeb.Services
                     //Call the Refresh endpoint and pass the refresh token
                     var httpClient = HttpClientHelper.GetHttpClient();
                     var refreshData = new { refreshToken };
-                    var response = await httpClient.PostAsJsonAsync(HttpClientHelper.RefreshUrl, refreshData);
+                    using var response = await httpClient.PostAsJsonAsync(HttpClientHelper.RefreshUrl, refreshData);
                     response.EnsureSuccessStatusCode();
                     var token = await response.Content.ReadAsStringAsync();
                     _accessToken = await TokenStorage.SaveTokenToSecureStorageAsync(token, email);

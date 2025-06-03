@@ -19,7 +19,7 @@
 
     private async Task PostRequest()
     {
-        var requestMessage = new HttpRequestMessage()
+        using var requestMessage = new HttpRequestMessage()
         {
             Method = new HttpMethod("POST"),
             RequestUri = new Uri("https://localhost:10000/api/TodoItems"),
@@ -41,7 +41,7 @@
             requestMessage.Content.Headers.TryAddWithoutValidation(
                 "x-custom-header", "value");
 
-            var response = await Http.SendAsync(requestMessage);
+            using var response = await Http.SendAsync(requestMessage);
             var responseStatusCode = response.StatusCode;
 
             responseBody = await response.Content.ReadAsStringAsync();

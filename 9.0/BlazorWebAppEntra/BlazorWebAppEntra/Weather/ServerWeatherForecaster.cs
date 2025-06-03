@@ -7,7 +7,7 @@ internal sealed class ServerWeatherForecaster(IDownstreamApi downstreamApi) : IW
 {
     public async Task<IEnumerable<WeatherForecast>> GetWeatherForecastAsync()
     {
-        var response = await downstreamApi.CallApiForUserAsync("DownstreamApi",
+        using var response = await downstreamApi.CallApiForUserAsync("DownstreamApi",
             options =>
             {
                 options.RelativePath = "/weather-forecast";
