@@ -85,6 +85,7 @@ else
 }
 
 builder.Services.AddDataProtection()
+    .SetApplicationName("BlazorWebAppEntra")
     .PersistKeysToAzureBlobStorage(
         new Uri("{BLOB URI}"),
         credential)
