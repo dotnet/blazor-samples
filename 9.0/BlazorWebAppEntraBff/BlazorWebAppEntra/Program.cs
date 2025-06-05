@@ -58,6 +58,12 @@ builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
  * in favor of a production distributed token cache provider, enable the 
  * following code, which configures Data Protection to protect keys with 
  * Azure Key Vault and maintain keys in Azure Blob Storage.
+ * A simple option is to use a Blob URI with a shared access signature
+ * generated on the key file in Azure Key Vault. A better (and recommended)
+ * approach is to use an Azure Managed Identity in production.
+ * Give the Managed Identity 'Key Vault Crypto User' and 
+ * 'Storage Blob Data Contributor' roles. Assign the Managed Identity
+ * to the App Service in Settings > Identity > User assigned > Add.
  * Other options, both within Azure and outside of Azure, are available for
  * managing Data Protection keys across multiple app instances. See the 
  * ASP.NET Core Data Protection documentation for details.
@@ -65,6 +71,28 @@ builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
 // Requires the Microsoft.Extensions.Azure NuGet package
 builder.Services.TryAddSingleton<AzureEventSourceLogForwarder>();
 
+** To use an Azure Managed Identity (Recommended) **
+TokenCredential? credential;
+
+if (builder.Environment.IsProduction())
+{
+    credential = new ManagedIdentityCredential("{MANAGED IDENTITY CLIENT ID}");
+}
+else
+{
+    // Local development and testing only
+    credential = new DefaultAzureCredential();
+}
+
+builder.Services.AddDataProtection()
+    .PersistKeysToAzureBlobStorage(
+        new Uri("{BLOB URI}"),
+        credential)
+    .ProtectKeysWithAzureKeyVault(
+        new Uri("{KEY IDENTIFIER}"),
+        credential);
+
+** To use a shared access signature (SAS) with a Blob URI **
 builder.Services.AddDataProtection()
     .PersistKeysToAzureBlobStorage(new Uri("{BLOB URI WITH SAS TOKEN}"))
     .ProtectKeysWithAzureKeyVault(new Uri("{KEY IDENTIFIER}"), new DefaultAzureCredential());
