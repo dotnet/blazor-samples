@@ -98,6 +98,7 @@ builder.Services.AddDataProtection()
 
 ** To use a shared access signature (SAS) with a Blob URI **
 builder.Services.AddDataProtection()
+    .SetApplicationName("BlazorWebAppEntra")
     .PersistKeysToAzureBlobStorage(new Uri("{BLOB URI WITH SAS TOKEN}"))
     .ProtectKeysWithAzureKeyVault(new Uri("{KEY IDENTIFIER}"), new DefaultAzureCredential());
 */
