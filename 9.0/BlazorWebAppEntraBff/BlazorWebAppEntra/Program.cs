@@ -107,10 +107,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddHttpForwarderWithServiceDiscovery();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient<IWeatherForecaster, ServerWeatherForecaster>(httpClient =>
-{
-    httpClient.BaseAddress = new("https://weatherapi");
-});
+builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
 
 var app = builder.Build();
 
