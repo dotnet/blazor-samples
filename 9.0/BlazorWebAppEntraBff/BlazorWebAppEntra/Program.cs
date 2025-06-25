@@ -79,7 +79,15 @@ if (builder.Environment.IsProduction())
 else
 {
     // Local development and testing only
-    credential = new DefaultAzureCredential();
+    DefaultAzureCredentialOptions options = new()
+    {
+        // Specify the tenant ID to use the dev credentials when running the app locally
+        // in Visual Studio.
+        VisualStudioTenantId = "{TENANT ID}",
+        SharedTokenCacheTenantId = "{TENANT ID}"
+    };
+
+    credential = new DefaultAzureCredential(options);
 }
 
 builder.Services.AddDataProtection()
