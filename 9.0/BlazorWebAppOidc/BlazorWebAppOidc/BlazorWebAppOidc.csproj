@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BlazorWebAppOidc.Client\BlazorWebAppOidc.Client.csproj" />
+    <PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" Version="4.0.0-Preview.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0" />
   </ItemGroup>
