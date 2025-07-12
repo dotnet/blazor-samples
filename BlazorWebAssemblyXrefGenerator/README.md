@@ -12,7 +12,7 @@ This site is automatically deployed to GitHub Pages by a [GitHub Action script (
   * **Actions permissions**
     * **Allow enterprise actions, and select non-enterprise, actions and reusable workflows**
     * Select **Allow actions created by GitHub**
-    * **Allow actions and reusable workflows** > `stevesandersonms/ghaction-rewrite-base-href@v1,`
+    * **Allow actions and reusable workflows** > `stevesandersonms/ghaction-rewrite-base-href@5b54862a8831e012d4f1a8b2660894415fdde8ec,` (v1.1.0)
   * **Workflow permissions** > **Read repository contents and packages permissions**
 * **Pages** > **Build and deployment**
   * **Source** > **GitHub Actions**
