@@ -41,8 +41,7 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options => options.Sig
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-// Learn more about configuring Swagger/OpenAPI at 
-// https://learn.microsoft.com/aspnet/core/tutorials/getting-started-with-swashbuckle
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
