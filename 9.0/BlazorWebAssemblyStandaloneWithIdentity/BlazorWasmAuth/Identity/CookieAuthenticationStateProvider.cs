@@ -1,9 +1,10 @@
+using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Components.Authorization;
 using BlazorWasmAuth.Identity.Models;
-using System.Text;
 
 namespace BlazorWasmAuth.Identity
 {
