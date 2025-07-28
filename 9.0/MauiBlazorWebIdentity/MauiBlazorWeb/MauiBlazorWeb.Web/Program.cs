@@ -3,7 +3,6 @@ using MauiBlazorWeb.Web.Components;
 using MauiBlazorWeb.Web.Components.Account;
 using MauiBlazorWeb.Web.Data;
 using MauiBlazorWeb.Web.Services;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,9 +40,10 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options => options.Sig
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// For more information on OpenAPI support in ASP.NET Core,
+// see OpenAPI support in ASP.NET Core API apps at
+// https://learn.microsoft.com/aspnet/core/fundamentals/openapi/overview
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -57,8 +57,7 @@ if (app.Environment.IsDevelopment())
         dbContext.Database.Migrate();
     }
     app.UseMigrationsEndPoint();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
 }
 else
 {
