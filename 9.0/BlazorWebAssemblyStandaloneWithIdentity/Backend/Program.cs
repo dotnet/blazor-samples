@@ -56,8 +56,8 @@ builder.Services.AddCors(
 // add services to the container
 builder.Services.AddEndpointsApiExplorer();
 
-// add NSwag services
-builder.Services.AddOpenApiDocument();
+// add OpenAPI services
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
@@ -67,9 +67,8 @@ if (builder.Environment.IsDevelopment())
     await using var scope = app.Services.CreateAsyncScope();
     await SeedData.InitializeAsync(scope.ServiceProvider);
 
-    // add OpenAPI/Swagger generator and the Swagger UI
-    app.UseOpenApi();
-    app.UseSwaggerUi();
+    // resolve OpenAPI document
+    app.MapOpenApi();
 }
 
 // create routes for the identity endpoints
