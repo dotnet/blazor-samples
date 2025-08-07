@@ -1,7 +1,4 @@
 @page "/"
-@using System.Net
-@using System.Text.RegularExpressions
-@inject IHttpClientFactory ClientFactory
 
 <div class="page">
     <main>
@@ -12,12 +9,10 @@
                         <h3 class="panel-title">Search</h3>
                         <span style="float:right">
                             <InputSelect @bind-Value="dotNetVersion">
-                                <option>aspnetcore-9.0</option>
-                                <option>aspnetcore-8.0</option>
-                                <option>aspnetcore-7.0</option>
-                                <option>aspnetcore-6.0</option>
-                                <option>aspnetcore-5.0</option>
-                                <option>aspnetcore-3.1</option>
+                                @foreach (var version in AppSettings.DotNetVersions)
+                                {
+                                    <option>@($"aspnetcore-{version}")</option>
+                                }
                             </InputSelect>
                         </span>
                     </div>
@@ -96,7 +91,7 @@
                 foreach (var result in SearchResultItems.Results.Take(MaxResults))
                 {
                     var client = ClientFactory.CreateClient();
-                    var encodedUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
+                    var encodedUrl = WebUtility.UrlEncode($"{AppSettings.MicrosoftLearnUrl}/en-us{result.Url}?view={dotNetVersion}");
                     using var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{encodedUrl}");
                     using var response = await client.SendAsync(request);
                     var content = await response.Content.ReadAsStringAsync();
