@@ -84,7 +84,7 @@
         try
         {
             var searchResults = await SearchService.GetSearchResultsAsync(Model.SearchText);
-            
+
             if (searchResults.Count() == 0)
             {
                 message = "No results returned.";
@@ -94,8 +94,8 @@
             var index = 1;
             foreach (var result in searchResults.Take(MaxResults))
             {
-                result.Index = index++;
                 var searchResult = await SearchService.GetSearchResultDataAsync(result, dotNetVersion);
+                result.Index = index++;
                 ResultsToRender.Add(searchResult);
                 StateHasChanged();
             }
