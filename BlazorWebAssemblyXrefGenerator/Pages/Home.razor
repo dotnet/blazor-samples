@@ -1,7 +1,4 @@
 @page "/"
-@using System.Net
-@using System.Text.RegularExpressions
-@inject IHttpClientFactory ClientFactory
 
 <div class="page">
     <main>
@@ -64,13 +61,12 @@
     [SupplyParameterFromForm]
     private FormModel? Model { get; set; } = new();
 
-    private SearchResults? SearchResultItems { get; set; }
-    private List<Result> ResultsToRender { get; set; } = new();
+    private List<SearchResult> ResultsToRender { get; set; } = new();
+
     public string? message;
     private string? dotNetVersion;
 
     private const int MaxResults = 22;
-
     private bool isSearching = false;
 
     public async Task GetSearchResults()
@@ -79,8 +75,7 @@
         ResultsToRender.Clear();
         message = string.Empty;
 
-        var apiClient = ClientFactory.CreateClient("APIClient");
-        if (string.IsNullOrEmpty(Model?.SearchText) || apiClient == null)
+        if (string.IsNullOrEmpty(Model?.SearchText))
         {
             isSearching = false;
             return;
@@ -88,33 +83,21 @@
 
         try
         {
-            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={Model.SearchText}");
-
-            if (SearchResultItems?.Results?.Any() == true)
-            {
-                var index = 1;
-                foreach (var result in SearchResultItems.Results.Take(MaxResults))
-                {
-                    var client = ClientFactory.CreateClient();
-                    var encodedUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
-                    using var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{encodedUrl}");
-                    using var response = await client.SendAsync(request);
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    var match = Regex.Match(content, "<meta name=\"ms.assetid\" content=\"(.+?)\" />");
-                    if (match.Success)
-                    {
-                        result.Link = match.Groups[1].Value.Replace("*", "%2A").Replace("`", "%60");
-                    }
-
-                    result.Index = index++;
-                    ResultsToRender.Add(result);
-                    StateHasChanged();
-                }
-            }
-            else
+            var searchResults = await SearchService.GetSearchResultsAsync(Model.SearchText);
+            
+            if (searchResults.Count() == 0)
             {
                 message = "No results returned.";
+                return;
+            }
+
+            var index = 1;
+            foreach (var result in searchResults.Take(MaxResults))
+            {
+                result.Index = index++;
+                var searchResult = await SearchService.GetSearchResultDataAsync(result, dotNetVersion);
+                ResultsToRender.Add(searchResult);
+                StateHasChanged();
             }
         }
         catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
@@ -137,20 +120,5 @@
     public class FormModel
     {
         public string? SearchText { get; set; } = string.Empty;
-    }
-
-    public class SearchResults
-    {
-        public IEnumerable<Result>? Results { get; set; }
-    }
-
-    public class Result
-    {
-        public string? DisplayName { get; set; }
-        public string? Url { get; set; }
-        public string? ItemType { get; set; }
-        public string? Description { get; set; }
-        public string? Link { get; set; }
-        public int Index { get; set; }
     }
 }

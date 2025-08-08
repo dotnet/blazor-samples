@@ -1,10 +1,12 @@
-@using System.Net.Http
-@using System.Net.Http.Json
+@using BlazorWebAssemblyXrefGenerator
+@using BlazorWebAssemblyXrefGenerator.Models
+@using BlazorWebAssemblyXrefGenerator.Services.Interfaces
+@using BlazorWebAssemblyXrefGenerator.Shared
+@using System.Net
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
-@using Microsoft.JSInterop
-@using BlazorWebAssemblyXrefGenerator
-@using BlazorWebAssemblyXrefGenerator.Shared
+
+@inject ISearchService SearchService
