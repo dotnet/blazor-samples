@@ -1,6 +1,6 @@
-# .NET on WASM in a React component
+# .NET on WASM (WebAssembly) in a React component
 
-This sample shows how to use .NET on WASM integrated into a React application. It also extracts the React component into a reusable package.
+This sample shows how to use .NET on WASM (WebAssembly) integrated into a React app. It also extracts the React component into a reusable package.
 
 * [Blazor Community Standup - Integrate .NET in JavaScript apps](https://www.youtube.com/watch?v=tAh899Gri4E)
 * [Blazor + React demo (`BlazorWebAssemblyReact`, .NET 10 or later, `dotnet/blazor-samples` GitHub repository](https://github.com/dotnet/blazor-samples)
@@ -8,7 +8,7 @@ This sample shows how to use .NET on WASM integrated into a React application. I
 
 ## Project structure
 
-* `app`: Target React application using rollup to do the JavaScript build.
+* `app`: Target React app using rollup to do the JavaScript build.
 * `qrlibrary`: npm library implementing QR generation.
   * `dotnet`: .NET implementation of QR generator.
   * `react`: [Rollup](https://rollupjs.org/)-bundled React component for showing a QR code image.
