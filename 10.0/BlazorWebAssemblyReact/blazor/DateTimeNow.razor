@@ -1,0 +1,12 @@
+<h1>Date and Time</h1>
+
+<p role="status">Current Date and Time: @currentDateTime.ToString("F")</p>
+
+<button class="btn btn-primary" @onclick="UpdateDateTime">Refresh</button>
+
+@code {
+    private DateTime currentDateTime = DateTime.Now;
+
+    private void UpdateDateTime()
+        => currentDateTime = DateTime.Now;
+}

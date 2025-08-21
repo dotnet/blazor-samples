@@ -1,0 +1,39 @@
+{
+    "name": "blazor-react",
+    "version": "1.0.0",
+    "description": "Blazor WebAssembly inside of a React application",
+    "author": "maraf",
+    "license": "MIT",
+    "repository": "maraf/dotnet-react-sample",
+    "homepage": "https://maraf.github.io/blazor-wasm-react/",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "build": "rollup -c -w",
+        "start": "serve ./public --single",
+        "deploy": "npx gh-pages -d public"
+    },
+    "keywords": [],
+    "dependencies": {
+        "blazor": "file:../blazor/bin/Release/net10.0/publish/wwwroot",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router": "^7.6.3"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.21.3",
+        "@babel/preset-react": "^7.18.6",
+        "@rollup/plugin-babel": "^6.0.4",
+        "@rollup/plugin-commonjs": "^28.0.2",
+        "@rollup/plugin-image": "^3.0.3",
+        "@rollup/plugin-legacy": "^3.0.2",
+        "@rollup/plugin-node-resolve": "^16.0.0",
+        "@rollup/plugin-replace": "^6.0.2",
+        "@rollup/plugin-url": "^8.0.2",
+        "babel-plugin-transform-globals": "^1.0.1",
+        "rollup": "^4.34.6",
+        "rollup-plugin-import-file": "^1.0.1",
+        "serve": "^14.2.4",
+        "gh-pages": "^6.3.0"
+    }
+}
