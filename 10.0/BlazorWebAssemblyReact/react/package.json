@@ -4,7 +4,7 @@
     "description": "Blazor WebAssembly inside of a React application",
     "author": "maraf",
     "license": "MIT",
-    "repository": "maraf/dotnet-react-sample",
+    "repository": "dotnet/blazor-samples",
     "homepage": "https://maraf.github.io/blazor-wasm-react/",
     "main": "index.js",
     "type": "module",

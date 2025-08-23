@@ -1,7 +1,7 @@
 import React from 'react';
 import { start } from 'blazor';
 
-export default function BlazorComponent({ component, ...params }) {
+export default function RazorComponent({ component, ...params }) {
     const [loading, setLoaded] = React.useState(true);
     React.useEffect(() => {
         start().then(setLoaded);

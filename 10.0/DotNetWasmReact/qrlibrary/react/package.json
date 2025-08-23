@@ -4,7 +4,7 @@
     "description": ".NET on WASM inside of a React component",
     "author": "maraf",
     "license": "MIT",
-    "repository": "maraf/dotnet-react-sample",
+    "repository": "dotnet/blazor-samples",
     "main": "./public/bundle.js",
     "type": "module",
     "exports": {
