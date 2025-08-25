@@ -2,7 +2,7 @@
     "name": "react-qr",
     "version": "1.0.0",
     "description": ".NET on WASM inside of a React component",
-    "author": "maraf",
+    "author": "dotnet/aspnet-blazor-eng",
     "license": "MIT",
     "repository": "dotnet/blazor-samples",
     "main": "./public/bundle.js",

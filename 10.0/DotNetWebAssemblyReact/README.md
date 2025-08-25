@@ -13,10 +13,6 @@ This sample shows how to use .NET on WASM (WebAssembly) integrated into a React 
   * `dotnet`: .NET implementation of QR generator.
   * `react`: [Rollup](https://rollupjs.org/)-bundled React component for showing a QR code image.
 
-## Live demo
-
-https://maraf.github.io/dotnet-wasm-react/
-
 ## Building the source code
 
 ### .NET

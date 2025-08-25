@@ -2,16 +2,14 @@
     "name": "blazor-react",
     "version": "1.0.0",
     "description": "Blazor WebAssembly inside of a React application",
-    "author": "maraf",
+    "author": "dotnet/aspnet-blazor-eng",
     "license": "MIT",
     "repository": "dotnet/blazor-samples",
-    "homepage": "https://maraf.github.io/blazor-wasm-react/",
     "main": "index.js",
     "type": "module",
     "scripts": {
         "build": "rollup -c -w",
-        "start": "serve ./public --single",
-        "deploy": "npx gh-pages -d public"
+        "start": "serve ./public --single"
     },
     "keywords": [],
     "dependencies": {
@@ -33,7 +31,6 @@
         "babel-plugin-transform-globals": "^1.0.1",
         "rollup": "^4.34.6",
         "rollup-plugin-import-file": "^1.0.1",
-        "serve": "^14.2.4",
-        "gh-pages": "^6.3.0"
+        "serve": "^14.2.4"
     }
 }

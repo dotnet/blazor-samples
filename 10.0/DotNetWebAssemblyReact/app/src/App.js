@@ -18,9 +18,6 @@ function App() {
         <QrImage text={text} />
       </p>
       <p>
-        Code at <a href="https://github.com/dotnet/blazor-samples">https://github.com/dotnet/blazor-samples (.NET 10 or later)</a>
-      </p>
-      <p>
         QR code generated using <a href="https://github.com/codebude/QRCoder">https://github.com/codebude/QRCoder</a>
       </p>
     </>

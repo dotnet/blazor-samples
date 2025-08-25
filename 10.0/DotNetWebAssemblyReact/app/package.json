@@ -1,14 +1,12 @@
 {
     "name": "dotnet-wasm-react",
     "version": "1.0.0",
-    "description": "",
+    "description": ".NET on WASM (WebAssembly) in a React component",
     "private": true,
-    "homepage": "https://maraf.github.io/dotnet-wasm-react",
     "type": "module",
     "scripts": {
         "build": "rollup -c -w",
-        "start": "serve ./public",
-        "deploy": "npx gh-pages -d public"
+        "start": "serve ./public"
     },
     "keywords": [],
     "author": "",
@@ -29,7 +27,6 @@
         "@rollup/plugin-node-resolve": "^16.0.0",
         "@rollup/plugin-replace": "^6.0.2",
         "rollup": "^4.34.6",
-        "rollup-plugin-import-file": "^1.0.1",
-        "gh-pages": "^6.3.0"
+        "rollup-plugin-import-file": "^1.0.1"
     }
 }
