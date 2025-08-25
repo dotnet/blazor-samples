@@ -13,7 +13,6 @@ This sample shows how to use Blazor WebAssembly integrated into a React app.
 
 ## Live demo
 
-https://maraf.github.io/blazor-wasm-react/
 
 ## Building the source code
 
