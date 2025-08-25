@@ -1,7 +1,7 @@
 {
     "name": "react-qr",
     "version": "1.0.0",
-    "description": ".NET on WASM inside of a React component",
+    "description": ".NET on WebAssembly inside of a React component",
     "author": "dotnet/aspnet-blazor-eng",
     "license": "MIT",
     "repository": "dotnet/blazor-samples",

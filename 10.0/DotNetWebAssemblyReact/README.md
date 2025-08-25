@@ -1,6 +1,6 @@
-# .NET on WASM (WebAssembly) in a React component
+# .NET on WebAssembly in a React component
 
-This sample shows how to use .NET on WASM (WebAssembly) integrated into a React app. It also extracts the React component into a reusable package.
+This sample shows how to use .NET on WebAssembly integrated into a React app. It also extracts the React component into a reusable package.
 
 * [Blazor Community Standup - Integrate .NET in JavaScript apps](https://www.youtube.com/watch?v=tAh899Gri4E)
 * [Blazor + React demo (`BlazorWebAssemblyReact`, .NET 10 or later, `dotnet/blazor-samples` GitHub repository](https://github.com/dotnet/blazor-samples)

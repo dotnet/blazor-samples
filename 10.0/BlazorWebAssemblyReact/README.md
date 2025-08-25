@@ -3,7 +3,7 @@
 This sample shows how to use Blazor WebAssembly integrated into a React app.
 
 * [Blazor Community Standup - Integrate .NET in JavaScript apps](https://www.youtube.com/watch?v=tAh899Gri4E)
-* [.NET + React demo (`DotNetWasmReact`, .NET 10 or later, `dotnet/blazor-samples` GitHub repository](https://github.com/dotnet/blazor-samples)
+* [.NET + React demo (`DotNetWebAssemblyReact`, .NET 10 or later, `dotnet/blazor-samples` GitHub repository](https://github.com/dotnet/blazor-samples)
 * [Host and deploy: JavaScript bundler support](https://learn.microsoft.com/aspnet/core/blazor/host-and-deploy/#javascript-bundler-support)
 
 ## Project structure

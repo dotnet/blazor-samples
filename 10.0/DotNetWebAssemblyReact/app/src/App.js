@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      <h1>.NET on WASM in a React component</h1>
+      <h1>.NET on WebAssembly in a React component</h1>
       <p>
         Generate a QR from text: 
         <br />
