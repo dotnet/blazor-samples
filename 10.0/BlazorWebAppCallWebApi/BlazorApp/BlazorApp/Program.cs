@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BlazorApp;
 using BlazorApp.Client;
@@ -110,40 +111,23 @@ static async Task<IResult> GetMovie(long id, MovieContext db)
     return await db.Movies.FindAsync(id) is Movie movie ? TypedResults.Ok(movie) : TypedResults.NotFound();
 }
 
-static async Task<IResult> CreateMovie(Movie movie, MovieContext db)
+static async Task<IResult> CreateMovie([FromServices] IMovieService movieService, Movie movie)
 {
-    db.Movies.Add(movie);
-    await db.SaveChangesAsync();
+    await movieService.PostMovieAsync(movie);
 
     return TypedResults.Created($"/movies/{movie.Id}", movie);
 }
 
-static async Task<IResult> UpdateMovie(long id, Movie inputMovie, MovieContext db)
+static async Task<IResult> UpdateMovie([FromServices] IMovieService movieService, long id, Movie inputMovie)
 {
-    var movie = await db.Movies.FindAsync(id);
-
-    if (movie is null)
-    {
-        return TypedResults.NotFound();
-    }
-
-    movie.Name = inputMovie.Name;
-    movie.IsWatched = inputMovie.IsWatched;
-
-    await db.SaveChangesAsync();
+    await movieService.PutMovieAsync(id, inputMovie);
 
     return TypedResults.NoContent();
 }
 
-static async Task<IResult> DeleteMovie(long id, MovieContext db)
+static async Task<IResult> DeleteMovie([FromServices] IMovieService movieService, long id)
 {
-    if (await db.Movies.FindAsync(id) is Movie movie)
-    {
-        db.Movies.Remove(movie);
-        await db.SaveChangesAsync();
-
-        return TypedResults.NoContent();
-    }
+    await movieService.DeleteMovieAsync(id);
 
     return TypedResults.NotFound();
 }
