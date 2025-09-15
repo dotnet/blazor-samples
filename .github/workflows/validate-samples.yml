@@ -51,7 +51,7 @@ jobs:
       - name: Get latest .NET SDK
         uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab # v4.3.0
         with:
-          dotnet-version: '9.0'
+          dotnet-version: '9.0.305'
 
       - name: Restore/build 9.0/BlazorSample_BlazorWebApp
         if: steps.filter.outputs.bwa90 == 'true'
