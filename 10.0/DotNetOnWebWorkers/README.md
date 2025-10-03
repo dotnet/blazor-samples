@@ -1,6 +1,6 @@
-# .NET on Web Worker
+# .NET on Web Workers
 
-Live demo: https://ashy-island-008420303.4.azurestaticapps.net/
+Live demonstration: https://ashy-island-008420303.4.azurestaticapps.net/
 
 ## Setup
 
@@ -39,11 +39,11 @@ npm run start
 
 ### Windows
 
-Same as Linux but with `Win` suffix. Examples: `npm run integrateWin`, `buildWin:all:debug`.
+Same as Linux but with `Win` suffix. Examples: `npm run integrateWin`, `buildWin:all:debug`
 
 ## Communication
 
-The React app runs in the main thread that has access to DOM. It imports functions for launching a .NET runtime on a Web Worker from a WebAssembly (Wasm) app (refer to [`client.js`](react/src/client.js)) and executes them. These functions establish a Web Worker using the [`worker.js`](dotnet/wwwroot/worker.js) file. Web Worker can perform heavy tasks without blocking the UI. However, it doesn't have direct control over the DOM and relies on communication with main thread for changes to the UI. Communication between the Web Worker and the main thread occurs through message passing. The demo includes a few simple examples of passing information from .NET (`dotnet`) to the React frontend (`react`) and in the opposite direction.
+The React app runs in the main thread that has access to DOM. It imports functions for launching a .NET runtime on a Web Worker from a WebAssembly (Wasm) app (refer to [`client.js`](react/src/client.js)) and executes them. These functions establish a Web Worker using the [`worker.js`](dotnet/wwwroot/worker.js) file. Web Worker can perform heavy tasks without blocking the UI. However, it doesn't have direct control over the DOM and relies on communication with main thread for changes to the UI. Communication between the Web Worker and the main thread occurs through message passing. The sample app includes a few simple examples of passing information from .NET (`dotnet`) to the React frontend (`react`) and in the opposite direction.
 
 From `react` to `dotnet`: QR code generation request.
 
