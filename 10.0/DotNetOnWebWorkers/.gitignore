@@ -1,0 +1,13 @@
+# dotnet
+*/bin
+*/obj
+react/dist
+
+# node
+node_modules
+react/public/qr
+react/build
+
+# vs
+.vs
+.vscode

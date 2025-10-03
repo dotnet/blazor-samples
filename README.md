@@ -76,6 +76,12 @@ git sparse-checkout set 9.0/BlazorSample_BlazorWebApp
 
 * Blazor WebAssembly Xref Generator (`BlazorWebAssemblyXrefGenerator`)<br>[Host and deploy ASP.NET Core Blazor WebAssembly with GitHub Pages](https://learn.microsoft.com/aspnet/core/blazor/host-and-deploy/webassembly/github-pages)
 
+* .NET on Web Workers (`DotNetOnWebWorkers`)<br>[.NET on Web Workers](https://learn.microsoft.com/aspnet/core/client-side/dotnet-on-webworkers)
+
+* Blazor WebAssembly + React (`BlazorWebAssemblyReact`)<br>[Host and deploy: JavaScript bundler support](https://learn.microsoft.com/aspnet/core/blazor/host-and-deploy/#javascript-bundler-support)
+
+* .NET WebAssembly + React (`DotNetWebAssemblyReact`)<br>[Host and deploy: JavaScript bundler support](https://learn.microsoft.com/aspnet/core/blazor/host-and-deploy/#javascript-bundler-support)
+
 ## Snippet sample apps for article code examples
 
 **WARNING**: Always follow an article's security guidance when implementing sample code.
