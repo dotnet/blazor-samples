@@ -1,6 +1,6 @@
 # .NET on Web Workers
 
-Live demonstration: https://ashy-island-008420303.4.azurestaticapps.net/
+This sample accompanies [.NET on Web Workers](https://learn.microsoft.com/aspnet/core/client-side/dotnet-on-webworkers) in the ASP.NET Core Blazor documentation.
 
 ## Setup
 
