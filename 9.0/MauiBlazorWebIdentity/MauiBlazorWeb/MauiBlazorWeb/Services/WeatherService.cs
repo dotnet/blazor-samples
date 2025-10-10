@@ -1,57 +1,38 @@
 using MauiBlazorWeb.Shared.Services;
-using System.Diagnostics;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace MauiBlazorWeb.Services
+namespace MauiBlazorWeb.Services;
+
+public partial class WeatherService(HttpClient httpClient) : IWeatherService
 {
-    public class WeatherService : IWeatherService
+    public async Task<WeatherForecast[]> GetWeatherForecastsAsync()
     {
-        private readonly MauiAuthenticationStateProvider _authenticationStateProvider;
-
-        public WeatherService(MauiAuthenticationStateProvider authenticationStateProvider)
+        try
         {
-            _authenticationStateProvider = authenticationStateProvider;
+            var forecasts = await httpClient.GetFromJsonAsync(
+                "weather", 
+                WeatherServiceContext.Default.WeatherForecastArray);
+            
+            return forecasts ?? [];
         }
-
-        public async Task<WeatherForecast[]> GetWeatherForecastsAsync()
+        catch (HttpRequestException httpEx)
         {
-            var forecasts = Array.Empty<WeatherForecast>();
-            try
-            {
-                var httpClient = HttpClientHelper.GetHttpClient();
-                var weatherUrl = HttpClientHelper.WeatherUrl;
-
-                var accessTokenInfo = await _authenticationStateProvider.GetAccessTokenInfoAsync();
-
-                if (accessTokenInfo is null)
-                {
-                    throw new Exception("Could not retrieve access token to get weather forecast.");
-                }
-
-                var token = accessTokenInfo.LoginResponse.AccessToken;
-                var scheme = accessTokenInfo.LoginResponse.TokenType; //"Bearer"
-
-                if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(scheme))
-                {
-                    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(scheme, token);
-                    forecasts = (await httpClient.GetFromJsonAsync<WeatherForecast[]>(weatherUrl)) ?? [];
-                }
-                else
-                {
-                    Debug.WriteLine("Token or scheme is null or empty.");
-                }
-            }
-            catch (HttpRequestException httpEx)
-            {
-                Debug.WriteLine($"HTTP Request error: {httpEx.Message}");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"An error occurred: {ex.Message}");
-            }
-
-            return forecasts;
+            System.Diagnostics.Debug.WriteLine($"HTTP Request error: {httpEx.Message}");
+            return [];
         }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"An error occurred: {ex.Message}");
+            return [];
+        }
+    }
+
+    // Source generation for System.Text.Json
+    [JsonSerializable(typeof(WeatherForecast[]))]
+    [JsonSourceGenerationOptions(JsonSerializerDefaults.Web)]
+    public partial class WeatherServiceContext : JsonSerializerContext
+    {
     }
 }

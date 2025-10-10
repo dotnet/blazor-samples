@@ -1,4 +1,4 @@
-@page "/Account/ConfirmEmailChange"
+﻿@page "/Account/ConfirmEmailChange"
 
 @using System.Text
 @using Microsoft.AspNetCore.Identity
@@ -36,6 +36,7 @@
         {
             RedirectManager.RedirectToWithStatus(
                 "Account/Login", "Error: Invalid email change confirmation link.", HttpContext);
+            return;
         }
 
         var user = await UserManager.FindByIdAsync(UserId);

@@ -1,4 +1,4 @@
-﻿@page "/logout"
+﻿@page "/Account/Logout"
 @inject NavigationManager navigationManager
 @inject MauiAuthenticationStateProvider AuthStateProvider
 
@@ -6,7 +6,7 @@
 @code{
     protected override void OnInitialized()
     {
-        AuthStateProvider.Logout();
-        navigationManager.NavigateTo("/login");
+        AuthStateProvider.SignOut();
+        navigationManager.NavigateTo("Account/Login");
     }
 }

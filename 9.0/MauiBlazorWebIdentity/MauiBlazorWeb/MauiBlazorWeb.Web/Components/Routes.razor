@@ -1,16 +1,15 @@
-@using MauiBlazorWeb.Web.Components.Account.Pages
-@using Microsoft.AspNetCore.Components.Authorization
-<Router AppAssembly="typeof(Program).Assembly"
+@using MauiBlazorWeb.Web.Components.Account.Shared
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(NotFound)"
         AdditionalAssemblies="new[] { typeof(Shared._Imports).Assembly }">
     <Found Context="routeData">
-       <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
+       <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
             <Authorizing>
                 Authorizing...
             </Authorizing>
             <NotAuthorized>
-                <Login />
+                <RedirectToLogin />
             </NotAuthorized>
-        </AuthorizeRouteView>   
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
 </Router>
