@@ -1,0 +1,21 @@
+@page "/counter-1"
+@inject ILogger<Counter1> Logger
+
+<PageTitle>Counter 1</PageTitle>
+
+<h1>Counter 1</h1>
+
+<p>Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        Logger.LogWarning("Someone has clicked me!");
+
+        currentCount++;
+    }
+}

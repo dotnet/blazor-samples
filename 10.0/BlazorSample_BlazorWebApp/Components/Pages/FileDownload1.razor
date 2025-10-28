@@ -1,0 +1,31 @@
+@page "/file-download-1"
+@using System.IO
+@inject IJSRuntime JS
+
+<PageTitle>File Download 1</PageTitle>
+
+<h1>File Download Example 1</h1>
+
+<button @onclick="DownloadFileFromStream">
+    Download File From Stream
+</button>
+
+@code {
+    private Stream GetFileStream()
+    {
+        var randomBinaryData = new byte[50 * 1024];
+        var fileStream = new MemoryStream(randomBinaryData);
+
+        return fileStream;
+    }
+
+    private async Task DownloadFileFromStream()
+    {
+        var fileStream = GetFileStream();
+        var fileName = "log.bin";
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+        await JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef);
+    }
+}

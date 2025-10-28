@@ -1,0 +1,28 @@
+@page "/event-handler-8"
+
+<PageTitle>Event Handler 8</PageTitle>
+
+<h1>Event Handler Example 8</h1>
+
+<p>Select the button to give the <code>&lt;input&gt;</code> focus.</p>
+
+<p>
+    <label>
+        Input: 
+        <input @ref="exampleInput" />
+    </label>
+    
+</p>
+
+<button @onclick="ChangeFocus">
+    Focus the Input Element
+</button>
+
+@code {
+    private ElementReference exampleInput;
+
+    private async Task ChangeFocus()
+    {
+        await exampleInput.FocusAsync();
+    }
+}
