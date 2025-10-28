@@ -1,0 +1,30 @@
+@page "/bind"
+
+<PageTitle>Bind</PageTitle>
+
+<h1>Bind Example</h1>
+
+<p>
+    <label>
+        inputValue: 
+        <input @bind="inputValue" />
+    </label>
+</p>
+
+<p>
+    <label>
+        InputValue: 
+        <input @bind="InputValue" />
+    </label>
+</p>
+
+<ul>
+    <li><code>inputValue</code>: @inputValue</li>
+    <li><code>InputValue</code>: @InputValue</li>
+</ul>
+
+@code {
+    private string? inputValue;
+
+    private string? InputValue { get; set; }
+}

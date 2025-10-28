@@ -1,0 +1,19 @@
+﻿@page "/generics-4"
+
+<PageTitle>Generics 4</PageTitle>
+
+<h1>Generic Type Example 4</h1>
+
+<ListItems4 ExampleList="@(new List<string> { "Item 5", "Item 6" })">
+    <ListDisplay1 Color="blue" 
+                  ExampleList="@(new List<string> { "Item 1", "Item 2" })" />
+    <ListDisplay1 Color="red" 
+                  ExampleList="@(new List<string> { "Item 3", "Item 4" })" />
+</ListItems4>
+
+<ListItems4 ExampleList="@(new List<int> { 5, 6 })">
+    <ListDisplay1 Color="blue" 
+                  ExampleList="@(new List<int> { 1, 2 })" />
+    <ListDisplay1 Color="red" 
+                  ExampleList="@(new List<int> { 3, 4 })" />
+</ListItems4>

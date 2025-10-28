@@ -1,0 +1,20 @@
+﻿@page "/generics-5"
+
+<PageTitle>Generics 5</PageTitle>
+
+<h1>Generic Type Example 5</h1>
+
+<ListItems4 ExampleList="stringData">
+    <ListDisplay1 Color="blue" ExampleList="stringData" />
+    <ListDisplay1 Color="red" ExampleList="stringData" />
+</ListItems4>
+
+<ListItems4 ExampleList="integerData">
+    <ListDisplay1 Color="blue" ExampleList="integerData" />
+    <ListDisplay1 Color="red" ExampleList="integerData" />
+</ListItems4>
+
+@code {
+    private List<string> stringData = new() { "Item 1", "Item 2" };
+    private List<int> integerData = new() { 1, 2 };
+}
