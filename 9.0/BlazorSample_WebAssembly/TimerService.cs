@@ -22,10 +22,19 @@ public class TimerService(NotifierService notifier,
                 {
                     elapsedCount += 1;
                     await notifier.Update("elapsedCount", elapsedCount);
-                    logger.LogInformation("elapsedCount: {elapsedCount}", 
-                        elapsedCount);
+                    logger.LogInformation("elapsedCount {Count}", elapsedCount);
                 }
             }
+        }
+    }
+
+    public async Task Stop()
+    {
+        if (timer is not null)
+        {
+            timer.Dispose();
+            timer = null;
+            logger.LogInformation("Stopped");
         }
     }
 

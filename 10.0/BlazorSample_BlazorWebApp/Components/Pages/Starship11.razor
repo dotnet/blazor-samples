@@ -1,0 +1,37 @@
+@page "/starship-11"
+@using System.ComponentModel.DataAnnotations
+@inject ILogger<Starship11> Logger
+
+<EditForm Model="Model" OnValidSubmit="Submit" FormName="Starship11">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div>
+        <label>
+            Identifier: 
+            <CustomInputText @bind-Value="Model!.Id" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+<div>
+    CurrentValue: @Model?.Id
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Starship? Model { get; set; }
+
+    protected override void OnInitialized() => Model ??= new();
+
+    private void Submit() => Logger.LogInformation("Submit: Processing form");
+
+    public class Starship
+    {
+        [Required]
+        [StringLength(10, ErrorMessage = "Id is too long.")]
+        public string? Id { get; set; }
+    }
+}

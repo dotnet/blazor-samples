@@ -11,6 +11,8 @@
 
 <button @onclick="StartTimer">Start Timer</button>
 
+<button @onclick="StopTimer">Stop Timer</button>
+
 <h2>Notifications</h2>
 
 <p>
@@ -40,6 +42,8 @@
     }
 
     private void StartTimer() => _ = Task.Run(Timer.Start);
+
+    private void StopTimer() => _ = Task.Run(Timer.Stop);
 
     public void Dispose() => Notifier.Notify -= OnNotify;
 }

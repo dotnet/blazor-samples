@@ -1,0 +1,20 @@
+﻿@page "/blazor-rocks-2"
+@inherits BlazorRocksBase2
+@inject ILogger<BlazorRocks2> Logger
+
+<PageTitle>Blazor Rocks!</PageTitle>
+
+<h1>Blazor Rocks! Example 2</h1>
+
+<p>
+    @BlazorRocksText
+</p>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Logger.LogInformation("Initialization code of BlazorRocks2 executed!");
+
+        base.OnInitialized();
+    }
+}
