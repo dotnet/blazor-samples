@@ -85,7 +85,7 @@ else
     private string? serviceEndpoint;
     private bool getCompletedItems;
 
-    [SupplyParameterFromPersistentComponentState]
+    [PersistentState]
     public TodoItem[]? TodoItems { get; set; }
 
     protected override async Task OnInitializedAsync()

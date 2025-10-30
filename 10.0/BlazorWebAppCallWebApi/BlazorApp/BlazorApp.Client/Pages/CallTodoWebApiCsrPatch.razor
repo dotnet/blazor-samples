@@ -37,7 +37,7 @@ else
     JsonPatchDocument<TodoItem> patchDocument = new JsonPatchDocument<TodoItem>().Replace(p => p.IsComplete, true);
     private HttpClient? client;
 
-    [SupplyParameterFromPersistentComponentState]
+    [PersistentState]
     public TodoItem[]? TodoItems { get; set; }
 
     [StringSyntax(StringSyntaxAttribute.Json)]
