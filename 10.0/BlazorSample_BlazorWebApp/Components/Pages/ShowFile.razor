@@ -22,11 +22,9 @@
 
 @code
 {
-    private async Task<(Stream, string?)> DownloadFileAsync(string url)
+    private async Task ShowFileAsync(string url, string title)
     {
         var absoluteUrl = Navigation.ToAbsoluteUri(url);
-        Console.WriteLine($"Downloading file from {absoluteUrl}");
-
         using var response = await Http.GetAsync(absoluteUrl);
         string? contentType = null;
 
@@ -35,13 +33,9 @@
             contentType = values.FirstOrDefault();
         }
 
-        return (await response.Content.ReadAsStreamAsync(), contentType);
-    }
-
-    private async Task ShowFileAsync(string url, string title)
-    {
-        var (fileStream, contentType) = await DownloadFileAsync(url);
+        var fileStream = await response.Content.ReadAsStreamAsync();
         var strRef = new DotNetStreamReference(fileStream);
+
         await JS.InvokeVoidAsync("setSource", "iframe", strRef, contentType, title);
     }
 }
