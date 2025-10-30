@@ -1,0 +1,23 @@
+<div class="card" style="margin:5px 0">
+    <div class="card-body">
+        <h5 class="card-title">RendererInfo.Name</h5>
+        <p class="card-text">Values: Static, Server, WebAssembly, WebView</p>
+        <p class="card-text" style="font-weight:bold">@RendererInfo.Name</p>
+    </div>
+</div>
+
+<div class="card" style="margin:5px 0">
+    <div class="card-body">
+        <h5 class="card-title">RendererInfo.IsInteractive</h5>
+        <p class="card-text">Values: True, False</p>
+        <p class="card-text" style="font-weight:bold">@RendererInfo.IsInteractive</p>
+    </div>
+</div>
+
+<div class="card" style="margin:5px 0">
+    <div class="card-body">
+        <h5 class="card-title">AssignedRenderMode</h5>
+        <p class="card-text">Values: InteractiveServerRenderMode, InteractiveAutoRenderMode, InteractiveWebAssemblyRenderMode, Null</p>
+        <p class="card-text" style="font-weight:bold">@(AssignedRenderMode is null ? "Null" : AssignedRenderMode)</p>
+    </div>
+</div>
