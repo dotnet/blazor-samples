@@ -84,7 +84,7 @@ else
     private string? newMovieName;
     private bool getWatchedMovies;
 
-    [SupplyParameterFromPersistentComponentState]
+    [PersistentState]
     public Movie[]? Movies { get; set; }
 
     protected override async Task OnInitializedAsync()

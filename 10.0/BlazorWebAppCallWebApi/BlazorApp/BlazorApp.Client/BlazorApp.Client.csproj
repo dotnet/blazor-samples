@@ -6,12 +6,20 @@
     <Nullable>enable</Nullable>
     <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
     <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
+    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
 
+  <Target Name="AllowUsingAspNetCoreInBlazorWasm" AfterTargets="ProcessFrameworkReferences" >
+    <ItemGroup>
+      <UnavailableRuntimePack Remove="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+  </Target>
+
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0-preview.4.25258.107" />
-    <PackageReference Include="Microsoft.AspNetCore.JsonPatch.SystemTextJson" Version="10.0.0-preview.4.25258.110" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0-preview.4.25258.107" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.0-rc.2.25502.107" />
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch.SystemTextJson" Version="10.0.0-rc.2.25502.107" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0-rc.2.25502.107" />
   </ItemGroup>
 
 </Project>
