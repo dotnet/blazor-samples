@@ -85,19 +85,17 @@ static async Task<IResult> CreateTodo(TodoItem todo, TodoContext db)
 
 static async Task<IResult> UpdateTodo(long id, TodoItem inputTodo, TodoContext db)
 {
-    var todo = await db.TodoItems.FindAsync(id);
-
-    if (todo is null)
+    if (await db.TodoItems.FindAsync(id) is TodoItem todo)
     {
-        return TypedResults.NotFound();
+        todo.Name = inputTodo.Name;
+        todo.IsComplete = inputTodo.IsComplete;
+
+        await db.SaveChangesAsync();
+
+        return TypedResults.NoContent();
     }
 
-    todo.Name = inputTodo.Name;
-    todo.IsComplete = inputTodo.IsComplete;
-
-    await db.SaveChangesAsync();
-
-    return TypedResults.NoContent();
+    return TypedResults.NotFound();
 }
 
 static async Task<IResult> DeleteTodo(long id, TodoContext db)
@@ -124,5 +122,5 @@ static async Task<IResult> PatchTodo(long id, TodoContext db)
         return TypedResults.Ok(todo);
     }
 
-    return TypedResults.NoContent();
+    return TypedResults.NotFound();
 }

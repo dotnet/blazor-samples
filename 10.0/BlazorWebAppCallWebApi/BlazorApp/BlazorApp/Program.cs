@@ -129,5 +129,5 @@ static async Task<IResult> DeleteMovie([FromServices] IMovieService movieService
 {
     await movieService.DeleteMovieAsync(id);
 
-    return TypedResults.NotFound();
+    return TypedResults.NoContent();
 }
