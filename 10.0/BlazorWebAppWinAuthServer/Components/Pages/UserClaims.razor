@@ -1,0 +1,83 @@
+@page "/user-claims"
+@using System.Security.Claims
+@using System.Security.Principal
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+<PageTitle>User Claims & Roles</PageTitle>
+
+<h1>User Claims & Roles</h1>
+
+<QuickGrid Items="claims" Pagination="pagination">
+    <Paginator State="pagination" />
+    <PropertyColumn Property="@(p => p.Type)" Sortable="true" />
+    <PropertyColumn Property="@(p => p.Value)" Sortable="true" />
+    <PropertyColumn Property="@(p => GetClaimAsHumanReadable(p))" Sortable="true" Title="Translation" />
+    <PropertyColumn Property="@(p => p.Issuer)" Sortable="true" />
+</QuickGrid>
+
+<h1>User Roles</h1>
+
+@if (roles.Any())
+{
+    <ul>
+        @foreach (var role in roles)
+        {
+            <li>@role</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No roles available.</p>
+}
+
+@code {
+    private IQueryable<Claim> claims = Enumerable.Empty<Claim>().AsQueryable();
+    private IEnumerable<string> roles = Enumerable.Empty<string>();
+    PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthState == null)
+        {
+            return;
+        }
+
+        var authState = await AuthState;
+
+        claims = authState.User.Claims.AsQueryable();
+
+        roles = authState.User.Claims
+            .Where(claim => claim.Type == ClaimTypes.Role)
+            .Select(claim => claim.Value);
+    }
+
+    private string GetClaimAsHumanReadable(Claim claim)
+    {
+        if (!OperatingSystem.IsWindows() ||
+            claim.Type is not (ClaimTypes.PrimarySid or ClaimTypes.PrimaryGroupSid
+                or ClaimTypes.GroupSid))
+        {
+            // We're either not on Windows or not dealing with a SID Claim that
+            // can be translated
+            return string.Empty;
+        }
+
+        SecurityIdentifier sid = new SecurityIdentifier(claim.Value);
+
+        try
+        {
+            // Throw an exception if the SID can't be translated
+            var account = sid.Translate(typeof(NTAccount));
+
+            return account.ToString();
+        }
+        catch (IdentityNotMappedException)
+        {
+            return "Could not be mapped";
+        }
+    }
+}
