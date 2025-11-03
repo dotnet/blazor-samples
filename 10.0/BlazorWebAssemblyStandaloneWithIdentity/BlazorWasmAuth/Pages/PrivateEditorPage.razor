@@ -1,0 +1,41 @@
+﻿@page "/private-editor-page"
+@attribute [Authorize(Roles = "Editor")]
+@using System.Security.Claims
+
+<PageTitle>Private Editor Page</PageTitle>
+
+<h1>Private Editor Page</h1>
+
+<AuthorizeView>
+    <p>Hello, @context.User.Identity?.Name! You're authenticated and you have an <b>Editor</b> role claim, so you can see this page.</p>
+</AuthorizeView>
+
+<h2>Claims</h2>
+
+@if (claims.Any())
+{
+    <ul>
+        @foreach (var claim in claims)
+        {
+            <li><b>@claim.Type:</b> @claim.Value</li>
+        }
+    </ul>
+}
+
+@code {
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthState == null)
+        {
+            return;
+        }
+
+        var authState = await AuthState;
+        claims = authState.User.Claims;
+    }
+}
