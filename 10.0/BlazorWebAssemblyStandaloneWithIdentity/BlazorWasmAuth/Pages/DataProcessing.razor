@@ -1,0 +1,97 @@
+@page "/data-processing"
+@inject IHttpClientFactory ClientFactory
+
+<PageTitle>Data Processing</PageTitle>
+
+<h1>Data Processing</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <p>Hello, @context.User.Identity?.Name! You're authenticated.</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>Hello! You're <em>NOT</em> authenticated, so processing data will fail.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+<h2>Data processing for any authenticated user</h2>
+
+<p>If you're in any role, you can process data with the following form.</p>
+
+<EditForm Model="Model1" OnSubmit="Submit1" FormName="ProcessData1">
+    <div>
+        <label>
+            Message:
+            <InputText @bind-Value="Model1!.Message" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+<div>
+    @result1
+</div>
+
+<h2>Data processing for Managers</h2>
+
+<p>You must be in the Manager role to use the following form to process data.</p>
+
+<EditForm Model="Model2" OnSubmit="Submit2" FormName="ProcessData2">
+    <div>
+        <label>
+            Message:
+            <InputText @bind-Value="Model2!.Message" />
+        </label>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</EditForm>
+
+<div>
+    @result2
+</div>
+
+@code {
+    private string? result1;
+    private string? result2;
+
+    [SupplyParameterFromForm]
+    private FormModel? Model1 { get; set; }
+
+    [SupplyParameterFromForm]
+    private FormModel? Model2 { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Model1 ??= new();
+        Model2 ??= new();
+    }
+
+    private async Task Submit1() => result1 = await ProcessData("data-processing-1", Model1!);
+
+    private async Task Submit2() => result2 = await ProcessData("data-processing-2", Model2!);
+
+    private async Task<string> ProcessData(string endpoint, FormModel model)
+    {
+        var client = ClientFactory.CreateClient("Auth");
+
+        using var response = await client.PostAsJsonAsync<FormModel>(endpoint, model);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return $"The data was processed by the server! The server indicates that the message is {await response.Content.ReadAsStringAsync()} long.";
+        }
+        else
+        {
+            return $"The server responded with an unsuccessful status code ({response.StatusCode}).";
+        }
+    }
+
+    public class FormModel
+    {
+        public string Message { get; set; } = string.Empty;
+    }
+}
