@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "Start Projects",
+    "Projects": [
+      {
+        "Path": "Backend\\Backend.csproj",
+        "Action": "StartWithoutDebugging",
+        "DebugTarget": "https"
+      },
+      {
+        "Path": "BlazorTodo\\BlazorTodo.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      }
+    ]
+  }
+]
