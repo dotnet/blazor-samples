@@ -34,7 +34,7 @@ else
 @code {
     private IQueryable<Claim> claims = Enumerable.Empty<Claim>().AsQueryable();
     private IEnumerable<string> roles = Enumerable.Empty<string>();
-    PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
+    private PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
 
     [CascadingParameter]
     private Task<AuthenticationState>? AuthState { get; set; }

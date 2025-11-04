@@ -9,6 +9,7 @@ _site/
 # User-specific files
 *.suo
 *.user
+!*.sln
 !*.slnLaunch.user
 *.userosscache
 *.sln.docstates

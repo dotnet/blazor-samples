@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11123.170 d18.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAppWinAuthServer", "BlazorWebAppWinAuthServer.csproj", "{3BFF82BC-FE3A-5BB4-4B19-7E7B7186698A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3BFF82BC-FE3A-5BB4-4B19-7E7B7186698A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BFF82BC-FE3A-5BB4-4B19-7E7B7186698A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BFF82BC-FE3A-5BB4-4B19-7E7B7186698A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BFF82BC-FE3A-5BB4-4B19-7E7B7186698A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A47CDE0-0BDA-43B1-8564-AABEFFC0F7B7}
+	EndGlobalSection
+EndGlobal
