@@ -13,6 +13,8 @@ internal sealed class ServerWeatherForecaster(IDownstreamApi downstreamApi) : IW
                 options.RelativePath = "/weather-forecast";
             });
 
+        response.EnsureSuccessStatusCode();
+
         return await response.Content.ReadFromJsonAsync<WeatherForecast[]>() ??
             throw new IOException("No weather forecast!");
     }

@@ -17,7 +17,7 @@ builder.Services.AddCors(
             .AllowAnyMethod()
             .AllowAnyHeader()));
 
-// Add services to the container
+// Add Endpoints API Explorer
 builder.Services.AddEndpointsApiExplorer();
 
 // Add NSwag services

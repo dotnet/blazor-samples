@@ -16,14 +16,15 @@ builder.Services.AddAuthentication()
         // under "Expose an API" in the Azure or Entra portal. {CLIENT ID} is the application (client) ID of this 
         // app's registration in the Azure portal.
         // 
-        // Audience format {AUDIENCE} for ME-ID tenant type: api://{CLIENT ID}
-        // Audience format {AUDIENCE} for B2C tenant type: https://{DIRECTORY NAME}.onmicrosoft.com/{CLIENT ID}
+        // Audience format {AUDIENCE} for ME-ID tenant type: api://{CLIENT ID (WEB API APP)}
+        // Audience format {AUDIENCE} for B2C tenant type: https://{DIRECTORY NAME}.onmicrosoft.com/{CLIENT ID (WEB API APP)}
         //
         jwtOptions.Audience = "{AUDIENCE}";
     });
+
 builder.Services.AddAuthorization();
 
-// Add services to the container
+// Add Endpoints API Explorer
 builder.Services.AddEndpointsApiExplorer();
 
 // Add NSwag services

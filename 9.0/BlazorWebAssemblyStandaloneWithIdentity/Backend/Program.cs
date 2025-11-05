@@ -53,7 +53,7 @@ builder.Services.AddCors(
             .AllowAnyHeader()
             .AllowCredentials()));
 
-// add services to the container
+// Add Endpoints API Explorer
 builder.Services.AddEndpointsApiExplorer();
 
 // add OpenAPI services
