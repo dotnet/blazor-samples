@@ -130,11 +130,12 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
-app.MapStaticAssets();
 app.UseAntiforgery();
+
+app.MapStaticAssets();
 
 app.MapDefaultEndpoints();
 
@@ -148,7 +149,7 @@ app.MapForwarder("/weather-forecast", "https://weatherapi", transformBuilder =>
     transformBuilder.AddRequestTransform(async transformContext =>
     {
         var tokenAcquisition = transformContext.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-        List<string> scopes = [ "https://guardrexorg.onmicrosoft.com/edb4f62e-f83a-496e-9629-ed87ad546c62/Weather.Get" ];
+        List<string> scopes = ["{APP ID URI}/Weather.Get"];
         var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
         transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
     });
