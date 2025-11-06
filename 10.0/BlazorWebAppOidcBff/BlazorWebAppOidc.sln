@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11201.2 d18.0
 MinimumVisualStudioVersion = 16.0.0.0
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aspire.AppHost", "Aspire\Aspire.AppHost\Aspire.AppHost.csproj", "{1E322394-C5E2-4B64-85F6-923154102855}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWebAppOidc", "BlazorWebAppOidc\BlazorWebAppOidc.csproj", "{32AAE4A2-4EA9-4961-B713-4B3A4732FC21}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWebAppOidc.Client", "BlazorWebAppOidc.Client\BlazorWebAppOidc.Client.csproj", "{85DD66B0-7978-411A-8F84-E36C82B450EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiJwt", "..\BlazorWebAppEntraBff\MinimalApiJwt\MinimalApiJwt.csproj", "{8006DD68-C878-533D-FEE9-CB802D67451A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aspire.AppHost", "Aspire\Aspire.AppHost\Aspire.AppHost.csproj", "{1E322394-C5E2-4B64-85F6-923154102855}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiJwt", "MinimalApiJwt\MinimalApiJwt.csproj", "{8006DD68-C878-533D-FEE9-CB802D67451A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aspire.ServiceDefaults", "Aspire\Aspire.ServiceDefaults\Aspire.ServiceDefaults.csproj", "{228355C3-72C7-43F9-891F-61B3E6662FE0}"
 EndProject
