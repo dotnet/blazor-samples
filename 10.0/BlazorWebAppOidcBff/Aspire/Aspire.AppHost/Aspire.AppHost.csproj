@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BlazorWebAppEntra\BlazorWebAppEntra.csproj" />
+    <ProjectReference Include="..\..\BlazorWebAppOidc\BlazorWebAppOidc.csproj" />
     <ProjectReference Include="..\..\MinimalApiJwt\MinimalApiJwt.csproj" />
   </ItemGroup>
 
