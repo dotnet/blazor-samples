@@ -1,12 +1,11 @@
-using BlazorWebAppOidc;
-using BlazorWebAppOidc.Client.Weather;
-using BlazorWebAppOidc.Components;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Yarp.ReverseProxy.Transforms;
+using BlazorWebAppOidc;
+using BlazorWebAppOidc.Client.Weather;
+using BlazorWebAppOidc.Components;
 
 const string MS_OIDC_SCHEME = "MicrosoftOidc";
 
@@ -182,11 +181,12 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
-app.MapStaticAssets();
 app.UseAntiforgery();
+
+app.MapStaticAssets();
 
 app.MapDefaultEndpoints();
 
