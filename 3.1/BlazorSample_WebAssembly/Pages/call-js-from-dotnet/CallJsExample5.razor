@@ -36,7 +36,7 @@
             $"{(char)('A' + r.Next(0, 26))}{(char)('A' + r.Next(0, 26))}";
         price = r.Next(1, 101);
         var interopResult = await jsClass.TickerChanged(stockSymbol, price);
-        result = $"Result of TickerChanged call for {stockSymbol} at " +
+        result = $"Result of SetStock call for {stockSymbol} at " +
             $"{price.ToString("c")}: {interopResult}";
     }
 

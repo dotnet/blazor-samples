@@ -32,7 +32,7 @@
         price = Random.Shared.Next(1, 101);
         var interopResult = 
             await JS.InvokeAsync<string>("displayTickerAlert2", stockSymbol, price);
-        result = $"Result of TickerChanged call for {stockSymbol} at " +
+        result = $"Result of SetStock call for {stockSymbol} at " +
             $"{price.ToString("c")}: {interopResult}";
     }
 }

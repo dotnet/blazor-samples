@@ -4,7 +4,7 @@ public class TimerService(NotifierService notifier,
     ILogger<TimerService> logger) : IDisposable
 {
     private int elapsedCount;
-    private readonly static TimeSpan heartbeatTickRate = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan heartbeatTickRate = TimeSpan.FromSeconds(5);
     private readonly ILogger<TimerService> logger = logger;
     private readonly NotifierService notifier = notifier;
     private PeriodicTimer? timer;
