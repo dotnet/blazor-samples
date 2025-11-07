@@ -1,4 +1,4 @@
-10.0\**\README# Blazor Web App with Windows Authentication
+# Blazor Web App with Windows Authentication
 
 This sample features:
 
