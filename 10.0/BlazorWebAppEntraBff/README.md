@@ -23,6 +23,8 @@ The sample app uses in-memory distributed token caches, but a production distrib
 
 ## Run the sample
 
+Update the sample's packages to the latest versions.
+
 ### Visual Studio
 
 1. Open the `BlazorWebAppEntra` solution file in Visual Studio.

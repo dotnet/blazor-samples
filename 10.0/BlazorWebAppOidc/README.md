@@ -20,6 +20,8 @@ Configure the OIDC provider using the comments in the `Program.cs` file.
 
 ## Run the sample
 
+Update the sample's packages to the latest versions.
+
 ### Visual Studio
 
 1. Open the `BlazorWebAppOidc` solution file in Visual Studio.

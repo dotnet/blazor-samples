@@ -1,4 +1,4 @@
-# Blazor Web App with Windows Authentication
+10.0\**\README# Blazor Web App with Windows Authentication
 
 This sample features:
 
@@ -12,6 +12,8 @@ The article for this sample app is [Secure an ASP.NET Core Blazor Web App with W
 If you need to open an issue that pertains to the coding of the sample app, open [an issue on this samples repo](https://github.com/dotnet/blazor-samples/issues). Otherwise, open an issue using the **Open a documentation issue** link/feedback form at the bottom of [the article](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-windows-authentication).
 
 ## Run the sample
+
+Update the sample's packages to the latest versions.
 
 ### Visual Studio
 

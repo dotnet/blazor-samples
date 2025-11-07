@@ -2,6 +2,8 @@
 
 This sample updates the `Weather` page in a project created from the Blazor Web App project template to make an API call from the client to the server when the page is prerendered and uses the Auto render mode.
 
+**Update the sample's packages to the latest versions.**
+
 For more information, see [Call a web API from ASP.NET Core Blazor](https://learn.microsoft.com/aspnet/core/blazor/call-web-api).
 
 * The `Weather` component depends on an `IWeatherService` for obtaining the weather data. This insulates the component from determining where it's running.

@@ -10,6 +10,8 @@ For more information, see [Microsoft Entra (ME-ID) groups, Administrator Roles, 
 
 1. Clone this repository or download a ZIP archive of the repository. For more information, see [How to download a sample](https://learn.microsoft.com/aspnet/core/introduction-to-aspnet-core#how-to-download-a-sample).
 
+1. Update the sample's packages to the latest versions.
+
 1. In the `appsettings.json` file, provide values for the following placeholders from the app's ME-ID registration in the Azure portal:
 
    * `{TENANT ID}`: The Directory (Tenant) Id GUID value.

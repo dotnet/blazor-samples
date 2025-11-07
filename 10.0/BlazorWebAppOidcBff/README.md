@@ -20,6 +20,8 @@ Configure the solution following the guidance in [Secure an ASP.NET Core Blazor 
 
 ## Run the sample
 
+Update the sample's packages to the latest versions.
+
 ### Visual Studio
 
 1. Open the `BlazorWebAppOidc` solution file in Visual Studio.

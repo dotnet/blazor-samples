@@ -11,6 +11,8 @@ cd dotnet
 dotnet workload restore
 ```
 
+Update the sample's packages to the latest versions.
+
 ### Linux
 
 Long version, from root:

@@ -15,6 +15,8 @@ This sample shows how to use .NET on WebAssembly integrated into a React app. It
 
 ## Building the source code
 
+Update the sample's packages to the latest versions.
+
 ### .NET
 
 * Install the [.NET SDK](https://dotnet.microsoft.com/download) (.NET 10 or later).
