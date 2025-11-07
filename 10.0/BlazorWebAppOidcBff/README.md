@@ -20,7 +20,7 @@ Configure the solution following the guidance in [Secure an ASP.NET Core Blazor 
 
 ## Run the sample
 
-If the sample uses third-party NuGet packages, update the packages to the latest versions, including patch versions. Updating Microsoft NuGet packages to the latest patch version is optional because the .NET SDK uses the highest available patch version by default.
+Update the `NSwag.AspNetCore` NuGet package in the `MinimalApiJwt` project to the latest version.
 
 ### Visual Studio
 

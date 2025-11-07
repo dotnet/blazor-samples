@@ -13,8 +13,6 @@ If you need to open an issue that pertains to the coding of the sample app, open
 
 ## Run the sample
 
-If the sample uses third-party NuGet packages, update the packages to the latest versions, including patch versions. Updating Microsoft NuGet packages to the latest patch version is optional because the .NET SDK uses the highest available patch version by default.
-
 ### Visual Studio
 
 1. Open the `BlazorWebAppWinAuthServer` solution file in Visual Studio.
