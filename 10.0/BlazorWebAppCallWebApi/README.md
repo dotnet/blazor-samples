@@ -8,7 +8,7 @@ For more information, see [Call a web API from ASP.NET Core Blazor](https://lear
 
 1. Clone this repository or download a ZIP archive of the repository. For more information, see [How to download a sample](https://learn.microsoft.com/aspnet/core/introduction-to-aspnet-core#how-to-download-a-sample).
 
-1. Update the sample's packages to the latest versions.
+1. If the sample uses third-party NuGet packages, update the packages to the latest versions, including patch versions. Updating Microsoft NuGet packages to the latest patch version is optional because the .NET SDK uses the highest available patch version by default.
 
 1. The default and fallback URLs for the two apps are:
 

@@ -2,7 +2,7 @@
 
 This sample app demonstrates how to maintain an area (folder) of components that adopt static server-side rendering (static SSR) in an app that otherwise adopts a global interactive render mode (Server, WebAssembly, or Auto).
 
-**Update the sample's packages to the latest versions.**
+**If the sample uses third-party NuGet packages, update the packages to the latest versions, including patch versions. Updating Microsoft NuGet packages to the latest patch version is optional because the .NET SDK uses the highest available patch version by default.**
 
 The app targets .NET 10 and uses general Blazor features available in ASP.NET Core 10.0 or later, but the technique demonstrated is most useful in 8.0. In ASP.NET Core 9.0 or later, Blazor includes a feature to simplify the implementation of this scenario with the `@attribute [ExcludeFromInteractiveRouting]` Razor component directive. For more information on how to use the `[ExcludeFromInteractiveRouting]` attribute, see [Static SSR pages in a interactive app (ASP.NET Core 9.0 or later)](https://learn.microsoft.com/aspnet/core/blazor/components/render-modes#static-ssr-pages-in-an-interactive-app).
 

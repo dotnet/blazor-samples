@@ -15,7 +15,7 @@ This sample shows how to use .NET on WebAssembly integrated into a React app. It
 
 ## Building the source code
 
-Update the sample's packages to the latest versions.
+If the sample uses third-party NuGet packages, update the packages to the latest versions, including patch versions. Updating Microsoft NuGet packages to the latest patch version is optional because the .NET SDK uses the highest available patch version by default.
 
 ### .NET
 
