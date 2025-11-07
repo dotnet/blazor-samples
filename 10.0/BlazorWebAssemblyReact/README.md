@@ -11,9 +11,6 @@ This sample shows how to use Blazor WebAssembly integrated into a React app.
 * `app`: Target React app using rollup to do the JavaScript build.
 * `blazor`: Blazor WebAssembly app containing several components.
 
-## Live demo
-
-
 ## Building the source code
 
 ### .NET
