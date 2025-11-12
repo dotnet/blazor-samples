@@ -53,9 +53,9 @@ jobs:
               - '3.1/BlazorSample_WebAssembly/**'
 
       - name: Get latest .NET SDK
-        uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab # v4.3.0
+        uses: actions/setup-dotnet@d4c94342e560b34958eacfc5d055d21461ed1c5d # v5.0.0
         with:
-          dotnet-version: '10.0.0'
+          dotnet-version: '10.0.x'
 
       - name: Restore/build 10.0/BlazorSample_BlazorWebApp
         if: steps.filter.outputs.bwa100 == 'true'
