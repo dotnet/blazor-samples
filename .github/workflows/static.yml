@@ -1,7 +1,7 @@
 # Simple workflow for deploying static content to GitHub Pages
 name: Deploy static content to Pages
 env:
-  PUBLISH_DIR: BlazorWebAssemblyXrefGenerator/bin/Release/net9.0/publish/wwwroot
+  PUBLISH_DIR: BlazorWebAssemblyXrefGenerator/bin/Release/net10.0/publish/wwwroot
 
 on:
   # Runs on pushes targeting the default branch for the app's folder path
@@ -42,7 +42,7 @@ jobs:
       - name: Get latest .NET SDK
         uses: actions/setup-dotnet@3951f0dfe7a07e2313ec93c75700083e2005cbab # v4.3.0
         with:
-          dotnet-version: '9.0'
+          dotnet-version: '10.0'
 
       - name: Publish app
         run: dotnet publish BlazorWebAssemblyXrefGenerator -c Release
