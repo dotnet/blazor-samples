@@ -63,7 +63,7 @@
 
 @code {
     [SupplyParameterFromForm]
-    private FormModel? Model { get; set; } = new();
+    private FormModel? Model { get; set; }
 
     private SearchResults? SearchResultItems { get; set; }
     private List<Result> ResultsToRender { get; set; } = new();
@@ -73,6 +73,8 @@
     private const int MaxResults = 22;
 
     private bool isSearching = false;
+
+    protected override void OnInitialized() => Model ??= new();
 
     public async Task GetSearchResults()
     {
