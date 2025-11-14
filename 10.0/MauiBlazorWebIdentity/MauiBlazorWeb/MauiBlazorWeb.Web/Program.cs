@@ -31,9 +31,15 @@ builder.Services.AddAuthentication(options =>
         options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
     });
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    {
+#if USE_SQL_SERVER
+        options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection"));
+#else
+        options.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
+#endif
+    });
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 //Needed for external clients to log in
