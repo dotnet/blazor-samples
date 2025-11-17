@@ -60,7 +60,8 @@
         <span class="dismiss">🗙</span>
     </div>
     <script src="decode.js"></script>
-    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
+    <!-- script src="_framework/blazor.webassembly.js" autostart="false"  /script -->
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js" autostart="false"></script>
     <script>
         Blazor.start({
             loadBootResource: function (type, name, defaultUri, integrity) {
