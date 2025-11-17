@@ -1,4 +1,4 @@
-﻿@attribute [CascadingTypeParameter(nameof(TExample))]
+@attribute [CascadingTypeParameter(nameof(TExample))]
 @typeparam TExample
 
 <h2>List Items 3</h2>
@@ -21,7 +21,7 @@
 
 @code {
     [CascadingParameter]
-    protected IEnumerable<TExample>? ExampleList { get; set; }
+    private IEnumerable<TExample>? ExampleList { get; set; }
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
