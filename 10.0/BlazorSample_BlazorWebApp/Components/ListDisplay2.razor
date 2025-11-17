@@ -1,4 +1,4 @@
-﻿@typeparam TExample
+@typeparam TExample
 
 @if (ExampleList is not null)
 {
@@ -15,5 +15,5 @@
     public string? Color { get; set; }
 
     [CascadingParameter]
-    protected IEnumerable<TExample>? ExampleList { get; set; }
+    private IEnumerable<TExample>? ExampleList { get; set; }
 }

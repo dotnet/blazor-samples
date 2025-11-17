@@ -21,7 +21,7 @@
 
 @code {
     [CascadingParameter]
-    protected IEnumerable<TExample>? ExampleList { get; set; }
+    private IEnumerable<TExample>? ExampleList { get; set; }
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

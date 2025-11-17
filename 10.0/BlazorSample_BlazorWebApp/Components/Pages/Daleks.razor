@@ -1,4 +1,4 @@
-﻿@page "/daleks"
+@page "/daleks"
 
 <PageTitle>Daleks</PageTitle>
 
@@ -16,8 +16,8 @@
 
 @code {
     [CascadingParameter]
-    public Dalek? Dalek { get; set; }
+    private Dalek? Dalek { get; set; }
 
     [CascadingParameter(Name = "AlphaGroup")]
-    public Dalek? AlphaGroupDalek { get; set; }
+    private Dalek? AlphaGroupDalek { get; set; }
 }
