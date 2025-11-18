@@ -13,10 +13,11 @@ using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
 
-// Add services to the container.
+// Configure authentication to use Microsoft Entra ID
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(msIdentityOptions =>
     {
@@ -34,6 +35,30 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
         configOptions.Scopes = [ "{APP ID URI}/Weather.Get" ];
     })
     .AddDistributedTokenCaches();
+
+// Configure authentication to use Microsoft Entra External ID
+//
+// Instead of the preceding configuration for Microsoft Entra ID, use the
+// following configuration for Microsoft Entra External ID. Comment out or
+// remove the preceding 'AddAuthentication' configuration if you activate 
+// the following code.
+/*
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApp(msIdentityOptions =>
+    {
+        msIdentityOptions.CallbackPath = "/signin-oidc";
+        msIdentityOptions.Authority = "https://{DIRECTORY NAME}.ciamlogin.com/{TENANT ID}/v2.0";
+        msIdentityOptions.ClientId = "{CLIENT ID (BLAZOR APP)}";
+        msIdentityOptions.ResponseType = "code";
+    })
+    .EnableTokenAcquisitionToCallDownstreamApi()
+    .AddDownstreamApi("DownstreamApi", configOptions =>
+    {
+        configOptions.BaseUrl = "{BASE URL}";
+        configOptions.Scopes = ["{APP ID URI}/Weather.Get"];
+    })
+    .AddDistributedTokenCaches();
+*/
 
 builder.Services.AddDistributedMemoryCache();
 
