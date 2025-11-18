@@ -10,8 +10,9 @@ builder.Services.AddAuthentication()
         //
         // Authority format {AUTHORITY} matches the issurer (`iss`) of the JWT returned by the identity provider.
         //
-        // Authority format {AUTHORITY} for ME-ID tenant type: https://sts.windows.net/{TENANT ID}/
-        // Authority format {AUTHORITY} for B2C tenant type: https://login.microsoftonline.com/{TENANT ID}/v2.0/
+        // Authority format {AUTHORITY} for ME-ID tenant type: https://sts.windows.net/{TENANT ID}
+        // Authority format {AUTHORITY} for ME External ID tenant type: https://{DIRECTORY NAME}.ciamlogin.com/{TENANT ID}/v2.0
+        // Authority format {AUTHORITY} for B2C tenant type: https://login.microsoftonline.com/{TENANT ID}/v2.0
         //
         jwtOptions.Authority = "{AUTHORITY}";
         //
@@ -19,7 +20,8 @@ builder.Services.AddAuthentication()
         // under "Expose an API" in the Azure or Entra portal. {CLIENT ID} is the application (client) ID of this 
         // app's registration in the Azure portal.
         // 
-        // Audience format {AUDIENCE} for ME-ID tenant type: api://{CLIENT ID (WEB API APP)
+        // Audience format {AUDIENCE} for ME-ID tenant type: api://{CLIENT ID (WEB API APP)}
+        // Audience format {AUDIENCE} for ME External ID tenant type: {CLIENT ID (WEB API APP)}
         // Audience format {AUDIENCE} for B2C tenant type: https://{DIRECTORY NAME}.onmicrosoft.com/{CLIENT ID (WEB API APP)}
         //
         jwtOptions.Audience = "{AUDIENCE}";
