@@ -49,6 +49,7 @@ From `react` to `dotnet`: QR code generation request.
 
 From `dotnet` to `react`: Populating a frontend element with data.
 
+```
 +-----------------------------------------------+              +---------------------+
 | React App                                     |              | WASM App            |
 | (Main Thread)                                 |              | (WebWorker Thread)  |
@@ -67,3 +68,4 @@ From `dotnet` to `react`: Populating a frontend element with data.
 ||+--------------+ |          | +-------------+||              | |                  ||
 |+-----------------+          +----------------+|              | +------------------+|
 +-----------------------------------------------+              +---------------------+
+```
