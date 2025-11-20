@@ -1,4 +1,4 @@
-# .NET on Web Workers
+# .NET on Web Workers - React (`DotNetOnWebWorkersReact`)
 
 This sample accompanies [.NET on Web Workers](https://learn.microsoft.com/aspnet/core/client-side/dotnet-on-webworkers) in the ASP.NET Core Blazor documentation.
 
