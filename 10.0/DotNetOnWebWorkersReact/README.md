@@ -69,3 +69,7 @@ From `dotnet` to `react`: Populating a frontend element with data.
 |+-----------------+          +----------------+|              | +------------------+|
 +-----------------------------------------------+              +---------------------+
 ```
+
+# .NET on Web Workers in a Blazor WebAssembly app
+
+See the sample named `DotNetOnWebWorkersBlazorWebAssembly` in a 10.0 or later sample folder.
