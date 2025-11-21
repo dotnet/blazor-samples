@@ -1,0 +1,9 @@
+.form-group {
+    margin-bottom: 20px;
+}
+.input-container{
+    max-width: 400px; margin:0 auto 0 0
+}
+.image {
+    border: 1px solid black;
+}

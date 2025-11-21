@@ -1,4 +1,4 @@
-# .NET on Web Workers
+# .NET on Web Workers - React (`DotNetOnWebWorkersReact`)
 
 This sample accompanies [.NET on Web Workers](https://learn.microsoft.com/aspnet/core/client-side/dotnet-on-webworkers) in the ASP.NET Core Blazor documentation.
 
@@ -69,3 +69,7 @@ From `dotnet` to `react`: Populating a frontend element with data.
 |+-----------------+          +----------------+|              | +------------------+|
 +-----------------------------------------------+              +---------------------+
 ```
+
+# .NET on Web Workers in a Blazor WebAssembly app
+
+See the sample named `DotNetOnWebWorkersBlazorWebAssembly` in a 10.0 or later sample folder.

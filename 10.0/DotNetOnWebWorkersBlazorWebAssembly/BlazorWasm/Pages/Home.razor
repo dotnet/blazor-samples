@@ -1,0 +1,32 @@
+@page "/"
+@using Components
+@namespace Pages
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+
+<Popup @ref="popup" />
+
+<div class="input-container">
+    <div class="form-group">
+        <label for="textInput">Generate a QR from text:</label>
+        <input type="text" class="form-control" id="textInput" @bind="text" placeholder="Text" />
+    </div>
+
+    <div class="form-group">
+        <label for="numberInput">Set size of QR (in pixels):</label>
+        <input type="number" class="form-control" id="numberInput" @bind="size" />
+    </div>
+
+    <div class="form-group">
+        <button class="btn btn-primary" @onclick="GenerateQR">Generate QR</button>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(imageUrl))
+    {
+        <div class="form-group">
+            <img class="image" src="@imageUrl" id="qrImage" alt="Image" />
+        </div>
+    }
+</div>
