@@ -15,15 +15,15 @@ action="$1"
 
 # Define functions
 build() {
-    dotnet publish -c Debug "blazorWasm/blazorWasm.csproj"
+    dotnet publish -c Debug "BlazorWasm/BlazorWasm.csproj"
     exit 0
 }
 
 clean() {
     echo "Cleaning the previous build..."
-    blazorBin="blazorWasm/bin"
-    blazorObj="blazorWasm/obj"
-    dotnetPublish="blazorWasm/wwwroot/dotnet"
+    blazorBin="BlazorWasm/bin"
+    blazorObj="BlazorWasm/obj"
+    dotnetPublish="BlazorWasm/wwwroot/dotnet"
 
     for dir in "$blazorBin" "$blazorObj" "$dotnetPublish"; do
         [ -d "$dir" ] && rm -rf "$dir"
@@ -45,7 +45,7 @@ case "$action" in
         build
         ;;
     run)
-        dotnet run --project "blazorWasm/blazorWasm.csproj"
+        dotnet run --project "BlazorWasm/BlazorWasm.csproj"
         ;;
     *)
         echo "Invalid action: $action"

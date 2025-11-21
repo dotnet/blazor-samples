@@ -28,7 +28,7 @@ REM Switch-case logic based on the action
         call :build
         goto :end
     ) else if "%action%"=="run" (
-        dotnet run --project "blazorWasm\blazorWasm.csproj"
+        dotnet run --project "BlazorWasm\BlazorWasm.csproj"
     ) else (
         echo Invalid project name: %action%
         exit /b 1
@@ -37,14 +37,14 @@ REM Switch-case logic based on the action
 
 REM Define functions
 :build
-    dotnet publish -c Debug "blazorWasm\blazorWasm.csproj"
+    dotnet publish -c Debug "BlazorWasm\BlazorWasm.csproj"
     exit /b 0
 
 :clean
     echo Cleaning the previous build...
-    set "blazorBin=blazorWasm\bin"
-    set "blazorObj=blazorWasm\obj"
-    set "dotnetPublish=blazorWasm\wwwroot\dotnet"
+    set "blazorBin=BlazorWasm\bin"
+    set "blazorObj=BlazorWasm\obj"
+    set "dotnetPublish=BlazorWasm\wwwroot\dotnet"
     if exist !blazorBin! rmdir /s /q !blazorBin!
     if exist !blazorObj! rmdir /s /q !blazorObj!
     if exist !dotnetPublish! rmdir /s /q !dotnetPublish!
