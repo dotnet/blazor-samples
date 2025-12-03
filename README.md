@@ -58,7 +58,7 @@ git sparse-checkout set 9.0/BlazorSample_BlazorWebApp
 
 * Blazor Web App movie database app tutorial (`BlazorWebAppMovies`)<br>[Build a Blazor movie database app](https://learn.microsoft.com/aspnet/core/blazor/tutorials/movie-database-app)
 
-* Blazor Web App with Microsoft Entra ID (`BlazorWebAppEntra`/`BlazorWebAppEntraBff`)<br>[Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra)
+* Blazor Web App with Microsoft Entra ID (`BlazorWebAppEntraBff`/`BlazorWebAppEntraBffYarpAspire`)<br>[Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra)
 
 * Blazor Web App with OIDC and Aspire (`BlazorWebAppOidcBff`/`BlazorWebAppOidc`)<br>[Secure an ASP.NET Core Blazor Web App with OpenID Connect (OIDC)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-oidc)
 
