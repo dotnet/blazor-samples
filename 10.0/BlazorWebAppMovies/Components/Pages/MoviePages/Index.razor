@@ -38,14 +38,13 @@
 <Paginator State="pagination" />
 
 @code {
+    private BlazorWebAppMoviesContext context = default!;
+    private PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
+
     private string titleFilter = string.Empty;
 
     private IQueryable<Movie> FilteredMovies =>
         context.Movie.Where(m => m.Title!.Contains(titleFilter));
-
-    private BlazorWebAppMoviesContext context = default!;
-
-    private PaginationState pagination = new PaginationState { ItemsPerPage = 5 };
 
     protected override void OnInitialized()
     {
