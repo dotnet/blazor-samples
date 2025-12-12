@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorWebAppMovies.Migrations
 {
     [DbContext(typeof(BlazorWebAppMoviesContext))]
-    [Migration("20251113175430_AddRatingField")]
+    [Migration("20251212163047_AddRatingField")]
     partial class AddRatingField
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace BlazorWebAppMovies.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.0-rc.1.25451.107")
+                .HasAnnotation("ProductVersion", "10.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

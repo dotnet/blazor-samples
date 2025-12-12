@@ -51,7 +51,9 @@
 
 @code {
     [SupplyParameterFromForm]
-    private Movie Movie { get; set; } = new();
+    private Movie Movie { get; set; } = default!;
+
+    protected override void OnInitialized() => Movie ??= new();
 
     // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddMovie()
