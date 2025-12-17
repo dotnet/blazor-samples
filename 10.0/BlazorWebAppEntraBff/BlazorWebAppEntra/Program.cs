@@ -1,21 +1,27 @@
+using System.Security.Claims;
+using Azure.Core;
 using Azure.Identity;
-using BlazorWebAppEntra;
 using BlazorWebAppEntra.Client.Weather;
 using BlazorWebAppEntra.Components;
+using BlazorWebAppEntra.Weather;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Add service defaults & Aspire components.
-builder.AddServiceDefaults();
+// Remove or set 'SerializeAllClaims' to 'false' if you only want to 
+// serialize name and role claims for CSR.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
 
 // Configure authentication to use Microsoft Entra ID
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
@@ -63,14 +69,14 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
-    options => 
+    options =>
     {
         // Disable L1 Cache default: false
         //options.DisableL1Cache = false;
-        
+
         // L1 Cache Size Limit default: 500 MB
         //options.L1CacheOptions.SizeLimit = 500 * 1024 * 1024;
-        
+
         // Encrypt tokens at rest default: false
         options.Encrypt = true;
         
@@ -121,25 +127,8 @@ builder.Services.AddDataProtection()
     .ProtectKeysWithAzureKeyVault( new Uri("{KEY IDENTIFIER}"), credential);
 */
 
-builder.Services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme).Configure(oidcOptions =>
-{
-    oidcOptions.Scope.Add(OpenIdConnectScope.OfflineAccess);
-});
-
 builder.Services.AddAuthorization();
 
-builder.Services.AddCascadingAuthenticationState();
-
-// Remove or set 'SerializeAllClaims' to 'false' if you only want to 
-// serialize name and role claims for CSR.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddMicrosoftIdentityConsentHandler()
-    .AddInteractiveWebAssemblyComponents()
-    .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
-
-builder.Services.AddHttpForwarderWithServiceDiscovery();
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
 
 var app = builder.Build();
@@ -162,23 +151,16 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 
-app.MapDefaultEndpoints();
+
+app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
+{
+    return WeatherForecaster.GetWeatherForecastAsync();
+}).RequireAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BlazorWebAppEntra.Client._Imports).Assembly);
-
-app.MapForwarder("/weather-forecast", "https://weatherapi", transformBuilder =>
-{
-    transformBuilder.AddRequestTransform(async transformContext =>
-    {
-        var tokenAcquisition = transformContext.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-        List<string> scopes = ["{APP ID URI}/Weather.Get"];
-        var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-        transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
-    });
-}).RequireAuthorization();
 
 app.MapGroup("/authentication").MapLoginAndLogout();
 

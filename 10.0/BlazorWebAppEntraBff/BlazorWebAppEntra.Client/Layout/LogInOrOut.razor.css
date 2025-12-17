@@ -19,6 +19,7 @@
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
+    text-align: left;
 }
 
     .nav-item .nav-link {
@@ -29,7 +30,7 @@
         height: 3rem;
         display: flex;
         align-items: center;
-        line-height: 3rem;
+        text-align: left;
         width: 100%;
     }
 

@@ -1,12 +1,9 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add service defaults & Aspire components.
-builder.AddServiceDefaults();
-
 builder.Services.AddAuthentication()
     .AddJwtBearer("Bearer", jwtOptions =>
     {
-        // {TENANT ID} in the following examples is the directory (tenant) ID.
+        // {TENANT ID} is the directory (tenant) ID.
         //
         // Authority format {AUTHORITY} matches the issurer (`iss`) of the JWT returned by the identity provider.
         //
@@ -42,8 +39,6 @@ if (app.Environment.IsDevelopment())
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
-
-app.MapDefaultEndpoints();
 
 var summaries = new[]
 {

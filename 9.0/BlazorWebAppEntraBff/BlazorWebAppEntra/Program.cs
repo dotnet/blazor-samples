@@ -1,22 +1,25 @@
 using Azure.Identity;
-using BlazorWebAppEntra;
 using BlazorWebAppEntra.Client.Weather;
 using BlazorWebAppEntra.Components;
+using BlazorWebAppEntra.Weather;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add service defaults & Aspire components.
-builder.AddServiceDefaults();
-
 // Add services to the container.
+// Remove or set 'SerializeAllClaims' to 'false' if you only want to 
+// serialize name and role claims for CSR.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
+
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(msIdentityOptions =>
     {
@@ -38,7 +41,7 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.Configure<MsalDistributedTokenCacheAdapterOptions>(
-    options => 
+    options =>
     {
         // Disable L1 Cache default: false
         //options.DisableL1Cache = false;
@@ -96,25 +99,8 @@ builder.Services.AddDataProtection()
     .ProtectKeysWithAzureKeyVault( new Uri("{KEY IDENTIFIER}"), credential);
 */
 
-builder.Services.AddOptions<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme).Configure(oidcOptions =>
-{
-    oidcOptions.Scope.Add(OpenIdConnectScope.OfflineAccess);
-});
-
 builder.Services.AddAuthorization();
 
-builder.Services.AddCascadingAuthenticationState();
-
-// Remove or set 'SerializeAllClaims' to 'false' if you only want to 
-// serialize name and role claims for CSR.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddMicrosoftIdentityConsentHandler()
-    .AddInteractiveWebAssemblyComponents()
-    .AddAuthenticationStateSerialization(options => options.SerializeAllClaims = true);
-
-builder.Services.AddHttpForwarderWithServiceDiscovery();
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IWeatherForecaster, ServerWeatherForecaster>();
 
 var app = builder.Build();
@@ -133,26 +119,19 @@ else
 
 app.UseHttpsRedirection();
 
-app.MapStaticAssets();
 app.UseAntiforgery();
 
-app.MapDefaultEndpoints();
+app.MapStaticAssets();
+
+app.MapGet("/weather-forecast", ([FromServices] IWeatherForecaster WeatherForecaster) =>
+{
+    return WeatherForecaster.GetWeatherForecastAsync();
+}).RequireAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(BlazorWebAppEntra.Client._Imports).Assembly);
-
-app.MapForwarder("/weather-forecast", "https://weatherapi", transformBuilder =>
-{
-    transformBuilder.AddRequestTransform(async transformContext =>
-    {
-        var tokenAcquisition = transformContext.HttpContext.RequestServices.GetRequiredService<ITokenAcquisition>();
-        List<string> scopes = [ "https://guardrexorg.onmicrosoft.com/edb4f62e-f83a-496e-9629-ed87ad546c62/Weather.Get" ];
-        var accessToken = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-        transformContext.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
-    });
-}).RequireAuthorization();
 
 app.MapGroup("/authentication").MapLoginAndLogout();
 

@@ -25,18 +25,15 @@
 
     protected override void OnInitialized()
     {
-        currentUrl = Navigation.ToBaseRelativePath(Navigation.Uri);
+        currentUrl = Navigation.Uri;
         Navigation.LocationChanged += OnLocationChanged;
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        currentUrl = Navigation.ToBaseRelativePath(e.Location);
+        currentUrl = Navigation.Uri;
         StateHasChanged();
     }
 
-    public void Dispose()
-    {
-        Navigation.LocationChanged -= OnLocationChanged;
-    }
+    public void Dispose() => Navigation.LocationChanged -= OnLocationChanged;
 }

@@ -2,6 +2,8 @@
 @using Microsoft.AspNetCore.Authorization
 @using BlazorWebAppEntra.Client.Weather
 @attribute [Authorize]
+@implements IDisposable
+@inject PersistentComponentState ApplicationState
 @inject IWeatherForecaster WeatherForecaster
 
 <PageTitle>Weather</PageTitle>
@@ -20,8 +22,8 @@ else
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
+                <th aria-label="Temperature in Celsius">Temp. (C)</th>
+                <th aria-label="Temperature in Fahrenheit">Temp. (F)</th>
                 <th>Summary</th>
             </tr>
         </thead>
@@ -41,9 +43,29 @@ else
 
 @code {
     private IEnumerable<WeatherForecast>? forecasts;
+    private PersistingComponentStateSubscription persistingSubscription;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await WeatherForecaster.GetWeatherForecastAsync();
+        if (!ApplicationState.TryTakeFromJson<IEnumerable<WeatherForecast>>(nameof(forecasts), out var restoredData))
+        {
+            forecasts = await WeatherForecaster.GetWeatherForecastAsync();
+        }
+        else
+        {
+            forecasts = restoredData!;
+        }
+
+        // Call at the end to avoid a potential race condition at app shutdown
+        persistingSubscription = ApplicationState.RegisterOnPersisting(PersistData);
     }
+
+    private Task PersistData()
+    {
+        ApplicationState.PersistAsJson(nameof(forecasts), forecasts);
+
+        return Task.CompletedTask;
+    }
+
+    void IDisposable.Dispose() => persistingSubscription.Dispose();
 }

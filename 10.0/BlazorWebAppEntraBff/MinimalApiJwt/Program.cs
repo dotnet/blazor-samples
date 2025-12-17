@@ -1,12 +1,12 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 
-// Add service defaults & Aspire components.
-builder.AddServiceDefaults();
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthentication()
     .AddJwtBearer("Bearer", jwtOptions =>
     {
-        // {TENANT ID} in the following examples is the directory (tenant) ID.
+        // {TENANT ID} is the directory (tenant) ID.
         //
         // Authority format {AUTHORITY} matches the issurer (`iss`) of the JWT returned by the identity provider.
         //
@@ -15,7 +15,6 @@ builder.Services.AddAuthentication()
         // Authority format {AUTHORITY} for B2C tenant type: https://login.microsoftonline.com/{TENANT ID}/v2.0
         //
         jwtOptions.Authority = "{AUTHORITY}";
-
         //
         // The following should match just the path of the Application ID URI configured when adding the "Weather.Get" scope
         // under "Expose an API" in the Azure or Entra portal. {CLIENT ID} is the application (client) ID of this 
@@ -48,8 +47,6 @@ if (app.Environment.IsDevelopment())
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
-
-app.MapDefaultEndpoints();
 
 var summaries = new[]
 {
