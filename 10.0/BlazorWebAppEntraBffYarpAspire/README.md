@@ -9,13 +9,13 @@ This sample features:
 
 ## Article for this sample app
 
-The article for this sample app is [Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID (BFF pattern)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=with-yarp-and-aspire).
+The article for this sample app is [Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID (with YARP and Aspire)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=with-yarp-and-aspire).
 
 If you need to open an issue that pertains to the coding of the sample app, open [an issue on this samples repo](https://github.com/dotnet/blazor-samples/issues). Otherwise, open an issue using the **Open a documentation issue** link/feedback form at the bottom of [the article](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=with-yarp-and-aspire).
 
 ## Configure the sample
 
-Configure the solution following the guidance in [Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID (BFF pattern)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=with-yarp-and-aspire).
+Configure the solution following the guidance in [Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID (with YARP and Aspire)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=with-yarp-and-aspire).
 
 ## Use a production distributed token cache provider
 

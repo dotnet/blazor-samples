@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "Start Projects",
+    "Projects": [
+      {
+        "Path": "MinimalApiJwt\\MinimalApiJwt.csproj",
+        "Action": "StartWithoutDebugging",
+        "DebugTarget": "https"
+      },
+      {
+        "Path": "BlazorWebAppOidcServer\\BlazorWebAppOidcServer.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      }
+    ]
+  }
+]
