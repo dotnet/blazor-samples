@@ -9,7 +9,7 @@ This sample features:
 
 ## Article for this sample app
 
-Sample app to accompany [Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID (without YARP/Aspire)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=without-yarp-and-aspire).
+Sample app to accompany [Secure an ASP.NET Core Blazor Web App with Microsoft Entra ID (without YARP and Aspire)](https://learn.microsoft.com/aspnet/core/blazor/security/blazor-web-app-with-entra?pivots=without-yarp-and-aspire).
 
 Update the `NSwag.AspNetCore` NuGet package in the `MinimalApiJwt` project to the latest version.
 
