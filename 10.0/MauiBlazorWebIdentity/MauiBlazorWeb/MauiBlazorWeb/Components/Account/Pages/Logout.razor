@@ -1,0 +1,13 @@
+﻿@page "/Account/Logout"
+@using System.Threading.Tasks
+@inject NavigationManager navigationManager
+@inject ISignInManager SignInManager
+
+<div class="loader loader-bouncing"><span>Redirecting...</span></div>
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        await SignInManager.SignOutAsync();
+        navigationManager.NavigateTo("Account/Login");
+    }
+}
