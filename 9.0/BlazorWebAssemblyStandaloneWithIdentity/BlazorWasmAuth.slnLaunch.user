@@ -1,13 +1,13 @@
 [
   {
-    "Name": "New Profile",
+    "Name": "Start Projects",
     "Projects": [
       {
-        "Name": "BlazorWasmAuth\\BlazorWasmAuth.csproj",
+        "Path": "BlazorWasmAuth\\BlazorWasmAuth.csproj",
         "Action": "Start"
       },
       {
-        "Name": "Backend\\Backend.csproj",
+        "Path": "Backend\\Backend.csproj",
         "Action": "StartWithoutDebugging"
       }
     ]
