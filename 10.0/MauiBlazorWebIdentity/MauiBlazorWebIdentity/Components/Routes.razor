@@ -1,9 +1,8 @@
-@using MauiBlazorWebIdentity.Shared.Pages
 @using Microsoft.AspNetCore.Components.Authorization
 
 <Router AppAssembly="typeof(MauiProgram).Assembly"
         AdditionalAssemblies="new[] { typeof(Shared._Imports).Assembly }"
-        NotFoundPage="typeof(NotFound)">
+        NotFoundPage="typeof(Pages.NotFound)">
     <Found Context="routeData">
        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)">
             <Authorizing>
