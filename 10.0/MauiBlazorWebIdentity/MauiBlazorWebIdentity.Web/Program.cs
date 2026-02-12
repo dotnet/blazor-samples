@@ -29,11 +29,7 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-#if USE_SQL_SERVER
-    options.UseSqlServer(connectionString));
-#else
     options.UseSqlite(connectionString));
-#endif
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Needed for external clients to log in
