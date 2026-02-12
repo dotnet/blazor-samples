@@ -21,10 +21,12 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
+// Ensure unauthenticated web clients redirect to login rather than receive 401.
+// Only DefaultChallengeScheme is set here; AddIdentityApiEndpoints sets DefaultScheme
+// to BearerAndApplicationScheme which handles both bearer tokens (MAUI) and cookies (web).
 builder.Services.AddAuthentication(options =>
     {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+        options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
     });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
