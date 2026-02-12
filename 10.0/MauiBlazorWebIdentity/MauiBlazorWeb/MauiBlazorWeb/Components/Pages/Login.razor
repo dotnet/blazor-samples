@@ -1,0 +1,51 @@
+﻿@page "/login"
+@inject NavigationManager Navigation
+@inject MauiAuthenticationStateProvider AuthStateProvider
+
+<h3>Login to Access Application</h3>
+
+<EditForm Model="LoginModel" OnValidSubmit="LoginUser" FormName="login">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="alert alert-danger" hidden="@loginFailureHidden">
+        @AuthStateProvider.LoginFailureMessage
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        <InputText id="email" @bind-Value="LoginModel.Email" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Password</label>
+        <InputText id="password" type="password" @bind-Value="LoginModel.Password" class="form-control" />
+    </div>
+    <div class="form-group mt-1">
+        <button type="submit" class="btn btn-primary w-100">Login Now</button>
+    </div>
+</EditForm>
+
+@code {
+
+    private LoginRequest LoginModel { get; set; } = new();
+    private bool loginFailureHidden = true;
+
+    protected override void OnInitialized()
+    {
+        if (AuthStateProvider.LoginStatus == LoginStatus.Failed)
+        {
+            loginFailureHidden = false;
+        }
+    }
+
+    private async Task LoginUser()
+    {
+        await AuthStateProvider.LogInAsync(LoginModel);
+
+        if (AuthStateProvider.LoginStatus != LoginStatus.Success)
+        {
+            loginFailureHidden = false;
+            return;
+        }
+
+        Navigation.NavigateTo(""); //Root URL
+    }
+}
