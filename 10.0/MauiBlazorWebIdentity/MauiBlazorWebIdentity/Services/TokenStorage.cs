@@ -34,27 +34,36 @@ namespace MauiBlazorWebIdentity.Services
             return null;
         }
 
+        public static AccessTokenInfo? DeserializeToken(string token, string email)
+        {
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
+            {
+                return null;
+            }
+
+            var loginToken = JsonSerializer.Deserialize<LoginResponse>(token);
+            if (loginToken == null)
+            {
+                return null;
+            }
+
+            return new AccessTokenInfo
+            {
+                LoginResponse = loginToken,
+                Email = email,
+                AccessTokenExpiration = DateTime.UtcNow.AddSeconds(loginToken.ExpiresIn)
+            };
+        }
+
         public static async Task<AccessTokenInfo?> SaveTokenToSecureStorageAsync(string token, string email)
         {
             AccessTokenInfo? accessToken = null;
             try
             {
-                if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(email))
+                accessToken = DeserializeToken(token, email);
+                if (accessToken != null)
                 {
-                    var loginToken = JsonSerializer.Deserialize<LoginResponse>(token);
-                    if (loginToken != null)
-                    {
-                        DateTime tokenExpiration = DateTime.UtcNow.AddSeconds(loginToken.ExpiresIn);
-
-                        accessToken = new AccessTokenInfo
-                        {
-                            LoginResponse = loginToken,
-                            Email = email,
-                            AccessTokenExpiration = tokenExpiration
-                        };
-
-                        await SecureStorage.SetAsync(StorageKeyName, JsonSerializer.Serialize<AccessTokenInfo>(accessToken));
-                    }
+                    await SecureStorage.SetAsync(StorageKeyName, JsonSerializer.Serialize<AccessTokenInfo>(accessToken));
                 }
             }
             catch (Exception ex)

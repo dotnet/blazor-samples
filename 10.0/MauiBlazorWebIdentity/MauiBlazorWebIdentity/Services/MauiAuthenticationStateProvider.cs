@@ -89,9 +89,18 @@ namespace MauiBlazorWebIdentity.Services
 
                 if (LoginStatus == LoginStatus.Success)
                 {
-                    // Save token to secure storage so the user doesn't have to login every time
                     var token = await response.Content.ReadAsStringAsync();
-                    _accessToken = await TokenStorage.SaveTokenToSecureStorageAsync(token, loginModel.Email);
+
+                    if (loginModel.RememberMe)
+                    {
+                        // Save token to secure storage so the user doesn't have to login every time
+                        _accessToken = await TokenStorage.SaveTokenToSecureStorageAsync(token, loginModel.Email);
+                    }
+                    else
+                    {
+                        // Keep token in memory only — cleared when app closes
+                        _accessToken = TokenStorage.DeserializeToken(token, loginModel.Email);
+                    }
 
                     authenticatedUser = CreateAuthenticatedUser(loginModel.Email);
                     LoginStatus = LoginStatus.Success;
