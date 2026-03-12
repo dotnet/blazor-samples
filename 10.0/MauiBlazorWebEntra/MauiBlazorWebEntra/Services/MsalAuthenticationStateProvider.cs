@@ -1,0 +1,159 @@
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Identity.Client;
+using System.Diagnostics;
+using System.Security.Claims;
+
+namespace MauiBlazorWebEntra.Services
+{
+    /// <summary>
+    /// Authentication state provider that uses MSAL.NET to authenticate against
+    /// Microsoft Entra External ID. Handles interactive sign-in via system browser,
+    /// silent token acquisition, and sign-out.
+    /// </summary>
+    public class MsalAuthenticationStateProvider : AuthenticationStateProvider
+    {
+        private readonly IPublicClientApplication _msalClient;
+
+        private static readonly ClaimsPrincipal _anonymousUser = new(new ClaimsIdentity());
+        private ClaimsPrincipal _currentUser = _anonymousUser;
+
+        public MsalAuthenticationStateProvider(IPublicClientApplication msalClient)
+        {
+            _msalClient = msalClient;
+        }
+
+        public override Task<AuthenticationState> GetAuthenticationStateAsync()
+        {
+            return Task.FromResult(new AuthenticationState(_currentUser));
+        }
+
+        /// <summary>
+        /// Attempts silent authentication using cached accounts, then falls back
+        /// to interactive sign-in if no cached token is available.
+        /// </summary>
+        public async Task<bool> TrySignInSilentAsync()
+        {
+            try
+            {
+                var accounts = await _msalClient.GetAccountsAsync();
+                var account = accounts.FirstOrDefault();
+
+                if (account is not null)
+                {
+                    var result = await _msalClient.AcquireTokenSilent(MsalConfig.Scopes, account)
+                        .ExecuteAsync();
+
+                    SetUserFromResult(result);
+                    return true;
+                }
+            }
+            catch (MsalUiRequiredException)
+            {
+                // Silent auth failed — user must sign in interactively
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Silent sign-in failed: {ex.Message}");
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Starts an interactive sign-in flow via the system browser.
+        /// </summary>
+        public async Task SignInInteractiveAsync()
+        {
+            try
+            {
+                var result = await _msalClient.AcquireTokenInteractive(MsalConfig.Scopes)
+#if ANDROID
+                    .WithParentActivityOrWindow(Platform.CurrentActivity)
+#elif IOS || MACCATALYST
+                    .WithSystemWebViewOptions(new SystemWebViewOptions())
+#endif
+                    .ExecuteAsync();
+
+                SetUserFromResult(result);
+            }
+            catch (MsalClientException ex) when (ex.ErrorCode == "authentication_canceled")
+            {
+                Debug.WriteLine("User canceled sign-in.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Interactive sign-in failed: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Signs out the current user and clears the MSAL token cache.
+        /// </summary>
+        public async Task SignOutAsync()
+        {
+            var accounts = await _msalClient.GetAccountsAsync();
+            foreach (var account in accounts)
+            {
+                await _msalClient.RemoveAsync(account);
+            }
+
+            _currentUser = _anonymousUser;
+            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        }
+
+        /// <summary>
+        /// Gets a valid access token for API calls. Returns null if not authenticated.
+        /// </summary>
+        public async Task<string?> GetAccessTokenAsync()
+        {
+            try
+            {
+                var accounts = await _msalClient.GetAccountsAsync();
+                var account = accounts.FirstOrDefault();
+
+                if (account is null)
+                    return null;
+
+                var result = await _msalClient.AcquireTokenSilent(MsalConfig.Scopes, account)
+                    .ExecuteAsync();
+
+                return result.AccessToken;
+            }
+            catch (MsalUiRequiredException)
+            {
+                // Token expired and refresh failed — user needs to sign in again
+                await SignOutAsync();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to get access token: {ex.Message}");
+                return null;
+            }
+        }
+
+        private void SetUserFromResult(AuthenticationResult result)
+        {
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Name, result.Account.Username ?? "User"),
+            };
+
+            // Add ID token claims if available
+            if (result.ClaimsPrincipal?.Claims is not null)
+            {
+                foreach (var claim in result.ClaimsPrincipal.Claims)
+                {
+                    if (!claims.Any(c => c.Type == claim.Type))
+                    {
+                        claims.Add(claim);
+                    }
+                }
+            }
+
+            var identity = new ClaimsIdentity(claims, "Entra External ID");
+            _currentUser = new ClaimsPrincipal(identity);
+            NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+        }
+    }
+}
