@@ -164,32 +164,77 @@ if ($existingWebApp) {
     $webObjectId = $existingWebApp.id
     Write-Host "  ✓ Web App already exists — Client ID: $webClientId" -ForegroundColor Green
 
-    # Check if appsettings.json already has a real secret
+    # --- Client Secret Decision Tree ---
+    # Check what appsettings.json currently has
     $appSettingsCheckPath = Join-Path $PSScriptRoot "MauiBlazorWebEntra.Web" "appsettings.json"
-    $existingSecret = $null
+    $existingConfigClientId = $null
+    $existingConfigSecret = $null
     if (Test-Path $appSettingsCheckPath) {
         $existingSettings = Get-Content $appSettingsCheckPath -Raw | ConvertFrom-Json
-        $existingSecret = $existingSettings.AzureAd.ClientSecret
+        $existingConfigClientId = $existingSettings.AzureAd.ClientId
+        $existingConfigSecret = $existingSettings.AzureAd.ClientSecret
     }
 
-    if ($existingSecret -and $existingSecret -ne "YOUR_CLIENT_SECRET") {
-        Write-Host "  ℹ Keeping existing client secret (not rotated)" -ForegroundColor Cyan
-        $clientSecret = $existingSecret
-    } else {
-        Write-Host "  ⚠ No client secret found — generating a new one..."
-        $secretJson = az ad app credential reset `
-            --id $webClientId `
-            --display-name "MauiBlazorWebEntra Setup" `
-            --years 1 2>$null
+    $hasRealSecret = $existingConfigSecret -and -not $existingConfigSecret.StartsWith("YOUR_")
+    $clientIdMatches = $existingConfigClientId -eq $webClientId
 
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "Failed to generate client secret."
-            exit 1
+    if ($hasRealSecret -and $clientIdMatches) {
+        # appsettings.json has a working secret for this same app
+        Write-Host ""
+        Write-Host "  appsettings.json already has a client secret for this app." -ForegroundColor Cyan
+        Write-Host "  Keep the existing secret? (Y/n): " -NoNewline -ForegroundColor Blue
+        $keepSecret = Read-Host
+        if ($keepSecret -eq "" -or $keepSecret -match "^[Yy]") {
+            $clientSecret = $existingConfigSecret
+            Write-Host "  ✓ Keeping existing client secret" -ForegroundColor Green
+        } else {
+            Write-Host "  Do you have a secret from another machine? (y/N): " -NoNewline -ForegroundColor Blue
+            $hasSecret = Read-Host
+            if ($hasSecret -match "^[Yy]") {
+                Write-Host "  Paste the client secret: " -NoNewline -ForegroundColor Blue
+                $clientSecret = Read-Host
+                Write-Host "  ✓ Using provided client secret" -ForegroundColor Green
+            } else {
+                Write-Host "  Adding a new client secret (existing secrets on other machines will keep working)..."
+                $addPwBody = @{ passwordCredential = @{ displayName = "MauiBlazorWebEntra Setup" } } | ConvertTo-Json -Depth 5 -Compress
+                $addPwJson = az rest --method POST `
+                    --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId/addPassword" `
+                    --headers "Content-Type=application/json" `
+                    --body $addPwBody 2>$null
+                if ($LASTEXITCODE -ne 0) {
+                    Write-Error "Failed to add client secret."
+                    exit 1
+                }
+                $clientSecret = ($addPwJson | ConvertFrom-Json).secretText
+                Write-Host "  ✓ New client secret added" -ForegroundColor Green
+            }
         }
-
-        $secretResult = $secretJson | ConvertFrom-Json
-        $clientSecret = $secretResult.password
-        Write-Host "  ✓ Client secret generated" -ForegroundColor Green
+    } else {
+        # No real secret in appsettings.json (placeholder or wrong client ID)
+        if (-not $clientIdMatches -and $existingConfigClientId -and -not $existingConfigClientId.StartsWith("YOUR_")) {
+            Write-Host "  ℹ appsettings.json has a different Client ID — will be updated" -ForegroundColor Cyan
+        }
+        Write-Host ""
+        Write-Host "  Do you have a client secret from another machine? (y/N): " -NoNewline -ForegroundColor Blue
+        $hasSecret = Read-Host
+        if ($hasSecret -match "^[Yy]") {
+            Write-Host "  Paste the client secret: " -NoNewline -ForegroundColor Blue
+            $clientSecret = Read-Host
+            Write-Host "  ✓ Using provided client secret" -ForegroundColor Green
+        } else {
+            Write-Host "  Adding a new client secret (existing secrets on other machines will keep working)..."
+            $addPwBody = @{ passwordCredential = @{ displayName = "MauiBlazorWebEntra Setup" } } | ConvertTo-Json -Depth 5 -Compress
+            $addPwJson = az rest --method POST `
+                --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId/addPassword" `
+                --headers "Content-Type=application/json" `
+                --body $addPwBody 2>$null
+            if ($LASTEXITCODE -ne 0) {
+                Write-Error "Failed to add client secret."
+                exit 1
+            }
+            $clientSecret = ($addPwJson | ConvertFrom-Json).secretText
+            Write-Host "  ✓ New client secret added" -ForegroundColor Green
+        }
     }
 
     # Get existing scope ID for later use
@@ -252,18 +297,18 @@ if ($existingWebApp) {
 
     # Generate client secret
     Write-Host "  Generating client secret..."
-    $secretJson = az ad app credential reset `
-        --id $webClientId `
-        --display-name "MauiBlazorWebEntra Setup" `
-        --years 1 2>$null
+    $addPwBody = @{ passwordCredential = @{ displayName = "MauiBlazorWebEntra Setup" } } | ConvertTo-Json -Depth 5 -Compress
+    $addPwJson = az rest --method POST `
+        --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId/addPassword" `
+        --headers "Content-Type=application/json" `
+        --body $addPwBody 2>$null
 
     if ($LASTEXITCODE -ne 0) {
         Write-Error "Failed to generate client secret."
         exit 1
     }
 
-    $secretResult = $secretJson | ConvertFrom-Json
-    $clientSecret = $secretResult.password
+    $clientSecret = ($addPwJson | ConvertFrom-Json).secretText
     Write-Host "  ✓ Client secret generated" -ForegroundColor Green
 
     # Expose API scope (access_as_user)
