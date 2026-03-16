@@ -40,6 +40,22 @@ var authBuilder = builder.Services.AddAuthentication(options =>
 // OpenID Connect + Cookie for web browser users
 authBuilder.AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
 
+// Forward prompt=create to the CIAM authorize endpoint (for direct register links)
+builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+{
+    options.Events ??= new OpenIdConnectEvents();
+    var existingHandler = options.Events.OnRedirectToIdentityProvider;
+    options.Events.OnRedirectToIdentityProvider = async context =>
+    {
+        if (context.Properties.Items.TryGetValue("prompt", out var prompt))
+        {
+            context.ProtocolMessage.Prompt = prompt;
+        }
+        if (existingHandler != null)
+            await existingHandler(context);
+    };
+});
+
 // JWT Bearer validation for MAUI client API calls
 authBuilder.AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"),
     jwtBearerScheme: JwtBearerDefaults.AuthenticationScheme);
@@ -83,6 +99,14 @@ app.MapGet("/authentication/login", async (HttpContext context, string? returnUr
 {
     await context.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme,
         new AuthenticationProperties { RedirectUri = returnUrl ?? "/" });
+});
+
+// Register endpoint: same OIDC flow with sign-up hints for CIAM
+app.MapGet("/authentication/register", async (HttpContext context, string? returnUrl) =>
+{
+    var properties = new AuthenticationProperties { RedirectUri = returnUrl ?? "/" };
+    properties.Items["prompt"] = "create";
+    await context.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, properties);
 });
 
 // Logout endpoint: clears cookie and signs out of Entra

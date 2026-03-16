@@ -31,34 +31,27 @@ Both flows authenticate against the same Entra External ID (CIAM) tenant. There 
 
 ### 1. Set up Azure resources
 
-Log in to your CIAM tenant and run the setup script:
+Run the interactive setup script — it will guide you through everything:
 
 ```bash
-az login --tenant <your-ciam-tenant-id>
 pwsh ./Setup-Azure.ps1
 ```
 
-The script will:
-- Create two app registrations (web server + MAUI client)
-- Expose an API scope (`access_as_user`)
-- Generate a client secret
-- Automatically patch `appsettings.json`, `MsalConfig.cs`, and platform config files with real values
+The script walks you through 5 steps:
+1. **Create a CIAM tenant** in the Azure Portal (opens automatically)
+2. **Login** to the new tenant via Azure CLI
+3. **Create app registrations**, API scope, and client secret (automated)
+4. **Create a user flow** in the Azure Portal (opens automatically)
+5. **Patch config files** with real values (automated)
 
-### 2. Create a User Flow
-
-In the [Azure Portal](https://portal.azure.com), navigate to your CIAM tenant:
-1. Go to **External Identities** → **User flows**
-2. Create a **Sign up and sign in** flow
-3. Link it to both app registrations
-
-### 3. Run the web server
+### 2. Run the web server
 
 ```bash
 cd MauiBlazorWebEntra.Web
 dotnet run --launch-profile https
 ```
 
-### 4. Run the MAUI app
+### 3. Run the MAUI app
 
 ```bash
 # Android

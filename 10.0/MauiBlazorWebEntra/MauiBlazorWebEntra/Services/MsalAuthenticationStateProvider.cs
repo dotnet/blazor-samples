@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Client.Extensibility;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -69,8 +70,12 @@ namespace MauiBlazorWebEntra.Services
                 var result = await _msalClient.AcquireTokenInteractive(MsalConfig.Scopes)
 #if ANDROID
                     .WithParentActivityOrWindow(Platform.CurrentActivity)
-#elif IOS || MACCATALYST
+#elif IOS
                     .WithSystemWebViewOptions(new SystemWebViewOptions())
+#elif MACCATALYST
+                    .WithCustomWebUi(new Platforms.MacCatalyst.MacCatalystWebUi())
+#elif WINDOWS
+                    .WithParentActivityOrWindow(GetCurrentWindowHandle())
 #endif
                     .ExecuteAsync();
 
@@ -78,11 +83,11 @@ namespace MauiBlazorWebEntra.Services
             }
             catch (MsalClientException ex) when (ex.ErrorCode == "authentication_canceled")
             {
-                Debug.WriteLine("User canceled sign-in.");
+                // User canceled — no action needed
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Interactive sign-in failed: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"MSAL error: {ex.GetType().Name}: {ex.Message}");
             }
         }
 
@@ -155,5 +160,14 @@ namespace MauiBlazorWebEntra.Services
             _currentUser = new ClaimsPrincipal(identity);
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }
+
+#if WINDOWS
+        private static nint GetCurrentWindowHandle()
+        {
+            var window = (Microsoft.UI.Xaml.Window)App.Current.Windows[0].Handler!.PlatformView!;
+            var windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            return windowHandle;
+        }
+#endif
     }
 }

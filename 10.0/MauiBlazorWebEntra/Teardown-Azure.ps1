@@ -15,9 +15,7 @@
 $ErrorActionPreference = 'Stop'
 
 Write-Host ""
-Write-Host "========================================" -ForegroundColor Cyan
-Write-Host " MauiBlazorWebEntra - Azure Teardown" -ForegroundColor Cyan
-Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "=== MauiBlazorWebEntra — Azure Teardown ===" -ForegroundColor Blue
 Write-Host ""
 
 $scriptDir = $PSScriptRoot
@@ -30,31 +28,51 @@ if (-not (Test-Path $dataPath)) {
 
 $data = Get-Content $dataPath -Raw | ConvertFrom-Json
 
-Write-Host "This will delete the following app registrations:" -ForegroundColor Yellow
-Write-Host "  Web App:  $($data.webClientId)" -ForegroundColor White
-Write-Host "  MAUI App: $($data.mauiClientId)" -ForegroundColor White
+# Ensure we're logged into the correct CIAM tenant
+Write-Host "A browser window will open to log in to the CIAM tenant:"
+Write-Host "  $($data.tenantName).onmicrosoft.com" -ForegroundColor Blue
+Write-Host ""
+Write-Host "Press Enter to continue..." -ForegroundColor Magenta -NoNewline
+Read-Host
+
+az login --tenant "$($data.tenantName).onmicrosoft.com" --allow-no-subscriptions 2>&1 | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Failed to login to tenant '$($data.tenantName).onmicrosoft.com'."
+    exit 1
+}
+
+$account = az account show 2>$null | ConvertFrom-Json
+Write-Host "  ✓ Logged in to tenant: $($account.tenantId)" -ForegroundColor Green
 Write-Host ""
 
-$confirm = Read-Host "Are you sure you want to proceed? (y/N)"
+Write-Host "This will delete the following app registrations:"
+Write-Host "  Web App:  $($data.webClientId)" -ForegroundColor Blue
+Write-Host "  MAUI App: $($data.mauiClientId)" -ForegroundColor Blue
+Write-Host ""
+
+Write-Host "Are you sure you want to proceed? (y/N): " -ForegroundColor Magenta -NoNewline
+$confirm = Read-Host
 if ($confirm -ne 'y' -and $confirm -ne 'Y') {
-    Write-Host "Cancelled." -ForegroundColor Yellow
+    Write-Host "Cancelled."
     exit 0
 }
 
 # Delete MAUI app registration
-Write-Host "Deleting MAUI app registration ($($data.mauiClientId))..." -ForegroundColor Yellow
+Write-Host ""
+Write-Host "Deleting MAUI app registration ($($data.mauiClientId))..."
 az ad app delete --id $data.mauiClientId 2>&1 | Out-Null
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "  Deleted." -ForegroundColor Green
+    Write-Host "  ✓ Deleted." -ForegroundColor Green
 } else {
     Write-Warning "Failed to delete MAUI app. It may have already been deleted."
 }
 
 # Delete Web app registration
-Write-Host "Deleting web app registration ($($data.webClientId))..." -ForegroundColor Yellow
+Write-Host "Deleting web app registration ($($data.webClientId))..."
 az ad app delete --id $data.webClientId 2>&1 | Out-Null
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "  Deleted." -ForegroundColor Green
+    Write-Host "  ✓ Deleted." -ForegroundColor Green
 } else {
     Write-Warning "Failed to delete web app. It may have already been deleted."
 }
@@ -62,8 +80,9 @@ if ($LASTEXITCODE -eq 0) {
 # Clean up local files
 Remove-Item $dataPath -Force
 Write-Host ""
-Write-Host "Teardown complete. Local .azure-setup.json removed." -ForegroundColor Green
+Write-Host "=== Teardown Complete ✓ ===" -ForegroundColor Green
 Write-Host ""
-Write-Host "NOTE: The configuration placeholders in appsettings.json and MsalConfig.cs" -ForegroundColor Yellow
-Write-Host "were NOT reverted. You can re-run Setup-Azure.ps1 to configure new resources," -ForegroundColor Yellow
-Write-Host "or manually restore the placeholder values." -ForegroundColor Yellow
+Write-Host "NOTE: The configuration placeholders in appsettings.json and MsalConfig.cs" -ForegroundColor Magenta
+Write-Host "were NOT reverted. You can re-run Setup-Azure.ps1 to configure new resources," -ForegroundColor Magenta
+Write-Host "or manually restore the placeholder values." -ForegroundColor Magenta
+Write-Host ""

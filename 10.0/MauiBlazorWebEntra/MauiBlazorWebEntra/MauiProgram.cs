@@ -26,11 +26,20 @@ namespace MauiBlazorWebEntra
 #endif
 
             // Build MSAL public client for Entra External ID authentication
-            var msalClient = PublicClientApplicationBuilder
+            var msalBuilder = PublicClientApplicationBuilder
                 .Create(MsalConfig.ClientId)
                 .WithAuthority(MsalConfig.Authority)
-                .WithRedirectUri(MsalConfig.RedirectUri)
-                .Build();
+                .WithIosKeychainSecurityGroup("com.microsoft.adalcache");
+
+#if WINDOWS || MACCATALYST
+            // Windows & Mac Catalyst: use http://localhost loopback redirect
+            msalBuilder.WithDefaultRedirectUri();
+#else
+            // iOS/Android: use custom scheme redirect (msal{clientId}://auth)
+            msalBuilder.WithRedirectUri(MsalConfig.RedirectUri);
+#endif
+
+            var msalClient = msalBuilder.Build();
 
             builder.Services.AddSingleton(msalClient);
 
