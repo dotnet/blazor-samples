@@ -7,8 +7,8 @@ namespace MauiBlazorWebEntra.Services;
 
 /// <summary>
 /// Authentication state provider that uses MSAL.NET to authenticate against
-/// Microsoft Entra External ID. Handles interactive sign-in via system browser,
-/// silent token acquisition, and sign-out.
+/// Microsoft Entra External ID. Handles interactive sign-in, silent token
+/// acquisition, and sign-out.
 /// </summary>
 public class MsalAuthenticationStateProvider(IPublicClientApplication msalClient) : AuthenticationStateProvider
 {
@@ -60,21 +60,17 @@ public class MsalAuthenticationStateProvider(IPublicClientApplication msalClient
     }
 
     /// <summary>
-    /// Starts an interactive sign-in flow via the system browser.
+    /// Starts an interactive sign-in flow. The platform-specific UI (embedded
+    /// WebView2 on Windows, system browser on iOS/Android) is configured via
+    /// the injected <see cref="IMsalInteractiveOptions"/>.
     /// </summary>
     public async Task SignInInteractiveAsync()
     {
         try
         {
-            var result = await msalClient.AcquireTokenInteractive(MsalConfig.Scopes)
-#if ANDROID
-                .WithParentActivityOrWindow(Platform.CurrentActivity)
-#elif IOS || MACCATALYST
-                .WithSystemWebViewOptions(new SystemWebViewOptions())
-#elif WINDOWS
-                .WithParentActivityOrWindow(GetCurrentWindow())
-#endif
-                .ExecuteAsync();
+            var request = msalClient.AcquireTokenInteractive(MsalConfig.Scopes)
+                .WithPlatformOptions();
+            var result = await request.ExecuteAsync();
 
             SetUserFromResult(result);
         }
@@ -158,11 +154,4 @@ public class MsalAuthenticationStateProvider(IPublicClientApplication msalClient
         _currentUser = new ClaimsPrincipal(identity);
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
-
-#if WINDOWS
-    private static Microsoft.UI.Xaml.Window GetCurrentWindow()
-    {
-        return (Microsoft.UI.Xaml.Window)App.Current.Windows[0].Handler!.PlatformView!;
-    }
-#endif
 }
