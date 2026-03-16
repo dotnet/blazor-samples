@@ -155,109 +155,189 @@ Write-Step 3 "Create App Registrations" "AUTO"
 
 # --- Web App Registration (Confidential Client) ---
 Write-Host ""
-Write-Host "Creating web server app registration..."
-
 $webAppName = "MauiBlazorWebEntra-Web"
-$webAppJson = az ad app create `
-    --display-name $webAppName `
-    --sign-in-audience "AzureADMyOrg" `
-    --web-redirect-uris "https://localhost:7157/signin-oidc" `
-    --enable-id-token-issuance true 2>$null
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to create web app registration."
-    exit 1
-}
+# Check if web app already exists
+$existingWebApp = az ad app list --display-name $webAppName --query "[0]" 2>$null | ConvertFrom-Json
+if ($existingWebApp) {
+    $webClientId = $existingWebApp.appId
+    $webObjectId = $existingWebApp.id
+    Write-Host "  ✓ Web App already exists — Client ID: $webClientId" -ForegroundColor Green
 
-$webApp = $webAppJson | ConvertFrom-Json
-
-$webClientId = $webApp.appId
-$webObjectId = $webApp.id
-Write-Host "  ✓ Web App Client ID: $webClientId" -ForegroundColor Green
-
-# Create service principal
-az ad sp create --id $webClientId 2>&1 | Out-Null
-Write-Host "  ✓ Service principal created" -ForegroundColor Green
-
-# Generate client secret
-Write-Host "  Generating client secret..."
-$secretJson = az ad app credential reset `
-    --id $webClientId `
-    --display-name "MauiBlazorWebEntra Setup" `
-    --years 1 2>$null
-
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to generate client secret."
-    exit 1
-}
-
-$secretResult = $secretJson | ConvertFrom-Json
-
-$clientSecret = $secretResult.password
-Write-Host "  ✓ Client secret generated" -ForegroundColor Green
-
-# Expose API scope (access_as_user)
-Write-Host "  Exposing API scope: access_as_user..."
-
-$scopeId = [guid]::NewGuid().ToString()
-$apiBody = @{
-    identifierUris = @("api://$webClientId")
-    api = @{
-        oauth2PermissionScopes = @(
-            @{
-                id = $scopeId
-                adminConsentDescription = "Allow the MAUI app to access the web API on behalf of the signed-in user."
-                adminConsentDisplayName = "Access web API as user"
-                isEnabled = $true
-                type = "User"
-                userConsentDescription = "Allow this app to access the web API on your behalf."
-                userConsentDisplayName = "Access web API"
-                value = "access_as_user"
-            }
-        )
+    # Check if appsettings.json already has a real secret
+    $appSettingsCheckPath = Join-Path $PSScriptRoot "MauiBlazorWebEntra.Web" "appsettings.json"
+    $existingSecret = $null
+    if (Test-Path $appSettingsCheckPath) {
+        $existingSettings = Get-Content $appSettingsCheckPath -Raw | ConvertFrom-Json
+        $existingSecret = $existingSettings.AzureAd.ClientSecret
     }
-} | ConvertTo-Json -Depth 10 -Compress
 
-az rest --method PATCH `
-    --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId" `
-    --headers "Content-Type=application/json" `
-    --body $apiBody `
-    2>&1 | Out-Null
+    if ($existingSecret -and $existingSecret -ne "YOUR_CLIENT_SECRET") {
+        Write-Host "  ℹ Keeping existing client secret (not rotated)" -ForegroundColor Cyan
+        $clientSecret = $existingSecret
+    } else {
+        Write-Host "  ⚠ No client secret found — generating a new one..."
+        $secretJson = az ad app credential reset `
+            --id $webClientId `
+            --display-name "MauiBlazorWebEntra Setup" `
+            --years 1 2>$null
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Warning "Failed to expose API scope automatically. You may need to do this manually."
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Failed to generate client secret."
+            exit 1
+        }
+
+        $secretResult = $secretJson | ConvertFrom-Json
+        $clientSecret = $secretResult.password
+        Write-Host "  ✓ Client secret generated" -ForegroundColor Green
+    }
+
+    # Get existing scope ID for later use
+    $existingScopes = $existingWebApp.api.oauth2PermissionScopes
+    $existingScope = $existingScopes | Where-Object { $_.value -eq "access_as_user" } | Select-Object -First 1
+    if ($existingScope) {
+        $scopeId = $existingScope.id
+        Write-Host "  ✓ API scope already configured: api://$webClientId/access_as_user" -ForegroundColor Green
+    } else {
+        $scopeId = [guid]::NewGuid().ToString()
+        Write-Host "  Exposing API scope: access_as_user..."
+        $apiBody = @{
+            identifierUris = @("api://$webClientId")
+            api = @{
+                oauth2PermissionScopes = @(
+                    @{
+                        id = $scopeId
+                        adminConsentDescription = "Allow the MAUI app to access the web API on behalf of the signed-in user."
+                        adminConsentDisplayName = "Access web API as user"
+                        isEnabled = $true
+                        type = "User"
+                        userConsentDescription = "Allow this app to access the web API on your behalf."
+                        userConsentDisplayName = "Access web API"
+                        value = "access_as_user"
+                    }
+                )
+            }
+        } | ConvertTo-Json -Depth 10 -Compress
+
+        az rest --method PATCH `
+            --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId" `
+            --headers "Content-Type=application/json" `
+            --body $apiBody `
+            2>&1 | Out-Null
+        Write-Host "  ✓ API scope: api://$webClientId/access_as_user" -ForegroundColor Green
+    }
 } else {
-    Write-Host "  ✓ API scope: api://$webClientId/access_as_user" -ForegroundColor Green
+    Write-Host "Creating web server app registration..."
+
+    $webAppJson = az ad app create `
+        --display-name $webAppName `
+        --sign-in-audience "AzureADMyOrg" `
+        --web-redirect-uris "https://localhost:7157/signin-oidc" `
+        --enable-id-token-issuance true 2>$null
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to create web app registration."
+        exit 1
+    }
+
+    $webApp = $webAppJson | ConvertFrom-Json
+
+    $webClientId = $webApp.appId
+    $webObjectId = $webApp.id
+    Write-Host "  ✓ Web App Client ID: $webClientId" -ForegroundColor Green
+
+    # Create service principal
+    az ad sp create --id $webClientId 2>&1 | Out-Null
+    Write-Host "  ✓ Service principal created" -ForegroundColor Green
+
+    # Generate client secret
+    Write-Host "  Generating client secret..."
+    $secretJson = az ad app credential reset `
+        --id $webClientId `
+        --display-name "MauiBlazorWebEntra Setup" `
+        --years 1 2>$null
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to generate client secret."
+        exit 1
+    }
+
+    $secretResult = $secretJson | ConvertFrom-Json
+    $clientSecret = $secretResult.password
+    Write-Host "  ✓ Client secret generated" -ForegroundColor Green
+
+    # Expose API scope (access_as_user)
+    Write-Host "  Exposing API scope: access_as_user..."
+
+    $scopeId = [guid]::NewGuid().ToString()
+    $apiBody = @{
+        identifierUris = @("api://$webClientId")
+        api = @{
+            oauth2PermissionScopes = @(
+                @{
+                    id = $scopeId
+                    adminConsentDescription = "Allow the MAUI app to access the web API on behalf of the signed-in user."
+                    adminConsentDisplayName = "Access web API as user"
+                    isEnabled = $true
+                    type = "User"
+                    userConsentDescription = "Allow this app to access the web API on your behalf."
+                    userConsentDisplayName = "Access web API"
+                    value = "access_as_user"
+                }
+            )
+        }
+    } | ConvertTo-Json -Depth 10 -Compress
+
+    az rest --method PATCH `
+        --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId" `
+        --headers "Content-Type=application/json" `
+        --body $apiBody `
+        2>&1 | Out-Null
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "Failed to expose API scope automatically. You may need to do this manually."
+    } else {
+        Write-Host "  ✓ API scope: api://$webClientId/access_as_user" -ForegroundColor Green
+    }
 }
 
 # --- MAUI App Registration (Public Client) ---
 Write-Host ""
-Write-Host "Creating MAUI client app registration..."
-
 $mauiAppName = "MauiBlazorWebEntra-MAUI"
-$mauiAppJson = az ad app create `
-    --display-name $mauiAppName `
-    --sign-in-audience "AzureADMyOrg" `
-    --is-fallback-public-client true 2>$null
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to create MAUI app registration."
-    exit 1
+# Check if MAUI app already exists
+$existingMauiApp = az ad app list --display-name $mauiAppName --query "[0]" 2>$null | ConvertFrom-Json
+if ($existingMauiApp) {
+    $mauiClientId = $existingMauiApp.appId
+    $mauiObjectId = $existingMauiApp.id
+    Write-Host "  ✓ MAUI App already exists — Client ID: $mauiClientId" -ForegroundColor Green
+} else {
+    Write-Host "Creating MAUI client app registration..."
+
+    $mauiAppJson = az ad app create `
+        --display-name $mauiAppName `
+        --sign-in-audience "AzureADMyOrg" `
+        --is-fallback-public-client true 2>$null
+
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to create MAUI app registration."
+        exit 1
+    }
+
+    $mauiApp = $mauiAppJson | ConvertFrom-Json
+
+    $mauiClientId = $mauiApp.appId
+    $mauiObjectId = $mauiApp.id
+    Write-Host "  ✓ MAUI App Client ID: $mauiClientId" -ForegroundColor Green
+
+    # Create service principal
+    az ad sp create --id $mauiClientId 2>&1 | Out-Null
+    Write-Host "  ✓ Service principal created" -ForegroundColor Green
 }
 
-$mauiApp = $mauiAppJson | ConvertFrom-Json
-
-$mauiClientId = $mauiApp.appId
-$mauiObjectId = $mauiApp.id
-Write-Host "  ✓ MAUI App Client ID: $mauiClientId" -ForegroundColor Green
-
-# Create service principal
-az ad sp create --id $mauiClientId 2>&1 | Out-Null
-Write-Host "  ✓ Service principal created" -ForegroundColor Green
-
-# Add MSAL redirect URI
+# Ensure MSAL redirect URI is configured (idempotent)
 $actualRedirectUri = "msal$mauiClientId`://auth"
-Write-Host "  Adding redirect URI: $actualRedirectUri"
+Write-Host "  Configuring redirect URI: $actualRedirectUri"
 
 $redirectBody = @{
     publicClient = @{
@@ -272,7 +352,7 @@ az rest --method PATCH `
     2>&1 | Out-Null
 Write-Host "  ✓ Redirect URI configured" -ForegroundColor Green
 
-# Grant MAUI app permission to web API scope
+# Grant MAUI app permission to web API scope (idempotent — PATCH replaces)
 Write-Host "  Granting API permission (access_as_user)..."
 
 $permissionBody = @{
@@ -310,131 +390,178 @@ if ($LASTEXITCODE -ne 0) {
 Write-Step 4 "Create User Flow" "AUTO"
 
 Write-Host ""
-Write-Host "Creating sign-up/sign-in user flow via Microsoft Graph API..." -ForegroundColor Magenta
+Write-Host "Checking for existing sign-up/sign-in user flow..." -ForegroundColor Magenta
 Write-Host ""
 
-$userFlowBody = @{
-    "@odata.type" = "#microsoft.graph.externalUsersSelfServiceSignUpEventsFlow"
-    displayName = "signup_signin"
-    conditions = @{
-        applications = @{
-            includeApplications = @(
-                @{ appId = $webClientId },
-                @{ appId = $mauiClientId }
-            )
+# Check if user flow already exists
+$existingFlows = az rest `
+    --method GET `
+    --url "https://graph.microsoft.com/v1.0/identity/authenticationEventsFlows" `
+    --headers "Content-Type=application/json" 2>$null | ConvertFrom-Json
+
+$existingFlow = $existingFlows.value | Where-Object { $_.displayName -eq "signup_signin" } | Select-Object -First 1
+
+if ($existingFlow) {
+    Write-Host "  ✓ User flow 'signup_signin' already exists (id: $($existingFlow.id))" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "  Ensuring both apps are linked to the flow..." -ForegroundColor Magenta
+
+    # Get currently linked apps
+    $linkedApps = az rest `
+        --method GET `
+        --url "https://graph.microsoft.com/v1.0/identity/authenticationEventsFlows/$($existingFlow.id)/conditions/applications/includeApplications" `
+        --headers "Content-Type=application/json" 2>$null | ConvertFrom-Json
+
+    $linkedAppIds = @()
+    if ($linkedApps.value) {
+        $linkedAppIds = $linkedApps.value | ForEach-Object { $_.appId }
+    }
+
+    # Add each app if not already linked
+    foreach ($appEntry in @(@{ id = $webClientId; name = $webAppName }, @{ id = $mauiClientId; name = $mauiAppName })) {
+        if ($linkedAppIds -contains $appEntry.id) {
+            Write-Host "  ✓ $($appEntry.name) already linked" -ForegroundColor Green
+        } else {
+            $addBody = @{ appId = $appEntry.id } | ConvertTo-Json
+            az rest `
+                --method POST `
+                --url "https://graph.microsoft.com/v1.0/identity/authenticationEventsFlows/$($existingFlow.id)/conditions/applications/includeApplications" `
+                --headers "Content-Type=application/json" `
+                --body $addBody 2>&1 | Out-Null
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "  ✓ $($appEntry.name) linked to flow" -ForegroundColor Green
+            } else {
+                Write-Host "  ✗ Failed to link $($appEntry.name) — add manually in portal" -ForegroundColor Red
+            }
         }
     }
-    onAuthenticationMethodLoadStart = @{
-        "@odata.type" = "#microsoft.graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp"
-        identityProviders = @(
-            @{ id = "EmailPassword-OAUTH" }
-        )
-    }
-    onInteractiveAuthFlowStart = @{
-        "@odata.type" = "#microsoft.graph.onInteractiveAuthFlowStartExternalUsersSelfServiceSignUp"
-        isSignUpAllowed = $true
-    }
-    onAttributeCollection = @{
-        "@odata.type" = "#microsoft.graph.onAttributeCollectionExternalUsersSelfServiceSignUp"
-        attributes = @(
-            @{
-                id = "email"
-                displayName = "Email Address"
-                description = "Email address of the user"
-                userFlowAttributeType = "builtIn"
-                dataType = "string"
-            },
-            @{
-                id = "displayName"
-                displayName = "Display Name"
-                description = "Display Name of the User."
-                userFlowAttributeType = "builtIn"
-                dataType = "string"
+} else {
+    Write-Host "Creating sign-up/sign-in user flow via Microsoft Graph API..." -ForegroundColor Magenta
+    Write-Host ""
+
+    $userFlowBody = @{
+        "@odata.type" = "#microsoft.graph.externalUsersSelfServiceSignUpEventsFlow"
+        displayName = "signup_signin"
+        conditions = @{
+            applications = @{
+                includeApplications = @(
+                    @{ appId = $webClientId },
+                    @{ appId = $mauiClientId }
+                )
             }
-        )
-        attributeCollectionPage = @{
-            views = @(
+        }
+        onAuthenticationMethodLoadStart = @{
+            "@odata.type" = "#microsoft.graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp"
+            identityProviders = @(
+                @{ id = "EmailPassword-OAUTH" }
+            )
+        }
+        onInteractiveAuthFlowStart = @{
+            "@odata.type" = "#microsoft.graph.onInteractiveAuthFlowStartExternalUsersSelfServiceSignUp"
+            isSignUpAllowed = $true
+        }
+        onAttributeCollection = @{
+            "@odata.type" = "#microsoft.graph.onAttributeCollectionExternalUsersSelfServiceSignUp"
+            attributes = @(
                 @{
-                    inputs = @(
-                        @{
-                            attribute = "email"
-                            label = "Email Address"
-                            inputType = "text"
-                            hidden = $true
-                            editable = $false
-                            writeToDirectory = $true
-                            required = $true
-                        },
-                        @{
-                            attribute = "displayName"
-                            label = "Display Name"
-                            inputType = "text"
-                            hidden = $false
-                            editable = $true
-                            writeToDirectory = $true
-                            required = $false
-                        }
-                    )
+                    id = "email"
+                    displayName = "Email Address"
+                    description = "Email address of the user"
+                    userFlowAttributeType = "builtIn"
+                    dataType = "string"
+                },
+                @{
+                    id = "displayName"
+                    displayName = "Display Name"
+                    description = "Display Name of the User."
+                    userFlowAttributeType = "builtIn"
+                    dataType = "string"
                 }
             )
+            attributeCollectionPage = @{
+                views = @(
+                    @{
+                        inputs = @(
+                            @{
+                                attribute = "email"
+                                label = "Email Address"
+                                inputType = "text"
+                                hidden = $true
+                                editable = $false
+                                writeToDirectory = $true
+                                required = $true
+                            },
+                            @{
+                                attribute = "displayName"
+                                label = "Display Name"
+                                inputType = "text"
+                                hidden = $false
+                                editable = $true
+                                writeToDirectory = $true
+                                required = $false
+                            }
+                        )
+                    }
+                )
+            }
         }
-    }
-} | ConvertTo-Json -Depth 10
+    } | ConvertTo-Json -Depth 10
 
-$flowResult = az rest `
-    --method POST `
-    --url "https://graph.microsoft.com/v1.0/identity/authenticationEventsFlows" `
-    --headers "Content-Type=application/json" `
-    --body $userFlowBody 2>&1
+    $flowResult = az rest `
+        --method POST `
+        --url "https://graph.microsoft.com/v1.0/identity/authenticationEventsFlows" `
+        --headers "Content-Type=application/json" `
+        --body $userFlowBody 2>&1
 
-if ($LASTEXITCODE -ne 0) {
-    Write-Host ""
-    Write-Host "  ✗ Automated user flow creation failed." -ForegroundColor Red
-    Write-Host ""
-    # Show the actual error so the user can diagnose
-    $errorText = ($flowResult | Out-String).Trim()
-    if ($errorText) {
-        Write-Host "  Error details:" -ForegroundColor Red
-        foreach ($line in ($errorText -split "`n")) {
-            Write-Host "    $line" -ForegroundColor Red
-        }
+    if ($LASTEXITCODE -ne 0) {
         Write-Host ""
+        Write-Host "  ✗ Automated user flow creation failed." -ForegroundColor Red
+        Write-Host ""
+        # Show the actual error so the user can diagnose
+        $errorText = ($flowResult | Out-String).Trim()
+        if ($errorText) {
+            Write-Host "  Error details:" -ForegroundColor Red
+            foreach ($line in ($errorText -split "`n")) {
+                Write-Host "    $line" -ForegroundColor Red
+            }
+            Write-Host ""
+        }
+        Write-Host "  Falling back to manual creation in the portal..." -ForegroundColor Magenta
+        Write-Host ""
+        Write-Host "  Part A — Create the user flow:" -ForegroundColor Blue
+        Write-Host ""
+        Write-Host "  Make sure you are in your CIAM tenant (check top-right)!" -ForegroundColor Magenta
+        Write-Host ""
+        Write-Host "    1. Left menu: External Identities > User flows"
+        Write-Host "    2. Click '+ New user flow'"
+        Write-Host "    3. Select 'Sign up and sign in', click 'Create'"
+        Write-Host "    4. Fill in the form:"
+        Write-Host "         - Name:                 signup_signin" -ForegroundColor Blue
+        Write-Host "         - Identity providers:   Email with password" -ForegroundColor Blue
+        Write-Host "    5. Click 'Create'"
+        Write-Host ""
+        Write-Host "  Part B — Add applications to the flow:" -ForegroundColor Blue
+        Write-Host ""
+        Write-Host "    1. Click on the new 'signup_signin' flow"
+        Write-Host "    2. In the left panel, click 'Applications'"
+        Write-Host "    3. Click '+ Add application'"
+        Write-Host "    4. Check BOTH of these apps:"
+        Write-Host "         - $webAppName" -ForegroundColor Blue
+        Write-Host "         - $mauiAppName" -ForegroundColor Blue
+        Write-Host "    5. Click 'Select'"
+        Write-Host ""
+
+        Write-Host "Press Enter to open the Entra admin center..." -ForegroundColor Magenta -NoNewline
+        Read-Host
+
+        Open-Url "https://entra.microsoft.com/"
+
+        Write-Host "Press Enter once the user flow is created and both apps are linked..." -ForegroundColor Magenta -NoNewline
+        Read-Host
+    } else {
+        Write-Host "  ✓ User flow 'signup_signin' created" -ForegroundColor Green
+        Write-Host "  ✓ Linked apps: $webAppName, $mauiAppName" -ForegroundColor Green
     }
-    Write-Host "  Falling back to manual creation in the portal..." -ForegroundColor Magenta
-    Write-Host ""
-    Write-Host "  Part A — Create the user flow:" -ForegroundColor Blue
-    Write-Host ""
-    Write-Host "  Make sure you are in your CIAM tenant (check top-right)!" -ForegroundColor Magenta
-    Write-Host ""
-    Write-Host "    1. Left menu: External Identities > User flows"
-    Write-Host "    2. Click '+ New user flow'"
-    Write-Host "    3. Select 'Sign up and sign in', click 'Create'"
-    Write-Host "    4. Fill in the form:"
-    Write-Host "         - Name:                 signup_signin" -ForegroundColor Blue
-    Write-Host "         - Identity providers:   Email with password" -ForegroundColor Blue
-    Write-Host "    5. Click 'Create'"
-    Write-Host ""
-    Write-Host "  Part B — Add applications to the flow:" -ForegroundColor Blue
-    Write-Host ""
-    Write-Host "    1. Click on the new 'signup_signin' flow"
-    Write-Host "    2. In the left panel, click 'Applications'"
-    Write-Host "    3. Click '+ Add application'"
-    Write-Host "    4. Check BOTH of these apps:"
-    Write-Host "         - $webAppName" -ForegroundColor Blue
-    Write-Host "         - $mauiAppName" -ForegroundColor Blue
-    Write-Host "    5. Click 'Select'"
-    Write-Host ""
-
-    Write-Host "Press Enter to open the Entra admin center..." -ForegroundColor Magenta -NoNewline
-    Read-Host
-
-    Open-Url "https://entra.microsoft.com/"
-
-    Write-Host "Press Enter once the user flow is created and both apps are linked..." -ForegroundColor Magenta -NoNewline
-    Read-Host
-} else {
-    Write-Host "  ✓ User flow 'signup_signin' created" -ForegroundColor Green
-    Write-Host "  ✓ Linked apps: $webAppName, $mauiAppName" -ForegroundColor Green
 }
 
 # ---------------------------------------------------
