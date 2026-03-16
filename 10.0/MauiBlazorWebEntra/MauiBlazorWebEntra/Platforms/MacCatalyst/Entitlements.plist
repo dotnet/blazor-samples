@@ -9,9 +9,6 @@
         <!-- When App Sandbox is enabled, this value is required to open outgoing network connections. -->
         <key>com.apple.security.network.client</key>
         <true/>
-        <!-- Required for MSAL loopback redirect (http://localhost) during authentication. -->
-        <key>com.apple.security.network.server</key>
-        <true/>
         <key>keychain-access-groups</key>
         <array>
             <string>$(AppIdentifierPrefix)com.microsoft.adalcache</string>

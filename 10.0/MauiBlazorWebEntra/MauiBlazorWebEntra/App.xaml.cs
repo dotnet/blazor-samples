@@ -1,14 +1,13 @@
-namespace MauiBlazorWebEntra
+namespace MauiBlazorWebEntra;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
-        }
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new MainPage()) { Title = "MauiBlazorWebEntra" };
-        }
+        InitializeComponent();
+    }
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(new MainPage()) { Title = "MauiBlazorWebEntra" };
     }
 }
