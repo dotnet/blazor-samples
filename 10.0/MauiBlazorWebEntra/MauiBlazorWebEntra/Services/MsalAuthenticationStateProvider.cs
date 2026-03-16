@@ -14,10 +14,17 @@ public class MsalAuthenticationStateProvider(IPublicClientApplication msalClient
 {
     private static readonly ClaimsPrincipal _anonymousUser = new(new ClaimsIdentity());
     private ClaimsPrincipal _currentUser = _anonymousUser;
+    private bool _initialized;
 
-    public override Task<AuthenticationState> GetAuthenticationStateAsync()
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        return Task.FromResult(new AuthenticationState(_currentUser));
+        if (!_initialized)
+        {
+            _initialized = true;
+            await TrySignInSilentAsync();
+        }
+
+        return new AuthenticationState(_currentUser);
     }
 
     /// <summary>
