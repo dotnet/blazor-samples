@@ -18,7 +18,7 @@ Write-Host ""
 Write-Host "=== MauiBlazorWebEntra — Azure Teardown ===" -ForegroundColor Blue
 Write-Host ""
 
-$scriptDir = $PSScriptRoot
+$scriptDir = Join-Path $PSScriptRoot ".."
 $dataPath = Join-Path $scriptDir ".azure-setup.json"
 
 if (-not (Test-Path $dataPath)) {

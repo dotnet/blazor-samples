@@ -34,7 +34,7 @@ Both flows authenticate against the same Entra External ID (CIAM) tenant. There 
 Run the interactive setup script — it will guide you through everything:
 
 ```bash
-pwsh ./Setup-Azure.ps1
+pwsh ./scripts/Setup-Azure.ps1
 ```
 
 The script walks you through 5 steps:
@@ -68,7 +68,7 @@ dotnet build -f net10.0-ios -r iossimulator-arm64
 To remove the Azure app registrations:
 
 ```bash
-pwsh ./Teardown-Azure.ps1
+pwsh ./scripts/Teardown-Azure.ps1
 ```
 
 ## Key Differences from MauiBlazorWebIdentity

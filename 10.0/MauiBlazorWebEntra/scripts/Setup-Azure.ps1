@@ -166,7 +166,7 @@ if ($existingWebApp) {
 
     # --- Client Secret Decision Tree ---
     # Check what appsettings.json currently has
-    $appSettingsCheckPath = Join-Path $PSScriptRoot "MauiBlazorWebEntra.Web" "appsettings.json"
+    $appSettingsCheckPath = Join-Path $PSScriptRoot ".." "MauiBlazorWebEntra.Web" "appsettings.json"
     $existingConfigClientId = $null
     $existingConfigSecret = $null
     if (Test-Path $appSettingsCheckPath) {
@@ -616,7 +616,7 @@ if ($existingFlow) {
 Write-Step 5 "Patch Configuration Files" "AUTO"
 
 Write-Host ""
-$scriptDir = $PSScriptRoot
+$scriptDir = Join-Path $PSScriptRoot ".."
 
 # --- appsettings.json ---
 $appSettingsPath = Join-Path $scriptDir "MauiBlazorWebEntra.Web" "appsettings.json"
