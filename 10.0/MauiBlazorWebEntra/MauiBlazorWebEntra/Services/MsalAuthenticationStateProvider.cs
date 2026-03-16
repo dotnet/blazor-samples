@@ -72,7 +72,7 @@ public class MsalAuthenticationStateProvider(IPublicClientApplication msalClient
 #elif IOS || MACCATALYST
                 .WithSystemWebViewOptions(new SystemWebViewOptions())
 #elif WINDOWS
-                .WithParentActivityOrWindow(GetCurrentWindowHandle())
+                .WithParentActivityOrWindow(GetCurrentWindow())
 #endif
                 .ExecuteAsync();
 
@@ -160,11 +160,9 @@ public class MsalAuthenticationStateProvider(IPublicClientApplication msalClient
     }
 
 #if WINDOWS
-    private static nint GetCurrentWindowHandle()
+    private static Microsoft.UI.Xaml.Window GetCurrentWindow()
     {
-        var window = (Microsoft.UI.Xaml.Window)App.Current.Windows[0].Handler!.PlatformView!;
-        var windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(window);
-        return windowHandle;
+        return (Microsoft.UI.Xaml.Window)App.Current.Windows[0].Handler!.PlatformView!;
     }
 #endif
 }

@@ -27,5 +27,13 @@ public static class MsalConfig
     public static string[] Scopes => [ApiScope];
 
     // MSAL redirect URI for native apps
+#if WINDOWS
+    // Windows uses http://localhost with embedded WebView2 (intercepted in-process, no listener)
+    public static string RedirectUri => "http://localhost";
+#else
+    // iOS/Android/Mac Catalyst use custom scheme redirect
     public static string RedirectUri => $"msal{ClientId}://auth";
+#endif
 }
+
+

@@ -380,13 +380,16 @@ if ($existingMauiApp) {
     Write-Host "  ✓ Service principal created" -ForegroundColor Green
 }
 
-# Ensure MSAL redirect URI is configured (idempotent)
-$actualRedirectUri = "msal$mauiClientId`://auth"
-Write-Host "  Configuring redirect URI: $actualRedirectUri"
+# Ensure MSAL redirect URIs are configured (idempotent)
+# - msal{clientId}://auth  — iOS, Android, Mac Catalyst
+# - http://localhost        — Windows (embedded WebView2 via Microsoft.Identity.Client.Desktop.WinUI3)
+$msalRedirectUri = "msal$mauiClientId`://auth"
+$localhostRedirectUri = "http://localhost"
+Write-Host "  Configuring redirect URIs: $msalRedirectUri, $localhostRedirectUri"
 
 $redirectBody = @{
     publicClient = @{
-        redirectUris = @($actualRedirectUri)
+        redirectUris = @($msalRedirectUri, $localhostRedirectUri)
     }
 } | ConvertTo-Json -Depth 5 -Compress
 
@@ -395,7 +398,7 @@ az rest --method PATCH `
     --headers "Content-Type=application/json" `
     --body $redirectBody `
     2>&1 | Out-Null
-Write-Host "  ✓ Redirect URI configured" -ForegroundColor Green
+Write-Host "  ✓ Redirect URIs configured" -ForegroundColor Green
 
 # Grant MAUI app permission to web API scope (idempotent — PATCH replaces)
 Write-Host "  Granting API permission (access_as_user)..."
