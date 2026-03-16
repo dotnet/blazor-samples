@@ -83,11 +83,12 @@ namespace MauiBlazorWebEntra.Services
             }
             catch (MsalClientException ex) when (ex.ErrorCode == "authentication_canceled")
             {
-                // User canceled — no action needed
+                Console.WriteLine($"MSAL canceled: {ex.ErrorCode}");
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"MSAL error: {ex.GetType().Name}: {ex.Message}");
+                Console.WriteLine($"MSAL error: {ex.GetType().Name}: {ex.Message}");
+                if (ex.InnerException != null) Console.WriteLine($"MSAL inner: {ex.InnerException.Message}");
             }
         }
 

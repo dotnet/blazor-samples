@@ -29,7 +29,7 @@ namespace MauiBlazorWebEntra
             var msalBuilder = PublicClientApplicationBuilder
                 .Create(MsalConfig.ClientId)
                 .WithAuthority(MsalConfig.Authority)
-                .WithIosKeychainSecurityGroup("com.microsoft.adalcache");
+                .WithIosKeychainSecurityGroup("com.companyname.MauiBlazorWebEntra");
 
 #if WINDOWS || MACCATALYST
             // Windows & Mac Catalyst: use http://localhost loopback redirect
