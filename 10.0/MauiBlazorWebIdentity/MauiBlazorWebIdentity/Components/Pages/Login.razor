@@ -1,0 +1,68 @@
+﻿@page "/login"
+@inject NavigationManager Navigation
+@inject MauiAuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Log in</PageTitle>
+
+<h1>Log in</h1>
+<div class="row">
+    <div class="col-lg-6">
+        <section>
+            <EditForm Model="LoginModel" OnValidSubmit="LoginUser" FormName="login">
+                <DataAnnotationsValidator />
+                <h2>Use a local account to log in.</h2>
+                <hr />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="alert alert-danger" role="alert" hidden="@loginFailureHidden">
+                    @AuthStateProvider.LoginFailureMessage
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="LoginModel.Email" id="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <label for="Input.Email" class="form-label">Email</label>
+                    <ValidationMessage For="() => LoginModel.Email" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="LoginModel.Password" id="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <label for="Input.Password" class="form-label">Password</label>
+                    <ValidationMessage For="() => LoginModel.Password" class="text-danger" />
+                </div>
+                <div class="checkbox mb-3">
+                    <label class="form-label">
+                        <InputCheckbox @bind-Value="LoginModel.RememberMe" class="darker-border-checkbox form-check-input" />
+                        Remember me
+                    </label>
+                </div>
+                <div>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+
+    private LoginRequest LoginModel { get; set; } = new();
+    private bool loginFailureHidden = true;
+
+    protected override void OnInitialized()
+    {
+        if (AuthStateProvider.LoginStatus == LoginStatus.Failed)
+        {
+            loginFailureHidden = false;
+        }
+    }
+
+    private async Task LoginUser()
+    {
+        await AuthStateProvider.LogInAsync(LoginModel);
+
+        if (AuthStateProvider.LoginStatus != LoginStatus.Success)
+        {
+            loginFailureHidden = false;
+            return;
+        }
+
+        Navigation.NavigateTo(""); //Root URL
+    }
+}
