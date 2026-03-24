@@ -26,9 +26,12 @@ internal static class MsalServiceExtensions
 
         var msalClient = msalBuilder.Build();
 
-#if WINDOWS
-        // Use .NET MAUI secure storage for Windows as Android and iOS automatically
-        // persist using native platform features.
+#if WINDOWS || MACCATALYST
+        // MSAL persists tokens natively on iOS (Keychain) and Android (SharedPreferences).
+        // Windows and Mac Catalyst need manual persistence — Windows because it uses a
+        // generic .NET assembly, Mac Catalyst because MSAL doesn't ship a maccatalyst TFM yet.
+        // Remove MACCATALYST from this condition once MSAL ships Mac Catalyst support:
+        // https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/3527
         msalClient.EnableSecureStorageTokenCachePersistence();
 #endif
 
@@ -78,9 +81,18 @@ internal static class MsalServiceExtensions
 
         return builder.WithParentActivityOrWindow(activity);
 
-#elif IOS || MACCATALYST
+#elif IOS
 
         return builder.WithSystemWebViewOptions(new SystemWebViewOptions());
+
+#elif MACCATALYST
+
+        // MSAL doesn't ship a maccatalyst TFM yet, so WithSystemWebViewOptions
+        // throws PlatformNotSupportedException. Use WithMacCatalystWebView() which
+        // drives ASWebAuthenticationSession via ICustomWebUi.
+        // Remove this #elif once MSAL ships Mac Catalyst support:
+        // https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/3527
+        return builder.WithMacCatalystWebView();
 
 #elif WINDOWS
 

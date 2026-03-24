@@ -71,6 +71,29 @@ To remove the Azure app registrations:
 pwsh ./scripts/Teardown-Azure.ps1
 ```
 
+## Known Issues
+
+### Windows: MSAL token cache is not persisted by default
+
+On iOS and Android, MSAL persists tokens automatically using native platform features (Keychain and SharedPreferences respectively). On Windows, the generic .NET assembly does not include built-in token persistence, so tokens would be lost when the app restarts.
+
+This sample calls `EnableSecureStorageTokenCachePersistence()` to persist the MSAL token cache using .NET MAUI [`SecureStorage`](https://github.com/dotnet/maui/blob/main/src/Essentials/src/SecureStorage/SecureStorage.windows.cs), which encrypts data using [`DataProtectionProvider("LOCAL=user")`](https://learn.microsoft.com/uwp/api/windows.security.cryptography.dataprotection.dataprotectionprovider) scoped to the current Windows user.
+
+### Mac Catalyst: MSAL does not ship a `maccatalyst` TFM
+
+MSAL.NET (as of v4.x) does not include a `net*-maccatalyst` target framework. When running on Mac Catalyst, the app loads the generic .NET assembly instead of a platform-specific one. This causes two problems:
+
+1. **System browser auth throws `PlatformNotSupportedException`** — MSAL's browser-based interactive login is not implemented in the generic assembly.
+2. **Token cache is not persisted** — the generic assembly has no native token persistence, so users must sign in again every time the app restarts.
+
+#### Workarounds in this sample
+
+**Authentication:** A custom [`ICustomWebUi`](MauiBlazorWebEntra/Platforms/MacCatalyst/MacCatalystWebUi.cs) implementation uses Apple's `ASWebAuthenticationSession` to handle the interactive login flow. It is wired up via a `WithMacCatalystWebView()` extension method in [`MsalServiceExtensions.cs`](MauiBlazorWebEntra/Services/MsalServiceExtensions.cs).
+
+**Token persistence:** The `SecureStorage`-based token cache (normally used only on Windows) is also enabled for Mac Catalyst so that tokens survive app restarts.
+
+Both workarounds include comments referencing [MSAL issue #3527](https://github.com/AzureAD/microsoft-authentication-library-for-dotnet/issues/3527) and can be removed once MSAL ships native Mac Catalyst support.
+
 ## Key Differences from MauiBlazorWebIdentity
 
 | Aspect | MauiBlazorWebIdentity | MauiBlazorWebEntra |
