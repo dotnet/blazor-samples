@@ -1,6 +1,6 @@
 ﻿import 'https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js';
 
-mapboxgl.accessToken = '{MAPBOX ACCESS TOKEN}';
+mapboxgl.accessToken = '{ACCESS TOKEN}';
 
 export function addMapToElement(element) {
   return new mapboxgl.Map({
