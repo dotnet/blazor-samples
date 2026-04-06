@@ -36,14 +36,14 @@ git sparse-checkout init --cone
 git sparse-checkout set {VERSION FOLDER}/{SAMPLE FOLDER}
 ```
 
-The following [PowerShell](https://learn.microsoft.com/powershell/) example obtains the 9.0 Blazor Web App sample and places it in the user's documents folder using PowerShell's `~/documents` path for the change directory (`cd`) command:
+The following [PowerShell](https://learn.microsoft.com/powershell/) example obtains the 10.0 Blazor Web App sample and places it in the user's documents folder using PowerShell's `~/documents` path for the change directory (`cd`) command:
 
 ```powershell
 cd "~/documents"
 git clone --depth 1 --filter=blob:none https://github.com/dotnet/blazor-samples.git --sparse
 cd blazor-samples
 git sparse-checkout init --cone
-git sparse-checkout set 9.0/BlazorSample_BlazorWebApp
+git sparse-checkout set 10.0/BlazorSample_BlazorWebApp
 ```
 
 ## Sample app article links (latest release)
