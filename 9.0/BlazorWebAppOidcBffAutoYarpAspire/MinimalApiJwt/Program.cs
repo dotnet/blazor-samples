@@ -10,9 +10,11 @@ builder.Services.AddAuthentication()
         //
         // Authority format {AUTHORITY} matches the issurer (`iss`) of the JWT returned by the identity provider.
         //
-        // Authority format {AUTHORITY} for ME-ID tenant type: https://sts.windows.net/{TENANT ID}
+        // Authority format {AUTHORITY} for ME-ID tenant type (V1 STS token): https://sts.windows.net/{TENANT ID}
         // Authority format {AUTHORITY} for ME External ID tenant type: https://{DIRECTORY NAME}.ciamlogin.com/{TENANT ID}/v2.0
         // Authority format {AUTHORITY} for B2C tenant type: https://login.microsoftonline.com/{TENANT ID}/v2.0
+        // The format of the authority URL depends on the tenant type and the version of the tokens issued by the identity provider.
+        // For guidance on adopting V2 tokens and the corresponding authority URL format, see the article.
         //
         jwtOptions.Authority = "{AUTHORITY}";
         //
