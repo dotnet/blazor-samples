@@ -60,9 +60,10 @@
 
         displayName = user.FindFirst("name")?.Value;
 
-        email = user.FindFirst("emails")?.Value
+        // Workforce tokens always include preferred_username (UPN).
+        // The "email" claim is present when the user has a mail address set.
+        email = user.FindFirst("preferred_username")?.Value
              ?? user.FindFirst("email")?.Value
-             ?? user.FindFirst(ClaimTypes.Email)?.Value
-             ?? user.FindFirst("preferred_username")?.Value;
+             ?? user.FindFirst(ClaimTypes.Email)?.Value;
     }
 }
