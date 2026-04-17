@@ -81,8 +81,12 @@ app.MapRazorComponents<App>()
 // Login endpoint: triggers the OIDC redirect to the workforce tenant
 app.MapGet("/authentication/login", async (HttpContext context, string? returnUrl) =>
 {
+    // Only allow local return URLs to prevent open-redirect attacks.
+    if (string.IsNullOrEmpty(returnUrl) || !Uri.IsWellFormedUriString(returnUrl, UriKind.Relative))
+        returnUrl = "/";
+
     await context.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme,
-        new AuthenticationProperties { RedirectUri = returnUrl ?? "/" });
+        new AuthenticationProperties { RedirectUri = returnUrl });
 });
 
 // Logout endpoint: clears cookie and signs out of Entra

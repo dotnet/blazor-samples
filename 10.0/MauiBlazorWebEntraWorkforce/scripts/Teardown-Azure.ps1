@@ -41,8 +41,29 @@ if ($confirm -notmatch "^[Yy]$") {
     exit 0
 }
 
+$failed = $false
+
 az ad app delete --id $data.mauiClientId 2>&1 | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Failed to delete MAUI app registration: $($data.mauiClientId)"
+    $failed = $true
+} else {
+    Write-Host "  Deleted MAUI app: $($data.mauiClientId)" -ForegroundColor Green
+}
+
 az ad app delete --id $data.webClientId 2>&1 | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Failed to delete web app registration: $($data.webClientId)"
+    $failed = $true
+} else {
+    Write-Host "  Deleted web app: $($data.webClientId)" -ForegroundColor Green
+}
+
+if ($failed) {
+    Write-Error "One or more app registrations could not be deleted. The setup data file has been kept."
+    exit 1
+}
+
 Remove-Item $dataPath -Force
 
 Write-Host ""
