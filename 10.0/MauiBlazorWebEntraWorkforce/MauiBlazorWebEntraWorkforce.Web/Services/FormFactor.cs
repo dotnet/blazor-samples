@@ -1,6 +1,6 @@
-using MauiBlazorWebEntra.Shared.Services;
+using MauiBlazorWebEntraWorkforce.Shared.Services;
 
-namespace MauiBlazorWebEntra.Web.Services;
+namespace MauiBlazorWebEntraWorkforce.Web.Services;
 
 public class FormFactor : IFormFactor
 {

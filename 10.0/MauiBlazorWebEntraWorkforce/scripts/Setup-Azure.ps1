@@ -1,283 +1,138 @@
 <#
 .SYNOPSIS
-    Full guided setup for MauiBlazorWebEntra — from a fresh Azure account to a working sample.
+    Configures Microsoft Entra workforce authentication for the
+    MauiBlazorWebEntraWorkforce sample.
 
 .DESCRIPTION
-    This interactive script walks you through the complete setup:
-      1. Create an Entra External ID (CIAM) tenant in the Azure Portal  (manual)
-      2. Login to the new CIAM tenant via Azure CLI                     (automated)
-      3. Create app registrations, API scope, client secret             (automated)
-      4. Create a user flow and link applications in the Portal         (manual)
-      5. Patch all configuration files with real values                 (automated)
-
-    Steps marked (manual) open the Azure Portal and wait for you to complete them.
-    Steps marked (automated) run entirely via Azure CLI.
+    This interactive script:
+      1. Signs in to an existing workforce tenant
+      2. Creates or reuses the web app registration
+      3. Creates or reuses the MAUI public client registration
+      4. Grants the MAUI app permission to call the web API
+      5. Patches local config files with the generated values
 
 .NOTES
     Prerequisites:
-    - Azure CLI (az) installed: https://learn.microsoft.com/cli/azure/install-azure-cli
-    - PowerShell Core 7+: https://learn.microsoft.com/powershell/scripting/install/installing-powershell
-    - An Azure subscription (free tier works)
+    - Azure CLI (az) installed
+    - PowerShell Core 7+
+    - Permission to create app registrations in the target tenant
 #>
 
 $ErrorActionPreference = 'Stop'
 
-# --- Helper: Open URL cross-platform ---
-function Open-Url {
-    param([string]$Url)
-    if ($IsMacOS) { Start-Process "open" -ArgumentList $Url }
-    elseif ($IsWindows) { Start-Process $Url }
-    elseif ($IsLinux) { Start-Process "xdg-open" -ArgumentList $Url }
-    else { Write-Host "  Please open: $Url" }
-}
-
 function Write-Step {
     param([int]$Number, [string]$Title, [string]$Type = "AUTO")
     Write-Host ""
-    Write-Host "=== Step $Number — $Title [$Type] ===" -ForegroundColor Blue
+    Write-Host "=== Step $Number - $Title [$Type] ===" -ForegroundColor Blue
+}
+
+function Read-RequiredInput {
+    param([string]$Prompt)
+
+    while ($true) {
+        Write-Host $Prompt -ForegroundColor Magenta -NoNewline
+        $value = Read-Host
+        if (-not [string]::IsNullOrWhiteSpace($value)) {
+            return $value.Trim()
+        }
+
+        Write-Host "This value is required." -ForegroundColor Red
+    }
+}
+
+function Ensure-ServicePrincipal {
+    param([string]$AppId)
+
+    az ad sp create --id $AppId 2>&1 | Out-Null
+}
+
+function New-AppSecret {
+    param(
+        [string]$ApplicationObjectId,
+        [string]$DisplayName
+    )
+
+    $body = @{
+        passwordCredential = @{
+            displayName = $DisplayName
+        }
+    } | ConvertTo-Json -Depth 5 -Compress
+
+    $json = az rest --method POST `
+        --uri "https://graph.microsoft.com/v1.0/applications/$ApplicationObjectId/addPassword" `
+        --headers "Content-Type=application/json" `
+        --body $body 2>$null
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to create client secret."
+    }
+
+    return ($json | ConvertFrom-Json).secretText
 }
 
 Write-Host ""
-Write-Host "=== MauiBlazorWebEntra — Full Azure Setup ===" -ForegroundColor Blue
+Write-Host "=== MauiBlazorWebEntraWorkforce - Azure Setup ===" -ForegroundColor Blue
 Write-Host ""
-Write-Host "This script will walk you through the complete setup."
-Write-Host "Some steps require the Azure Portal; they will open automatically."
-Write-Host ""
-
-# ---------------------------------------------------
-# PREREQUISITES
-# ---------------------------------------------------
 
 if (-not (Get-Command az -ErrorAction SilentlyContinue)) {
     Write-Host "Azure CLI (az) is not installed." -ForegroundColor Red
     Write-Host "Install it from: https://learn.microsoft.com/cli/azure/install-azure-cli" -ForegroundColor Blue
     exit 1
 }
-Write-Host "✓ Azure CLI found" -ForegroundColor Green
 
-# ---------------------------------------------------
-# STEP 1: Create CIAM Tenant (Portal)
-# ---------------------------------------------------
+Write-Host "Azure CLI found." -ForegroundColor Green
 
-Write-Step 1 "Create an Entra External ID Tenant" "PORTAL"
+$sampleRoot = Join-Path $PSScriptRoot ".."
+$webAppName = "MauiBlazorWebEntraWorkforce-Web"
+$mauiAppName = "MauiBlazorWebEntraWorkforce-MAUI"
 
-Write-Host ""
-Write-Host "You need a Microsoft Entra External ID tenant (CIAM)."
-Write-Host "This cannot be automated and must be created in the Azure Portal."
-Write-Host ""
-
-Write-Host "Do you already have a CIAM tenant? (y/N): " -ForegroundColor Magenta -NoNewline
-$hasExistingTenant = Read-Host
-
-if ($hasExistingTenant -ne 'y' -and $hasExistingTenant -ne 'Y') {
-    Write-Host ""
-    Write-Host "We will open the Entra admin center so you can create a tenant."
-    Write-Host "Review the instructions below first, then press Enter to open the browser."
-    Write-Host ""
-    Write-Host "  Basics tab:" -ForegroundColor Blue
-    Write-Host "    1. Click '+ Create' at the top of the page"
-    Write-Host "    2. Select 'External' tenant type, click 'Continue'"
-    Write-Host "    3. Fill in the form:"
-    Write-Host "         - Tenant Name:     Maui Blazor Entra" -ForegroundColor Blue
-    Write-Host "         - Domain Name:     mauiblazorentra" -ForegroundColor Blue
-    Write-Host "           (becomes mauiblazorentra.onmicrosoft.com)"
-    Write-Host "         - Country/Region:  <your nearest location>" -ForegroundColor Blue
-    Write-Host "           (cannot be changed later!)" -ForegroundColor Red
-    Write-Host "    4. Click 'Next: Add a subscription'"
-    Write-Host ""
-    Write-Host "  Subscription tab:" -ForegroundColor Blue
-    Write-Host "         - Subscription:        <select your subscription>" -ForegroundColor Blue
-    Write-Host "         - Resource group:      rg-maui-blazor-entra" -ForegroundColor Blue
-    Write-Host "           (click 'Create new' if needed)"
-    Write-Host "         - Resource group loc:  <match your tenant region>" -ForegroundColor Blue
-    Write-Host "         - Billing Unit:        Monthly active users (MAU)" -ForegroundColor Blue
-    Write-Host "           (leave default, free in preview)"
-    Write-Host "    5. Click 'Review + Create', then 'Create'"
-    Write-Host "    6. Wait for provisioning (1-3 minutes)"
-    Write-Host ""
-
-    Write-Host "Press Enter to open the Entra admin center..." -ForegroundColor Magenta
-    Read-Host
-
-    Open-Url "https://entra.microsoft.com/#view/Microsoft_AAD_IAM/DirectorySwitchBlade/subtitle/"
-
-    Write-Host "Press Enter once the tenant is created..." -ForegroundColor Magenta
-    Read-Host
-}
+Write-Step 1 "Sign in to workforce tenant" "AUTO"
 
 Write-Host ""
-Write-Host "Now enter the details of your CIAM tenant."
-Write-Host "You can find these in the Azure Portal → Microsoft Entra ID → Overview"
-Write-Host ""
-
-Write-Host "Tenant domain prefix (e.g., 'mauiblazorentra' from mauiblazorentra.onmicrosoft.com): " -ForegroundColor Magenta -NoNewline
-$tenantName = Read-Host
-if ([string]::IsNullOrWhiteSpace($tenantName)) {
-    Write-Error "Tenant domain prefix is required."
-    exit 1
-}
-
-# ---------------------------------------------------
-# STEP 2: Login to the CIAM Tenant
-# ---------------------------------------------------
-
-Write-Step 2 "Login to CIAM Tenant" "AUTO"
+Write-Host "Use an existing Microsoft Entra workforce tenant." -ForegroundColor Cyan
+$tenantInput = Read-RequiredInput "Tenant domain or tenant ID (for example, contoso.onmicrosoft.com): "
 
 Write-Host ""
-Write-Host "A browser window will open to log in to the CIAM tenant:"
-Write-Host "  $tenantName.onmicrosoft.com" -ForegroundColor Blue
-Write-Host ""
-Write-Host "Press Enter to continue..." -ForegroundColor Magenta -NoNewline
-Read-Host
-
-az login --tenant "$tenantName.onmicrosoft.com" --allow-no-subscriptions 2>&1 | Out-Null
+Write-Host "A browser window may open for sign-in..." -ForegroundColor Cyan
+az login --tenant $tenantInput --allow-no-subscriptions 2>&1 | Out-Null
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to login to tenant '$tenantName.onmicrosoft.com'. Please check the domain prefix and try again."
+    Write-Error "Failed to sign in to tenant '$tenantInput'."
     exit 1
 }
 
-# Auto-detect tenant ID from the logged-in session
 $account = az account show 2>$null | ConvertFrom-Json
 $tenantId = $account.tenantId
 
-Write-Host "  ✓ Logged in successfully" -ForegroundColor Green
-Write-Host ""
-Write-Host "  Tenant: $tenantName.onmicrosoft.com"
-Write-Host "  ID:     $tenantId"
-Write-Host "  CIAM:   https://$tenantName.ciamlogin.com"
+$org = az rest `
+    --method GET `
+    --uri "https://graph.microsoft.com/v1.0/organization?`$select=displayName,verifiedDomains" 2>$null | ConvertFrom-Json
 
-# ---------------------------------------------------
-# STEP 3: Create App Registrations
-# ---------------------------------------------------
+$tenantDomain = $null
+if ($org.value -and $org.value.Count -gt 0) {
+    $tenantDomain = $org.value[0].verifiedDomains |
+        Where-Object { $_.isDefault -eq $true } |
+        Select-Object -ExpandProperty name -First 1
+}
+if (-not $tenantDomain) {
+    $tenantDomain = $tenantInput
+}
 
-Write-Step 3 "Create App Registrations" "AUTO"
+Write-Host "  Tenant ID:     $tenantId" -ForegroundColor Green
+Write-Host "  Tenant domain: $tenantDomain" -ForegroundColor Green
 
-# --- Web App Registration (Confidential Client) ---
-Write-Host ""
-$webAppName = "MauiBlazorWebEntra-Web"
+Write-Step 2 "Create web app registration" "AUTO"
 
-# Check if web app already exists
 $existingWebApp = az ad app list --display-name $webAppName --query "[0]" 2>$null | ConvertFrom-Json
 if ($existingWebApp) {
     $webClientId = $existingWebApp.appId
     $webObjectId = $existingWebApp.id
-    Write-Host "  ✓ Web App already exists — Client ID: $webClientId" -ForegroundColor Green
-
-    # --- Client Secret Decision Tree ---
-    # Check what appsettings.json currently has
-    $appSettingsCheckPath = Join-Path $PSScriptRoot ".." "MauiBlazorWebEntra.Web" "appsettings.json"
-    $existingConfigClientId = $null
-    $existingConfigSecret = $null
-    if (Test-Path $appSettingsCheckPath) {
-        $existingSettings = Get-Content $appSettingsCheckPath -Raw | ConvertFrom-Json
-        $existingConfigClientId = $existingSettings.AzureAd.ClientId
-        $existingConfigSecret = $existingSettings.AzureAd.ClientSecret
-    }
-
-    $hasRealSecret = $existingConfigSecret -and -not $existingConfigSecret.StartsWith("YOUR_")
-    $clientIdMatches = $existingConfigClientId -eq $webClientId
-
-    if ($hasRealSecret -and $clientIdMatches) {
-        # appsettings.json has a working secret for this same app
-        Write-Host ""
-        Write-Host "  appsettings.json already has a client secret for this app." -ForegroundColor Cyan
-        Write-Host "  Keep the existing secret? (Y/n): " -NoNewline -ForegroundColor Blue
-        $keepSecret = Read-Host
-        if ($keepSecret -eq "" -or $keepSecret -match "^[Yy]") {
-            $clientSecret = $existingConfigSecret
-            Write-Host "  ✓ Keeping existing client secret" -ForegroundColor Green
-        } else {
-            Write-Host "  Do you have a secret from another machine? (y/N): " -NoNewline -ForegroundColor Blue
-            $hasSecret = Read-Host
-            if ($hasSecret -match "^[Yy]") {
-                Write-Host "  Paste the client secret: " -NoNewline -ForegroundColor Blue
-                $clientSecret = Read-Host
-                Write-Host "  ✓ Using provided client secret" -ForegroundColor Green
-            } else {
-                Write-Host "  Adding a new client secret (existing secrets on other machines will keep working)..."
-                $addPwBody = @{ passwordCredential = @{ displayName = "MauiBlazorWebEntra Setup" } } | ConvertTo-Json -Depth 5 -Compress
-                $addPwJson = az rest --method POST `
-                    --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId/addPassword" `
-                    --headers "Content-Type=application/json" `
-                    --body $addPwBody 2>$null
-                if ($LASTEXITCODE -ne 0) {
-                    Write-Error "Failed to add client secret."
-                    exit 1
-                }
-                $clientSecret = ($addPwJson | ConvertFrom-Json).secretText
-                Write-Host "  ✓ New client secret added" -ForegroundColor Green
-            }
-        }
-    } else {
-        # No real secret in appsettings.json (placeholder or wrong client ID)
-        if (-not $clientIdMatches -and $existingConfigClientId -and -not $existingConfigClientId.StartsWith("YOUR_")) {
-            Write-Host "  ℹ appsettings.json has a different Client ID — will be updated" -ForegroundColor Cyan
-        }
-        Write-Host ""
-        Write-Host "  Do you have a client secret from another machine? (y/N): " -NoNewline -ForegroundColor Blue
-        $hasSecret = Read-Host
-        if ($hasSecret -match "^[Yy]") {
-            Write-Host "  Paste the client secret: " -NoNewline -ForegroundColor Blue
-            $clientSecret = Read-Host
-            Write-Host "  ✓ Using provided client secret" -ForegroundColor Green
-        } else {
-            Write-Host "  Adding a new client secret (existing secrets on other machines will keep working)..."
-            $addPwBody = @{ passwordCredential = @{ displayName = "MauiBlazorWebEntra Setup" } } | ConvertTo-Json -Depth 5 -Compress
-            $addPwJson = az rest --method POST `
-                --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId/addPassword" `
-                --headers "Content-Type=application/json" `
-                --body $addPwBody 2>$null
-            if ($LASTEXITCODE -ne 0) {
-                Write-Error "Failed to add client secret."
-                exit 1
-            }
-            $clientSecret = ($addPwJson | ConvertFrom-Json).secretText
-            Write-Host "  ✓ New client secret added" -ForegroundColor Green
-        }
-    }
-
-    # Get existing scope ID for later use
-    $existingScopes = $existingWebApp.api.oauth2PermissionScopes
-    $existingScope = $existingScopes | Where-Object { $_.value -eq "access_as_user" } | Select-Object -First 1
-    if ($existingScope) {
-        $scopeId = $existingScope.id
-        Write-Host "  ✓ API scope already configured: api://$webClientId/access_as_user" -ForegroundColor Green
-    } else {
-        $scopeId = [guid]::NewGuid().ToString()
-        Write-Host "  Exposing API scope: access_as_user..."
-        $apiBody = @{
-            identifierUris = @("api://$webClientId")
-            api = @{
-                oauth2PermissionScopes = @(
-                    @{
-                        id = $scopeId
-                        adminConsentDescription = "Allow the MAUI app to access the web API on behalf of the signed-in user."
-                        adminConsentDisplayName = "Access web API as user"
-                        isEnabled = $true
-                        type = "User"
-                        userConsentDescription = "Allow this app to access the web API on your behalf."
-                        userConsentDisplayName = "Access web API"
-                        value = "access_as_user"
-                    }
-                )
-            }
-        } | ConvertTo-Json -Depth 10 -Compress
-
-        az rest --method PATCH `
-            --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId" `
-            --headers "Content-Type=application/json" `
-            --body $apiBody `
-            2>&1 | Out-Null
-        Write-Host "  ✓ API scope: api://$webClientId/access_as_user" -ForegroundColor Green
-    }
+    Write-Host "  Reusing web app: $webClientId" -ForegroundColor Green
 } else {
-    Write-Host "Creating web server app registration..."
-
     $webAppJson = az ad app create `
         --display-name $webAppName `
         --sign-in-audience "AzureADMyOrg" `
-        --web-redirect-uris "https://localhost:7157/signin-oidc" `
+        --web-redirect-uris "https://localhost:7157/signin-oidc" "https://localhost:7157/signout-callback-oidc" `
         --enable-id-token-issuance true 2>$null
 
     if ($LASTEXITCODE -ne 0) {
@@ -286,34 +141,52 @@ if ($existingWebApp) {
     }
 
     $webApp = $webAppJson | ConvertFrom-Json
-
     $webClientId = $webApp.appId
     $webObjectId = $webApp.id
-    Write-Host "  ✓ Web App Client ID: $webClientId" -ForegroundColor Green
+    Write-Host "  Created web app: $webClientId" -ForegroundColor Green
+}
 
-    # Create service principal
-    az ad sp create --id $webClientId 2>&1 | Out-Null
-    Write-Host "  ✓ Service principal created" -ForegroundColor Green
+Ensure-ServicePrincipal -AppId $webClientId
 
-    # Generate client secret
-    Write-Host "  Generating client secret..."
-    $addPwBody = @{ passwordCredential = @{ displayName = "MauiBlazorWebEntra Setup" } } | ConvertTo-Json -Depth 5 -Compress
-    $addPwJson = az rest --method POST `
-        --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId/addPassword" `
-        --headers "Content-Type=application/json" `
-        --body $addPwBody 2>$null
+$clientSecret = $null
+$appSettingsPath = Join-Path $sampleRoot "MauiBlazorWebEntraWorkforce.Web" "appsettings.json"
+if (Test-Path $appSettingsPath) {
+    $existingSettings = Get-Content $appSettingsPath -Raw | ConvertFrom-Json
+    $existingConfigClientId = $existingSettings.AzureAd.ClientId
+    $existingConfigSecret = $existingSettings.AzureAd.ClientSecret
 
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to generate client secret."
-        exit 1
+    if ($existingConfigClientId -eq $webClientId -and
+        $existingConfigSecret -and
+        -not $existingConfigSecret.StartsWith("YOUR_")) {
+        Write-Host "Keep the existing client secret from appsettings.json? (Y/n): " -ForegroundColor Blue -NoNewline
+        $keepSecret = Read-Host
+        if ($keepSecret -eq "" -or $keepSecret -match "^[Yy]") {
+            $clientSecret = $existingConfigSecret
+            Write-Host "  Reusing saved client secret." -ForegroundColor Green
+        }
     }
+}
 
-    $clientSecret = ($addPwJson | ConvertFrom-Json).secretText
-    Write-Host "  ✓ Client secret generated" -ForegroundColor Green
+if (-not $clientSecret) {
+    Write-Host "Create a new client secret for the web app? (Y/n): " -ForegroundColor Blue -NoNewline
+    $createSecret = Read-Host
+    if ($createSecret -eq "" -or $createSecret -match "^[Yy]") {
+        $clientSecret = New-AppSecret -ApplicationObjectId $webObjectId -DisplayName "MauiBlazorWebEntraWorkforce Setup"
+        Write-Host "  New client secret created." -ForegroundColor Green
+    } else {
+        $clientSecret = Read-RequiredInput "Paste the existing client secret: "
+    }
+}
 
-    # Expose API scope (access_as_user)
-    Write-Host "  Exposing API scope: access_as_user..."
+$webAppDetails = az ad app show --id $webClientId 2>$null | ConvertFrom-Json
+$existingScope = $webAppDetails.api.oauth2PermissionScopes |
+    Where-Object { $_.value -eq "access_as_user" } |
+    Select-Object -First 1
 
+if ($existingScope) {
+    $scopeId = $existingScope.id
+    Write-Host "  Reusing API scope: api://$webClientId/access_as_user" -ForegroundColor Green
+} else {
     $scopeId = [guid]::NewGuid().ToString()
     $apiBody = @{
         identifierUris = @("api://$webClientId")
@@ -336,29 +209,24 @@ if ($existingWebApp) {
     az rest --method PATCH `
         --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId" `
         --headers "Content-Type=application/json" `
-        --body $apiBody `
-        2>&1 | Out-Null
+        --body $apiBody 2>&1 | Out-Null
 
     if ($LASTEXITCODE -ne 0) {
-        Write-Warning "Failed to expose API scope automatically. You may need to do this manually."
-    } else {
-        Write-Host "  ✓ API scope: api://$webClientId/access_as_user" -ForegroundColor Green
+        Write-Error "Failed to expose the access_as_user scope on the web app."
+        exit 1
     }
+
+    Write-Host "  API scope created: api://$webClientId/access_as_user" -ForegroundColor Green
 }
 
-# --- MAUI App Registration (Public Client) ---
-Write-Host ""
-$mauiAppName = "MauiBlazorWebEntra-MAUI"
+Write-Step 3 "Create MAUI app registration" "AUTO"
 
-# Check if MAUI app already exists
 $existingMauiApp = az ad app list --display-name $mauiAppName --query "[0]" 2>$null | ConvertFrom-Json
 if ($existingMauiApp) {
     $mauiClientId = $existingMauiApp.appId
     $mauiObjectId = $existingMauiApp.id
-    Write-Host "  ✓ MAUI App already exists — Client ID: $mauiClientId" -ForegroundColor Green
+    Write-Host "  Reusing MAUI app: $mauiClientId" -ForegroundColor Green
 } else {
-    Write-Host "Creating MAUI client app registration..."
-
     $mauiAppJson = az ad app create `
         --display-name $mauiAppName `
         --sign-in-audience "AzureADMyOrg" `
@@ -370,38 +238,35 @@ if ($existingMauiApp) {
     }
 
     $mauiApp = $mauiAppJson | ConvertFrom-Json
-
     $mauiClientId = $mauiApp.appId
     $mauiObjectId = $mauiApp.id
-    Write-Host "  ✓ MAUI App Client ID: $mauiClientId" -ForegroundColor Green
-
-    # Create service principal
-    az ad sp create --id $mauiClientId 2>&1 | Out-Null
-    Write-Host "  ✓ Service principal created" -ForegroundColor Green
+    Write-Host "  Created MAUI app: $mauiClientId" -ForegroundColor Green
 }
 
-# Ensure MSAL redirect URIs are configured (idempotent)
-# - msal{clientId}://auth  — iOS, Android, Mac Catalyst
-# - http://localhost        — Windows (embedded WebView2 via Microsoft.Identity.Client.Desktop.WinUI3)
-$msalRedirectUri = "msal$mauiClientId`://auth"
-$localhostRedirectUri = "http://localhost"
-Write-Host "  Configuring redirect URIs: $msalRedirectUri, $localhostRedirectUri"
+Ensure-ServicePrincipal -AppId $mauiClientId
 
 $redirectBody = @{
     publicClient = @{
-        redirectUris = @($msalRedirectUri, $localhostRedirectUri)
+        redirectUris = @(
+            "msal$mauiClientId`://auth",
+            "http://localhost"
+        )
     }
 } | ConvertTo-Json -Depth 5 -Compress
 
 az rest --method PATCH `
     --uri "https://graph.microsoft.com/v1.0/applications/$mauiObjectId" `
     --headers "Content-Type=application/json" `
-    --body $redirectBody `
-    2>&1 | Out-Null
-Write-Host "  ✓ Redirect URIs configured" -ForegroundColor Green
+    --body $redirectBody 2>&1 | Out-Null
 
-# Grant MAUI app permission to web API scope (idempotent — PATCH replaces)
-Write-Host "  Granting API permission (access_as_user)..."
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Failed to configure redirect URIs for the MAUI app."
+    exit 1
+}
+
+Write-Host "  Redirect URIs configured." -ForegroundColor Green
+
+Write-Step 4 "Grant API permission" "AUTO"
 
 $permissionBody = @{
     requiredResourceAccess = @(
@@ -420,283 +285,78 @@ $permissionBody = @{
 az rest --method PATCH `
     --uri "https://graph.microsoft.com/v1.0/applications/$mauiObjectId" `
     --headers "Content-Type=application/json" `
-    --body $permissionBody `
-    2>&1 | Out-Null
+    --body $permissionBody 2>&1 | Out-Null
 
-# Admin consent
-az ad app permission admin-consent --id $mauiClientId 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) {
-    Write-Warning "Admin consent may need to be granted manually in the Azure portal."
-} else {
-    Write-Host "  ✓ Admin consent granted" -ForegroundColor Green
+    Write-Error "Failed to grant the MAUI app access to the web API scope."
+    exit 1
 }
 
-# ---------------------------------------------------
-# STEP 4: Create User Flow (Automated via Graph API)
-# ---------------------------------------------------
-
-Write-Step 4 "Create User Flow" "AUTO"
-
-Write-Host ""
-Write-Host "Checking for existing sign-up/sign-in user flow..." -ForegroundColor Magenta
-Write-Host ""
-
-# Check if user flow already exists
-$existingFlows = az rest `
-    --method GET `
-    --url "https://graph.microsoft.com/v1.0/identity/authenticationEventsFlows" `
-    --headers "Content-Type=application/json" 2>$null | ConvertFrom-Json
-
-$existingFlow = $existingFlows.value | Where-Object { $_.displayName -eq "signup_signin" } | Select-Object -First 1
-
-if ($existingFlow) {
-    Write-Host "  ✓ User flow 'signup_signin' already exists (id: $($existingFlow.id))" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "  Ensuring both apps are linked to the flow..." -ForegroundColor Magenta
-
-    # Get currently linked apps
-    $linkedApps = az rest `
-        --method GET `
-        --url "https://graph.microsoft.com/v1.0/identity/authenticationEventsFlows/$($existingFlow.id)/conditions/applications/includeApplications" `
-        --headers "Content-Type=application/json" 2>$null | ConvertFrom-Json
-
-    $linkedAppIds = @()
-    if ($linkedApps.value) {
-        $linkedAppIds = $linkedApps.value | ForEach-Object { $_.appId }
-    }
-
-    # Add each app if not already linked
-    foreach ($appEntry in @(@{ id = $webClientId; name = $webAppName }, @{ id = $mauiClientId; name = $mauiAppName })) {
-        if ($linkedAppIds -contains $appEntry.id) {
-            Write-Host "  ✓ $($appEntry.name) already linked" -ForegroundColor Green
-        } else {
-            $addBody = @{ appId = $appEntry.id } | ConvertTo-Json
-            az rest `
-                --method POST `
-                --url "https://graph.microsoft.com/v1.0/identity/authenticationEventsFlows/$($existingFlow.id)/conditions/applications/includeApplications" `
-                --headers "Content-Type=application/json" `
-                --body $addBody 2>&1 | Out-Null
-            if ($LASTEXITCODE -eq 0) {
-                Write-Host "  ✓ $($appEntry.name) linked to flow" -ForegroundColor Green
-            } else {
-                Write-Host "  ✗ Failed to link $($appEntry.name) — add manually in portal" -ForegroundColor Red
-            }
-        }
-    }
+az ad app permission admin-consent --id $mauiClientId 2>&1 | Out-Null
+if ($LASTEXITCODE -eq 0) {
+    Write-Host "  Admin consent granted." -ForegroundColor Green
 } else {
-    Write-Host "Creating sign-up/sign-in user flow via Microsoft Graph API..." -ForegroundColor Magenta
-    Write-Host ""
-
-    $userFlowBody = @{
-        "@odata.type" = "#microsoft.graph.externalUsersSelfServiceSignUpEventsFlow"
-        displayName = "signup_signin"
-        conditions = @{
-            applications = @{
-                includeApplications = @(
-                    @{ appId = $webClientId },
-                    @{ appId = $mauiClientId }
-                )
-            }
-        }
-        onAuthenticationMethodLoadStart = @{
-            "@odata.type" = "#microsoft.graph.onAuthenticationMethodLoadStartExternalUsersSelfServiceSignUp"
-            identityProviders = @(
-                @{ id = "EmailPassword-OAUTH" }
-            )
-        }
-        onInteractiveAuthFlowStart = @{
-            "@odata.type" = "#microsoft.graph.onInteractiveAuthFlowStartExternalUsersSelfServiceSignUp"
-            isSignUpAllowed = $true
-        }
-        onAttributeCollection = @{
-            "@odata.type" = "#microsoft.graph.onAttributeCollectionExternalUsersSelfServiceSignUp"
-            attributes = @(
-                @{
-                    id = "email"
-                    displayName = "Email Address"
-                    description = "Email address of the user"
-                    userFlowAttributeType = "builtIn"
-                    dataType = "string"
-                },
-                @{
-                    id = "displayName"
-                    displayName = "Display Name"
-                    description = "Display Name of the User."
-                    userFlowAttributeType = "builtIn"
-                    dataType = "string"
-                }
-            )
-            attributeCollectionPage = @{
-                views = @(
-                    @{
-                        inputs = @(
-                            @{
-                                attribute = "email"
-                                label = "Email Address"
-                                inputType = "text"
-                                hidden = $true
-                                editable = $false
-                                writeToDirectory = $true
-                                required = $true
-                            },
-                            @{
-                                attribute = "displayName"
-                                label = "Display Name"
-                                inputType = "text"
-                                hidden = $false
-                                editable = $true
-                                writeToDirectory = $true
-                                required = $false
-                            }
-                        )
-                    }
-                )
-            }
-        }
-    } | ConvertTo-Json -Depth 10
-
-    $flowResult = az rest `
-        --method POST `
-        --url "https://graph.microsoft.com/v1.0/identity/authenticationEventsFlows" `
-        --headers "Content-Type=application/json" `
-        --body $userFlowBody 2>&1
-
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host ""
-        Write-Host "  ✗ Automated user flow creation failed." -ForegroundColor Red
-        Write-Host ""
-        # Show the actual error so the user can diagnose
-        $errorText = ($flowResult | Out-String).Trim()
-        if ($errorText) {
-            Write-Host "  Error details:" -ForegroundColor Red
-            foreach ($line in ($errorText -split "`n")) {
-                Write-Host "    $line" -ForegroundColor Red
-            }
-            Write-Host ""
-        }
-        Write-Host "  Falling back to manual creation in the portal..." -ForegroundColor Magenta
-        Write-Host ""
-        Write-Host "  Part A — Create the user flow:" -ForegroundColor Blue
-        Write-Host ""
-        Write-Host "  Make sure you are in your CIAM tenant (check top-right)!" -ForegroundColor Magenta
-        Write-Host ""
-        Write-Host "    1. Left menu: External Identities > User flows"
-        Write-Host "    2. Click '+ New user flow'"
-        Write-Host "    3. Select 'Sign up and sign in', click 'Create'"
-        Write-Host "    4. Fill in the form:"
-        Write-Host "         - Name:                 signup_signin" -ForegroundColor Blue
-        Write-Host "         - Identity providers:   Email with password" -ForegroundColor Blue
-        Write-Host "    5. Click 'Create'"
-        Write-Host ""
-        Write-Host "  Part B — Add applications to the flow:" -ForegroundColor Blue
-        Write-Host ""
-        Write-Host "    1. Click on the new 'signup_signin' flow"
-        Write-Host "    2. In the left panel, click 'Applications'"
-        Write-Host "    3. Click '+ Add application'"
-        Write-Host "    4. Check BOTH of these apps:"
-        Write-Host "         - $webAppName" -ForegroundColor Blue
-        Write-Host "         - $mauiAppName" -ForegroundColor Blue
-        Write-Host "    5. Click 'Select'"
-        Write-Host ""
-
-        Write-Host "Press Enter to open the Entra admin center..." -ForegroundColor Magenta -NoNewline
-        Read-Host
-
-        Open-Url "https://entra.microsoft.com/"
-
-        Write-Host "Press Enter once the user flow is created and both apps are linked..." -ForegroundColor Magenta -NoNewline
-        Read-Host
-    } else {
-        Write-Host "  ✓ User flow 'signup_signin' created" -ForegroundColor Green
-        Write-Host "  ✓ Linked apps: $webAppName, $mauiAppName" -ForegroundColor Green
-    }
+    Write-Warning "Admin consent may require a tenant administrator."
 }
 
-# ---------------------------------------------------
-# STEP 5: Patch Configuration Files
-# ---------------------------------------------------
+Write-Step 5 "Patch local configuration" "AUTO"
 
-Write-Step 5 "Patch Configuration Files" "AUTO"
-
-Write-Host ""
-$scriptDir = Join-Path $PSScriptRoot ".."
-
-# --- appsettings.json ---
-$appSettingsPath = Join-Path $scriptDir "MauiBlazorWebEntra.Web" "appsettings.json"
 if (Test-Path $appSettingsPath) {
     $appSettings = Get-Content $appSettingsPath -Raw | ConvertFrom-Json
-    $appSettings.AzureAd.Instance = "https://$tenantName.ciamlogin.com/"
+    $appSettings.AzureAd.Instance = "https://login.microsoftonline.com/"
+    $appSettings.AzureAd.Domain = $tenantDomain
     $appSettings.AzureAd.TenantId = $tenantId
     $appSettings.AzureAd.ClientId = $webClientId
     $appSettings.AzureAd.ClientSecret = $clientSecret
     $appSettings | ConvertTo-Json -Depth 10 | Set-Content $appSettingsPath -Encoding UTF8
-    Write-Host "  ✓ appsettings.json" -ForegroundColor Green
-} else {
-    Write-Warning "  appsettings.json not found at: $appSettingsPath"
+    Write-Host "  Updated appsettings.json" -ForegroundColor Green
 }
 
-# --- MsalConfig.cs ---
-$msalConfigPath = Join-Path $scriptDir "MauiBlazorWebEntra" "Services" "MsalConfig.cs"
+$msalConfigPath = Join-Path $sampleRoot "MauiBlazorWebEntraWorkforce" "MsalConfig.cs"
 if (Test-Path $msalConfigPath) {
     $content = Get-Content $msalConfigPath -Raw
-    $content = $content -replace 'YOUR_TENANT_NAME', $tenantName
+    $content = $content -replace 'YOUR_TENANT_DOMAIN', $tenantDomain
     $content = $content -replace 'YOUR_TENANT_ID', $tenantId
     $content = $content -replace 'YOUR_MAUI_CLIENT_ID', $mauiClientId
     $content = $content -replace 'YOUR_WEB_CLIENT_ID', $webClientId
     Set-Content $msalConfigPath $content -Encoding UTF8
-    Write-Host "  ✓ MsalConfig.cs" -ForegroundColor Green
-} else {
-    Write-Warning "  MsalConfig.cs not found at: $msalConfigPath"
+    Write-Host "  Updated MsalConfig.cs" -ForegroundColor Green
 }
 
-# --- MsalActivity.cs (Android) ---
-$msalActivityPath = Join-Path $scriptDir "MauiBlazorWebEntra" "Platforms" "Android" "MsalActivity.cs"
+$msalActivityPath = Join-Path $sampleRoot "MauiBlazorWebEntraWorkforce" "Platforms" "Android" "MsalActivity.cs"
 if (Test-Path $msalActivityPath) {
     $content = Get-Content $msalActivityPath -Raw
     $content = $content -replace 'msalYOUR_MAUI_CLIENT_ID', "msal$mauiClientId"
     Set-Content $msalActivityPath $content -Encoding UTF8
-    Write-Host "  ✓ MsalActivity.cs (Android)" -ForegroundColor Green
 }
 
-# --- Info.plist (iOS) ---
-$plistPath = Join-Path $scriptDir "MauiBlazorWebEntra" "Platforms" "iOS" "Info.plist"
-if (Test-Path $plistPath) {
-    $content = Get-Content $plistPath -Raw
-    $content = $content -replace 'msalYOUR_MAUI_CLIENT_ID', "msal$mauiClientId"
-    Set-Content $plistPath $content -Encoding UTF8
-    Write-Host "  ✓ Info.plist (iOS)" -ForegroundColor Green
+foreach ($plistPath in @(
+    (Join-Path $sampleRoot "MauiBlazorWebEntraWorkforce" "Platforms" "iOS" "Info.plist"),
+    (Join-Path $sampleRoot "MauiBlazorWebEntraWorkforce" "Platforms" "MacCatalyst" "Info.plist")
+)) {
+    if (Test-Path $plistPath) {
+        $content = Get-Content $plistPath -Raw
+        $content = $content -replace 'msalYOUR_MAUI_CLIENT_ID', "msal$mauiClientId"
+        Set-Content $plistPath $content -Encoding UTF8
+    }
 }
 
-# ---------------------------------------------------
-# SAVE & SUMMARY
-# ---------------------------------------------------
-
-# Save for teardown
-$teardownDataPath = Join-Path $scriptDir ".azure-setup.json"
+$teardownDataPath = Join-Path $sampleRoot ".azure-setup.json"
 @{
     webClientId  = $webClientId
     mauiClientId = $mauiClientId
     tenantId     = $tenantId
-    tenantName   = $tenantName
+    tenantDomain = $tenantDomain
 } | ConvertTo-Json | Set-Content $teardownDataPath -Encoding UTF8
 
 Write-Host ""
-Write-Host "=== Setup Complete! ✓ ===" -ForegroundColor Green
+Write-Host "=== Setup Complete ===" -ForegroundColor Green
+Write-Host "  Tenant:    $tenantDomain ($tenantId)"
+Write-Host "  Web App:   $webAppName -> $webClientId"
+Write-Host "  MAUI App:  $mauiAppName -> $mauiClientId"
+Write-Host "  API Scope: api://$webClientId/access_as_user"
 Write-Host ""
-Write-Host "  Tenant:     $tenantName.ciamlogin.com ($tenantId)"
-Write-Host "  Web App:    $webAppName → $webClientId"
-Write-Host "  MAUI App:   $mauiAppName → $mauiClientId"
-Write-Host "  API Scope:  api://$webClientId/access_as_user"
-Write-Host ""
-Write-Host "  Config files patched:"
-Write-Host "    • MauiBlazorWebEntra.Web/appsettings.json"
-Write-Host "    • MauiBlazorWebEntra/Services/MsalConfig.cs"
-Write-Host "    • MauiBlazorWebEntra/Platforms/Android/MsalActivity.cs"
-Write-Host "    • MauiBlazorWebEntra/Platforms/iOS/Info.plist"
-Write-Host ""
-Write-Host "  Next:" -ForegroundColor Blue
-Write-Host "    cd MauiBlazorWebEntra.Web && dotnet run --launch-profile https"
-Write-Host "    # Then build and deploy the MAUI app"
-Write-Host ""
-Write-Host "  To clean up: pwsh ./Teardown-Azure.ps1"
+Write-Host "Next steps:" -ForegroundColor Blue
+Write-Host "  cd MauiBlazorWebEntraWorkforce.Web && dotnet run --launch-profile https"
+Write-Host "  # Then build and deploy the MAUI app"
 Write-Host ""

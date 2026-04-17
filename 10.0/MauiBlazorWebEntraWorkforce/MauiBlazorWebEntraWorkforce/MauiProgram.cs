@@ -1,9 +1,9 @@
-using MauiBlazorWebEntra.Services;
-using MauiBlazorWebEntra.Shared.Services;
+using MauiBlazorWebEntraWorkforce.Services;
+using MauiBlazorWebEntraWorkforce.Shared.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 
-namespace MauiBlazorWebEntra;
+namespace MauiBlazorWebEntraWorkforce;
 
 public static class MauiProgram
 {
@@ -32,7 +32,7 @@ public static class MauiProgram
         builder.Services.AddScoped<MsalAuthenticationStateProvider>();
         builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<MsalAuthenticationStateProvider>());
 
-        // Add device-specific services used by the MauiBlazorWebEntra.Shared project
+        // Add device-specific services used by the MauiBlazorWebEntraWorkforce.Shared project
         builder.Services.AddSingleton<IFormFactor, FormFactor>();
         builder.Services.AddScoped<IWeatherService, WeatherService>();
 

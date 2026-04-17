@@ -1,4 +1,4 @@
-namespace MauiBlazorWebEntra.Services;
+namespace MauiBlazorWebEntraWorkforce.Services;
 
 /// <summary>
 /// Helper class to manage HttpClient configuration and API endpoint URLs.

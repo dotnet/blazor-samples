@@ -2,7 +2,7 @@ using Foundation;
 using Microsoft.Identity.Client;
 using UIKit;
 
-namespace MauiBlazorWebEntra;
+namespace MauiBlazorWebEntraWorkforce;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

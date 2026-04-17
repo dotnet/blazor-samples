@@ -3,11 +3,11 @@ using Microsoft.Identity.Client;
 using System.Diagnostics;
 using System.Security.Claims;
 
-namespace MauiBlazorWebEntra.Services;
+namespace MauiBlazorWebEntraWorkforce.Services;
 
 /// <summary>
 /// Authentication state provider that uses MSAL.NET to authenticate against
-/// Microsoft Entra External ID. Handles interactive sign-in, silent token
+/// Microsoft Entra workforce identity. Handles interactive sign-in, silent token
 /// acquisition, and sign-out.
 /// </summary>
 public class MsalAuthenticationStateProvider(IPublicClientApplication msalClient) : AuthenticationStateProvider
@@ -61,8 +61,8 @@ public class MsalAuthenticationStateProvider(IPublicClientApplication msalClient
 
     /// <summary>
     /// Starts an interactive sign-in flow. The platform-specific UI (embedded
-    /// WebView2 on Windows, system browser on iOS/Android) is configured via
-    /// the injected <see cref="IMsalInteractiveOptions"/>.
+    /// WebView2 on Windows and the system browser on iOS/Android) is configured
+    /// via the platform-specific MSAL helpers.
     /// </summary>
     public async Task SignInInteractiveAsync()
     {
@@ -150,7 +150,7 @@ public class MsalAuthenticationStateProvider(IPublicClientApplication msalClient
             }
         }
 
-        var identity = new ClaimsIdentity(claims, "Entra External ID");
+        var identity = new ClaimsIdentity(claims, "Entra Workforce");
         _currentUser = new ClaimsPrincipal(identity);
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }

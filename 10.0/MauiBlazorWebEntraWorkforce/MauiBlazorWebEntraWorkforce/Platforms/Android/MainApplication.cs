@@ -1,7 +1,7 @@
 using Android.App;
 using Android.Runtime;
 
-namespace MauiBlazorWebEntra;
+namespace MauiBlazorWebEntraWorkforce;
 
 [Application]
 public class MainApplication : MauiApplication

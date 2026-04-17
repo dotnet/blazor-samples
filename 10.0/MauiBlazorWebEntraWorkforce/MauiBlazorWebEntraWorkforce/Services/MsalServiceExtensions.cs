@@ -3,7 +3,7 @@ using Microsoft.Identity.Client;
 using Microsoft.Identity.Client.Desktop;
 #endif
 
-namespace MauiBlazorWebEntra.Services;
+namespace MauiBlazorWebEntraWorkforce.Services;
 
 internal static class MsalServiceExtensions
 {
@@ -18,9 +18,8 @@ internal static class MsalServiceExtensions
             .WithRedirectUri(MsalConfig.RedirectUri);
 
 #if WINDOWS
-        // Windows: use embedded WebView2 browser + WAM broker for authentication.
-        // WAM doesn't support Entra External ID (CIAM), so the embedded WebView2
-        // provides the sign-in UI instead of opening the system browser.
+        // Windows: enable WAM integration for single sign-on with workforce accounts.
+        // MSAL handles the best available experience for the current device.
         msalBuilder.WithWindowsDesktopFeatures(new BrokerOptions(BrokerOptions.OperatingSystems.Windows));
 #endif
 
@@ -77,7 +76,7 @@ internal static class MsalServiceExtensions
 #if ANDROID
 
         if (Platform.CurrentActivity is not Android.App.Activity activity)
-            throw new InvalidOperationException("No running acivity found.");
+            throw new InvalidOperationException("No running activity found.");
 
         return builder.WithParentActivityOrWindow(activity);
 

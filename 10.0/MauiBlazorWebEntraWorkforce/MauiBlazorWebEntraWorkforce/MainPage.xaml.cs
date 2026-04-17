@@ -1,4 +1,4 @@
-namespace MauiBlazorWebEntra;
+namespace MauiBlazorWebEntraWorkforce;
 
 public partial class MainPage : ContentPage
 {

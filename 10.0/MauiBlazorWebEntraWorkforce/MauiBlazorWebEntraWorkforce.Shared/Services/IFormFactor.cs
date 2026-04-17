@@ -1,4 +1,4 @@
-namespace MauiBlazorWebEntra.Shared.Services;
+namespace MauiBlazorWebEntraWorkforce.Shared.Services;
 
 public interface IFormFactor
 {

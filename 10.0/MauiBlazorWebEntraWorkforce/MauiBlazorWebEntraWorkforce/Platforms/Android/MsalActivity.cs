@@ -2,11 +2,11 @@ using Android.App;
 using Android.Content;
 using Microsoft.Identity.Client;
 
-namespace MauiBlazorWebEntra.Platforms.Android
+namespace MauiBlazorWebEntraWorkforce.Platforms.Android
 {
     /// <summary>
     /// Activity that handles the MSAL redirect URI callback from the system browser
-    /// after Entra External ID authentication completes.
+    /// after workforce authentication completes.
     /// </summary>
     [Activity(Exported = true)]
     [IntentFilter(

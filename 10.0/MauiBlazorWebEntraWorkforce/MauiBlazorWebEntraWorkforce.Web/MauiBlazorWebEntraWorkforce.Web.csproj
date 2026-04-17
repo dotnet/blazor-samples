@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MauiBlazorWebEntra.Shared\MauiBlazorWebEntra.Shared.csproj" />
+    <ProjectReference Include="..\MauiBlazorWebEntraWorkforce.Shared\MauiBlazorWebEntraWorkforce.Shared.csproj" />
   </ItemGroup>
 
 </Project>

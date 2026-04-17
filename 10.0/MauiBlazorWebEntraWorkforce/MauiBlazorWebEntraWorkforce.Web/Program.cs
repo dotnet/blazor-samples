@@ -1,6 +1,6 @@
-using MauiBlazorWebEntra.Shared.Services;
-using MauiBlazorWebEntra.Web.Components;
-using MauiBlazorWebEntra.Web.Services;
+using MauiBlazorWebEntraWorkforce.Shared.Services;
+using MauiBlazorWebEntraWorkforce.Web.Components;
+using MauiBlazorWebEntraWorkforce.Web.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Add device-specific services used by the MauiBlazorWebEntra.Shared project
+// Add device-specific services used by the MauiBlazorWebEntraWorkforce.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 
@@ -39,22 +39,6 @@ var authBuilder = builder.Services.AddAuthentication(options =>
 
 // OpenID Connect + Cookie for web browser users
 authBuilder.AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
-
-// Forward prompt=create to the CIAM authorize endpoint (for direct register links)
-builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
-{
-    options.Events ??= new OpenIdConnectEvents();
-    var existingHandler = options.Events.OnRedirectToIdentityProvider;
-    options.Events.OnRedirectToIdentityProvider = async context =>
-    {
-        if (context.Properties.Items.TryGetValue("prompt", out var prompt))
-        {
-            context.ProtocolMessage.Prompt = prompt;
-        }
-        if (existingHandler != null)
-            await existingHandler(context);
-    };
-});
 
 // JWT Bearer validation for MAUI client API calls
 authBuilder.AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"),
@@ -92,21 +76,13 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(typeof(MauiBlazorWebEntra.Shared._Imports).Assembly);
+    .AddAdditionalAssemblies(typeof(MauiBlazorWebEntraWorkforce.Shared._Imports).Assembly);
 
-// Login endpoint: triggers OIDC redirect to Entra External ID
+// Login endpoint: triggers the OIDC redirect to the workforce tenant
 app.MapGet("/authentication/login", async (HttpContext context, string? returnUrl) =>
 {
     await context.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme,
         new AuthenticationProperties { RedirectUri = returnUrl ?? "/" });
-});
-
-// Register endpoint: same OIDC flow with sign-up hints for CIAM
-app.MapGet("/authentication/register", async (HttpContext context, string? returnUrl) =>
-{
-    var properties = new AuthenticationProperties { RedirectUri = returnUrl ?? "/" };
-    properties.Items["prompt"] = "create";
-    await context.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, properties);
 });
 
 // Logout endpoint: clears cookie and signs out of Entra

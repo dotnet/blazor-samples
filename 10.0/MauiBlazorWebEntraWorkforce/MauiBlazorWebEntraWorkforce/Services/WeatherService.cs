@@ -1,9 +1,9 @@
-using MauiBlazorWebEntra.Shared.Services;
+using MauiBlazorWebEntraWorkforce.Shared.Services;
 using System.Diagnostics;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-namespace MauiBlazorWebEntra.Services;
+namespace MauiBlazorWebEntraWorkforce.Services;
 
 public class WeatherService(MsalAuthenticationStateProvider authStateProvider) : IWeatherService
 {
