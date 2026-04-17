@@ -123,7 +123,7 @@ Write-Host "  Tenant domain: $tenantDomain" -ForegroundColor Green
 
 Write-Step 2 "Create web app registration" "AUTO"
 
-$existingWebApp = az ad app list --display-name $webAppName --query "[0]" 2>$null | ConvertFrom-Json
+$existingWebApp = az ad app list --display-name $webAppName --query "[?displayName=='$webAppName'] | [0]" 2>$null | ConvertFrom-Json
 if ($existingWebApp) {
     $webClientId = $existingWebApp.appId
     $webObjectId = $existingWebApp.id
@@ -147,6 +147,28 @@ if ($existingWebApp) {
 }
 
 Ensure-ServicePrincipal -AppId $webClientId
+
+# Ensure redirect URIs are correct (idempotent — handles reuse with stale URIs)
+$webRedirectBody = @{
+    web = @{
+        redirectUris = @(
+            "https://localhost:7157/signin-oidc",
+            "https://localhost:7157/signout-callback-oidc"
+        )
+        implicitGrantSettings = @{
+            enableIdTokenIssuance = $true
+        }
+    }
+} | ConvertTo-Json -Depth 5 -Compress
+
+az rest --method PATCH `
+    --uri "https://graph.microsoft.com/v1.0/applications/$webObjectId" `
+    --headers "Content-Type=application/json" `
+    --body $webRedirectBody 2>&1 | Out-Null
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Warning "Failed to update web redirect URIs. Verify manually in the Azure portal."
+}
 
 $clientSecret = $null
 $appSettingsPath = Join-Path $sampleRoot "MauiBlazorWebEntraWorkforce.Web" "appsettings.json"
@@ -221,7 +243,7 @@ if ($existingScope) {
 
 Write-Step 3 "Create MAUI app registration" "AUTO"
 
-$existingMauiApp = az ad app list --display-name $mauiAppName --query "[0]" 2>$null | ConvertFrom-Json
+$existingMauiApp = az ad app list --display-name $mauiAppName --query "[?displayName=='$mauiAppName'] | [0]" 2>$null | ConvertFrom-Json
 if ($existingMauiApp) {
     $mauiClientId = $existingMauiApp.appId
     $mauiObjectId = $existingMauiApp.id

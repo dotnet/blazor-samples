@@ -68,3 +68,8 @@ Remove-Item $dataPath -Force
 
 Write-Host ""
 Write-Host "Teardown complete." -ForegroundColor Green
+Write-Host ""
+Write-Host "NOTE: The configuration values in appsettings.json and MsalConfig.cs" -ForegroundColor Magenta
+Write-Host "were NOT reverted to placeholders. You can re-run Setup-Azure.ps1 to" -ForegroundColor Magenta
+Write-Host "configure new resources, or manually restore the placeholder values." -ForegroundColor Magenta
+Write-Host ""
