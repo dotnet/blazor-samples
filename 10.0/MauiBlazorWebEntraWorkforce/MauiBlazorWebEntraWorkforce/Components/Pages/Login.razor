@@ -1,0 +1,63 @@
+﻿@page "/login"
+@inject NavigationManager Navigation
+@inject MsalAuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Sign in</PageTitle>
+
+<h1>Sign in</h1>
+<div class="row">
+    <div class="col-lg-6">
+        <section>
+            <p>Sign in with your Microsoft Entra workforce account.</p>
+            <div class="alert alert-danger" role="alert" hidden="@(!showError)">
+                Sign-in was canceled or failed. Please try again.
+            </div>
+            <div>
+                <button class="w-100 btn btn-lg btn-primary" @onclick="SignInAsync" disabled="@isSigningIn">
+                    @if (isSigningIn)
+                    {
+                        <span>Signing in...</span>
+                    }
+                    else
+                    {
+                        <span>Sign in with Microsoft</span>
+                    }
+                </button>
+            </div>
+        </section>
+    </div>
+</div>
+
+@code {
+    private bool isSigningIn;
+    private bool showError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Try silent sign-in first (cached account)
+        if (await AuthStateProvider.TrySignInSilentAsync())
+        {
+            Navigation.NavigateTo("");
+        }
+    }
+
+    private async Task SignInAsync()
+    {
+        isSigningIn = true;
+        showError = false;
+
+        await AuthStateProvider.SignInInteractiveAsync();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated == true)
+        {
+            Navigation.NavigateTo("");
+        }
+        else
+        {
+            showError = true;
+        }
+
+        isSigningIn = false;
+    }
+}
