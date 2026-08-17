@@ -1,0 +1,71 @@
+@implements IDisposable
+@inject HttpClient Http
+
+@* A validator component that runs asynchronous validation, both when the whole form is
+   validated on submit and per field as the user edits the Username field. *@
+
+@code {
+    [CascadingParameter]
+    private EditContext? CurrentEditContext { get; set; }
+
+    [Parameter, EditorRequired]
+    public RegistrationModel Model { get; set; } = default!;
+
+    private ValidationMessageStore? _messages;
+
+    protected override void OnInitialized()
+    {
+        ArgumentNullException.ThrowIfNull(CurrentEditContext);
+        _messages = new ValidationMessageStore(CurrentEditContext);
+        CurrentEditContext.OnValidationRequested += OnValidationRequested;
+        CurrentEditContext.OnFieldChanged += OnFieldChanged;
+    }
+
+    // Registers asynchronous work for the whole form. EditForm awaits it before invoking
+    // OnValidSubmit.
+    private void OnValidationRequested(
+        object? sender, ValidationRequestedEventArgs e) =>
+        e.AddAsyncValidator(ValidateUsernameAsync);
+
+    // Registers asynchronous work for a single field. A new registration supersedes and
+    // cancels any validation already in flight for the field.
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs e)
+    {
+        if (e.FieldIdentifier.FieldName != nameof(RegistrationModel.Username))
+        {
+            return;
+        }
+
+        CurrentEditContext!.RegisterAsyncFieldValidator(
+            e.FieldIdentifier,
+            token => CheckAsync(e.FieldIdentifier, token));
+    }
+
+    private Task ValidateUsernameAsync(CancellationToken token) =>
+        CheckAsync(CurrentEditContext!.Field(nameof(Model.Username)), token);
+
+    private async Task CheckAsync(FieldIdentifier field, CancellationToken token)
+    {
+        _messages!.Clear(field);
+
+        var available = await Http.GetFromJsonAsync<bool>(
+            $"api/usernames/available?value={Uri.EscapeDataString(Model.Username)}",
+            token);
+
+        if (!available)
+        {
+            _messages.Add(field, "The username is already taken.");
+        }
+
+        CurrentEditContext!.NotifyValidationStateChanged();
+    }
+
+    public void Dispose()
+    {
+        if (CurrentEditContext is not null)
+        {
+            CurrentEditContext.OnValidationRequested -= OnValidationRequested;
+            CurrentEditContext.OnFieldChanged -= OnFieldChanged;
+        }
+    }
+}

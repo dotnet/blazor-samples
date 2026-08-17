@@ -1,0 +1,114 @@
+@page "/starship-10"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using BlazorSample.Client.Starship
+@attribute [Authorize]
+@inject IFormValidation FormValidation
+@inject ILogger<Starship10> Logger
+
+<h1>Starfleet Starship Database</h1>
+
+<h2>New Ship Entry Form</h2>
+
+<EditForm FormName="Starship10" Model="Model" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <CustomValidation @ref="customValidation" />
+    <ValidationSummary />
+    <div>
+        <label>
+            Identifier: 
+            <InputText @bind-Value="Model!.Id" disabled="@disabled" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Description (optional):
+            <InputTextArea @bind-Value="Model!.Description" 
+                disabled="@disabled" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Primary Classification:
+            <InputSelect @bind-Value="Model!.Classification" disabled="@disabled">
+                <option value="">Select classification ...</option>
+                <option value="Exploration">Exploration</option>
+                <option value="Diplomacy">Diplomacy</option>
+                <option value="Defense">Defense</option>
+            </InputSelect>
+        </label>
+    </div>
+    <div>
+        <label>
+            Maximum Accommodation:
+            <InputNumber @bind-Value="Model!.MaximumAccommodation" 
+                disabled="@disabled" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Engineering Approval:
+            <InputCheckbox @bind-Value="Model!.IsValidatedDesign" 
+                disabled="@disabled" />
+        </label>
+    </div>
+    <div>
+        <label>
+            Production Date:
+            <InputDate @bind-Value="Model!.ProductionDate" disabled="@disabled" />
+        </label>
+    </div>
+    <div>
+        <button type="submit" disabled="@disabled">Submit</button>
+    </div>
+    <div style="@messageStyles">
+        @message
+    </div>
+</EditForm>
+
+@code {
+    private CustomValidation? customValidation;
+    private bool disabled;
+    private string? message;
+    private string messageStyles = "visibility:hidden";
+
+    [SupplyParameterFromForm]
+    private StarshipModel? Model { get; set; }
+
+    protected override void OnInitialized() => 
+        Model ??= new() { ProductionDate = DateTime.UtcNow };
+
+    private async Task Submit(EditContext editContext)
+    {
+        customValidation?.ClearErrors();
+
+        try
+        {
+            var validationProblemDetails = 
+                await FormValidation.ValidateStarshipFormAsync(
+                    (StarshipModel)editContext.Model);
+
+            if (validationProblemDetails?.Count > 0)
+            {
+                customValidation?.DisplayErrors(validationProblemDetails);
+            }
+            else
+            {
+                disabled = true;
+                messageStyles = "color:green";
+                message = "The form has been processed.";
+            }
+        }
+        catch (AccessTokenNotAvailableException ex)
+        {
+            ex.Redirect();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Form processing error.");
+            disabled = true;
+            messageStyles = "color:red";
+            message = "There was an error processing the form.";
+        }
+    }
+}

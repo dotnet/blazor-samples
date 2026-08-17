@@ -4,7 +4,11 @@ namespace BlazorSample;
 
 public class CustomFieldClassProvider : FieldCssClassProvider
 {
-    public override string GetFieldCssClass(
-            EditContext editContext, in FieldIdentifier fieldIdentifier) =>
-        editContext.IsValid(fieldIdentifier) ? "validField" : "invalidField";
+    public override string GetFieldCssClass(EditContext editContext,
+        in FieldIdentifier fieldIdentifier)
+    {
+        var isValid = editContext.IsValid(fieldIdentifier);
+
+        return isValid ? "validField" : "invalidField";
+    }
 }
