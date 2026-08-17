@@ -9,8 +9,9 @@ public class CustomFieldClassProvider2 : FieldCssClassProvider
     {
         if (fieldIdentifier.FieldName == "Name")
         {
-            return editContext.IsValid(fieldIdentifier) ?
-                "validField" : "invalidField";
+            var isValid = editContext.IsValid(fieldIdentifier);
+
+            return isValid ? "validField" : "invalidField";
         }
 
         return string.Empty;
