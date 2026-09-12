@@ -79,7 +79,7 @@ dotnet build MauiBlazorWeb.WebUi.Tests/MauiBlazorWeb.WebUi.Tests.csproj
 
 ASPNETCORE_ENVIRONMENT=Development \
 ConnectionStrings__DefaultConnection="Data Source=$STATE_DIR/identity.db" \
-dotnet run --project MauiBlazorWeb.Web/MauiBlazorWeb.Web.csproj --no-launch-profile --urls "$SERVER_URL" \
+dotnet MauiBlazorWeb.Web/bin/Debug/net10.0/MauiBlazorWeb.Web.dll --urls "$SERVER_URL" \
     >"$STATE_DIR/server.log" 2>&1 &
 SERVER_PID=$!
 wait_for_url "$SERVER_URL/health" "Development server"

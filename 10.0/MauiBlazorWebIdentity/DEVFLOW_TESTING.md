@@ -9,8 +9,10 @@ The live suite complements—not replaces—the server API suite. Run both with:
 The runner executes `MauiBlazorWeb.IdentityApi.Tests`, builds the web,
 Playwright, and `net10.0-maccatalyst` projects, then starts an isolated Development SQLite
 database, the real web server, the DevFlow broker when needed, and the
-production-bundle-id Mac Catalyst app. It waits for the agent and CDP before
-running the hosted Playwright and `MauiBlazorWeb.DevFlow.Tests` suites. It only stops PIDs it started; it stops
+production-bundle-id Mac Catalyst app. The already-built web DLL is launched
+directly so the recorded server PID is the application itself, not a transient
+`dotnet run` wrapper. It waits for the agent and CDP before running the hosted
+Playwright and `MauiBlazorWeb.DevFlow.Tests` suites. It only stops PIDs it started; it stops
 the broker only when it started a previously stopped broker. Existing occupied
 ports fail explicitly rather than being terminated.
 The Development/Testing-only `/health` endpoint gates server readiness.

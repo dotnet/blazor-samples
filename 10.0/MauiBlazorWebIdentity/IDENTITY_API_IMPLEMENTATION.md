@@ -43,6 +43,7 @@ shared, persistent Data Protection keys.
 | 4 | Complete | Development notification UI, complete Microsoft-only integration suite, documentation reconciliation, and platform validation |
 | 5 | Complete | Debug-only DevFlow Mac Catalyst live-test increment with isolated Development state |
 | 6 | Complete | Route-contract test matrix, stock/override/new endpoint coverage, hosted Playwright ceremonies, and expanded DevFlow account flows |
+| 7 | Complete | Runner launches the built server DLL directly so cleanup owns the real server PID |
 
 ## Endpoint ledger
 
