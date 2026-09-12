@@ -76,6 +76,9 @@ shared, persistent Data Protection keys.
 | Production development-notification smoke test | Passed; `/development/notifications` returns 404 outside Development |
 | Passkey login-begin smoke test | Passed; emits an `Identity.TwoFactorUserId` temporary ceremony cookie |
 | `dotnet build MauiBlazorWeb/MauiBlazorWeb.csproj -f net10.0-maccatalyst --no-restore` | Passed; existing unsigned local development entitlement warning |
+| `dotnet build MauiBlazorWeb/MauiBlazorWeb.csproj -f net10.0-ios --no-restore` | Passed |
+| `dotnet build MauiBlazorWeb/MauiBlazorWeb.csproj -f net10.0-android --no-restore` | Passed |
+| `dotnet build MauiBlazorWeb.sln --no-restore` | Passed for web, Mac Catalyst, iOS, and Android; existing upstream package and unsigned local development entitlement warnings remain |
 | SecureStorage boundary validation | Passed by build review: reads/removes fall back to logged-out/best-effort cleanup with diagnostics; failed writes retain the valid in-memory pair and disable restart persistence |
 | Web, Mac Catalyst, iOS, Android builds | Pending |
 | Microsoft-only integration tests | Pending project creation |
