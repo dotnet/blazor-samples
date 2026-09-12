@@ -16,7 +16,7 @@ provider.
 | Item | Value |
 | --- | --- |
 | Base commit | `567732e0a78d2c1b2a22c3677f86c673d7527bed` (`origin/main`) |
-| Current commit | Uncommitted tracker baseline |
+| Current commit | `953b2e8` tracker baseline; endpoint-library increment in progress |
 | Stock API | `app.MapGroup("/identity").MapIdentityApi<ApplicationUser>()` |
 | New endpoints | `MauiBlazorWeb.IdentityApi.MapNewIdentityApi<TUser>()`, mapped on `/identity` only for stock-absent routes |
 | Overrides | `MapOverrideIdentityApi<TUser>()`, mapped only under `/identity-overrides` |
@@ -33,9 +33,9 @@ shared, persistent Data Protection keys.
 
 | Phase | Status | Scope |
 | --- | --- | --- |
-| 0 | In progress | Tracker, capability ledger, project inventory |
+| 0 | Complete | Tracker, capability ledger, project inventory |
 | 1 | Pending | Stock endpoint typed MAUI client, durable token lifecycle, account UI |
-| 2 | Pending | Generic override endpoint library and `/identity-overrides` client use |
+| 2 | In progress | Generic override endpoint library and `/identity-overrides` client use |
 | 3 | Pending | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
 | 4 | Pending | Development notification UI, integration tests, platform validation |
 
@@ -87,6 +87,5 @@ shared, persistent Data Protection keys.
 
 ## Resume instructions
 
-**Next task:** create the `MauiBlazorWeb.IdentityApi` net10.0 framework-reference
-library, add it to the solution and web project, and implement the generic
-`MapOverrideIdentityApi<TUser>()` login endpoint with typed stable failures.
+**Next task:** test the new override routes against an in-memory host, then
+replace the legacy MAUI authentication provider with the typed stock REST client.

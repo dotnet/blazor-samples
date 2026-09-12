@@ -3,7 +3,9 @@ using MauiBlazorWeb.Web.Components;
 using MauiBlazorWeb.Web.Components.Account;
 using MauiBlazorWeb.Web.Data;
 using MauiBlazorWeb.Web.Services;
+using MauiBlazorWeb.IdentityApi;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,7 +83,10 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(MauiBlazorWeb.Shared._Imports).Assembly);
 
 // Needed for external clients to log in
-app.MapGroup("/identity").MapIdentityApi<ApplicationUser>();
+var identity = app.MapGroup("/identity");
+identity.MapIdentityApi<ApplicationUser>();
+identity.MapNewIdentityApi<ApplicationUser>();
+app.MapGroup("/identity-overrides").MapOverrideIdentityApi<ApplicationUser>();
 // Needed for Identity Blazor components
 app.MapAdditionalIdentityEndpoints();
 
@@ -90,6 +95,9 @@ app.MapGet("/api/weather", async (IWeatherService weatherService) =>
 {
     var forecasts = await weatherService.GetWeatherForecastsAsync();
     return Results.Ok(forecasts);
-}).RequireAuthorization();
+}).RequireAuthorization(new AuthorizeAttribute
+{
+    AuthenticationSchemes = IdentityConstants.BearerScheme,
+});
 
 app.Run();
