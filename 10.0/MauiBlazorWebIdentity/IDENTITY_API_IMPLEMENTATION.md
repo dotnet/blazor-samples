@@ -16,7 +16,7 @@ provider.
 | Item | Value |
 | --- | --- |
 | Base commit | `567732e0a78d2c1b2a22c3677f86c673d7527bed` (`origin/main`) |
-| Current commit | `3183f04` generic override endpoint increment; portable endpoint and development-notification increment in progress |
+| Current commit | `9786023` portable endpoint increment; MAUI typed-client increment in progress |
 | Stock API | `app.MapGroup("/identity").MapIdentityApi<ApplicationUser>()` |
 | New endpoints | `MauiBlazorWeb.IdentityApi.MapNewIdentityApi<TUser>()`, mapped on `/identity` only for stock-absent routes |
 | Overrides | `MapOverrideIdentityApi<TUser>()`, mapped only under `/identity-overrides` |
@@ -34,9 +34,9 @@ shared, persistent Data Protection keys.
 | Phase | Status | Scope |
 | --- | --- | --- |
 | 0 | Complete | Tracker, capability ledger, project inventory |
-| 1 | Pending | Stock endpoint typed MAUI client, durable token lifecycle, account UI |
+| 1 | In progress | Stock endpoint typed MAUI client, durable token lifecycle, account UI |
 | 2 | In progress | Generic override endpoint library and `/identity-overrides` client use |
-| 3 | In progress | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
+| 3 | Complete | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
 | 4 | In progress | Development notification UI, integration tests, platform validation |
 
 ## Endpoint ledger
@@ -75,6 +75,7 @@ shared, persistent Data Protection keys.
 | HTTPS development smoke test | Passed; stock, override, and new routes present; bearer-only passkey route returns 401 without bearer credential |
 | Production development-notification smoke test | Passed; `/development/notifications` returns 404 outside Development |
 | Passkey login-begin smoke test | Passed; emits an `Identity.TwoFactorUserId` temporary ceremony cookie |
+| `dotnet build MauiBlazorWeb/MauiBlazorWeb.csproj -f net10.0-maccatalyst --no-restore` | Passed; existing unsigned local development entitlement warning |
 | Web, Mac Catalyst, iOS, Android builds | Pending |
 | Microsoft-only integration tests | Pending project creation |
 
@@ -90,5 +91,5 @@ shared, persistent Data Protection keys.
 
 ## Resume instructions
 
-**Next task:** replace the legacy MAUI authentication provider with the typed
-stock REST client, including atomic token-pair replacement and auth epochs.
+**Next task:** add the typed REST account client methods and MAUI account pages
+for confirmation, reset, profile, passwords, and two-factor operations.

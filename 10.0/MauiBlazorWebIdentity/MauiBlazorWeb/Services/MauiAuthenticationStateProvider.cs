@@ -1,203 +1,268 @@
-using MauiBlazorWeb.Models;
-using Microsoft.AspNetCore.Components.Authorization;
-using System.Diagnostics;
+using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
+using MauiBlazorWeb.Models;
+using Microsoft.AspNetCore.Components.Authorization;
 
-namespace MauiBlazorWeb.Services
+namespace MauiBlazorWeb.Services;
+
+/// <summary>
+/// Owns the native client's opaque Identity token pair and authentication state.
+/// </summary>
+public sealed class MauiAuthenticationStateProvider : AuthenticationStateProvider
 {
-    /// <summary>
-    /// This class manages the authentication state of the user.
-    /// The class handles user login, logout, and token validation, including refreshing tokens when they are close to expiration.
-    /// It uses secure storage to save and retrieve tokens, ensuring that users do not need to log in every time.
-    /// </summary>
-    public class MauiAuthenticationStateProvider : AuthenticationStateProvider
+    private const int TokenExpirationBufferMinutes = 30;
+    private const string AuthenticationType = "IdentityBearer";
+    private static readonly ClaimsPrincipal DefaultUser = new(new ClaimsIdentity());
+    private static readonly Task<AuthenticationState> DefaultAuthState =
+        Task.FromResult(new AuthenticationState(DefaultUser));
+    private readonly SemaphoreSlim _refreshLock = new(1, 1);
+    private Task<AuthenticationState> _currentAuthState = DefaultAuthState;
+    private AccessTokenInfo? _accessToken;
+    private bool _persistToken;
+    private long _authEpoch;
+
+    public LoginStatus LoginStatus { get; private set; }
+
+    public string LoginFailureMessage { get; private set; } = string.Empty;
+
+    public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        //TODO: Place this in AppSettings or Client config file
-        private const string AuthenticationType = "Custom authentication";
-        private const int TokenExpirationBuffer = 30; //minutes
-
-        private static ClaimsPrincipal _defaultUser = new ClaimsPrincipal(new ClaimsIdentity());
-        private static Task<AuthenticationState> _defaultAuthState = Task.FromResult(new AuthenticationState(_defaultUser));
-
-        public LoginStatus LoginStatus { get; set; } = LoginStatus.None;
-        public string LoginFailureMessage { get; set; } = "";
-
-        private Task<AuthenticationState> _currentAuthState = _defaultAuthState;
-        private AccessTokenInfo? _accessToken;
-
-        public override Task<AuthenticationState> GetAuthenticationStateAsync()
+        if (_currentAuthState != DefaultAuthState)
         {
-            if (_currentAuthState != _defaultAuthState)
-            {
-                return _currentAuthState;
-            }
-
-            _currentAuthState = CreateAuthenticationStateFromSecureStorageAsync();
-            NotifyAuthenticationStateChanged(_currentAuthState);
-
             return _currentAuthState;
         }
 
-        public async Task<AccessTokenInfo?> GetAccessTokenInfoAsync()
+        _currentAuthState = RestoreAuthenticationStateAsync();
+        NotifyAuthenticationStateChanged(_currentAuthState);
+        return _currentAuthState;
+    }
+
+    public async Task<AccessTokenInfo?> GetAccessTokenInfoAsync()
+    {
+        if (await UpdateAndValidateAccessTokenAsync())
         {
-            if (await UpdateAndValidateAccessTokenAsync())
+            return _accessToken;
+        }
+
+        await LogoutAsync();
+        return null;
+    }
+
+    public async Task LogoutAsync()
+    {
+        Interlocked.Increment(ref _authEpoch);
+        LoginStatus = LoginStatus.None;
+        LoginFailureMessage = string.Empty;
+        _accessToken = null;
+        _persistToken = false;
+        _currentAuthState = DefaultAuthState;
+        await TokenStorage.RemoveTokenAsync();
+        NotifyAuthenticationStateChanged(DefaultAuthState);
+    }
+
+    public Task LogInAsync(LoginRequest login)
+    {
+        var epoch = Interlocked.Increment(ref _authEpoch);
+        _currentAuthState = LogInAsyncCore(login, epoch);
+        NotifyAuthenticationStateChanged(_currentAuthState);
+        return _currentAuthState;
+    }
+
+    private async Task<AuthenticationState> LogInAsyncCore(LoginRequest login, long epoch)
+    {
+        LoginStatus = LoginStatus.None;
+        LoginFailureMessage = string.Empty;
+
+        try
+        {
+            using var client = HttpClientHelper.GetHttpClient();
+            using var response = await client.PostAsJsonAsync(
+                HttpClientHelper.OverrideLoginUrl,
+                new
+                {
+                    login.Email,
+                    login.Password,
+                    login.TwoFactorCode,
+                    login.TwoFactorRecoveryCode,
+                });
+
+            if (!response.IsSuccessStatusCode)
             {
-                return _accessToken;
+                var failure = await response.Content.ReadFromJsonAsync<LoginFailureResponse>();
+                if (epoch == Volatile.Read(ref _authEpoch))
+                {
+                    LoginStatus = LoginStatus.Failed;
+                    LoginFailureMessage = GetLoginFailureMessage(failure?.Code);
+                }
+
+                return new AuthenticationState(DefaultUser);
             }
 
-            Logout();
+            var responseToken = await response.Content.ReadFromJsonAsync<LoginResponse>();
+            if (responseToken is null)
+            {
+                throw new InvalidOperationException("Identity login returned no token response.");
+            }
+
+            var email = await GetAuthoritativeEmailAsync(client, responseToken);
+            if (string.IsNullOrWhiteSpace(email) || epoch != Volatile.Read(ref _authEpoch))
+            {
+                return new AuthenticationState(DefaultUser);
+            }
+
+            var token = TokenStorage.DeserializeToken(
+                JsonSerializer.Serialize(responseToken),
+                email);
+            if (token is null)
+            {
+                throw new InvalidOperationException("Identity login returned an invalid token response.");
+            }
+
+            _persistToken = login.RememberMe;
+            _accessToken = login.RememberMe
+                ? await TokenStorage.SaveTokenToSecureStorageAsync(JsonSerializer.Serialize(responseToken), email)
+                : token;
+            if (_accessToken is null || epoch != Volatile.Read(ref _authEpoch))
+            {
+                return new AuthenticationState(DefaultUser);
+            }
+
+            if (!login.RememberMe)
+            {
+                await TokenStorage.RemoveTokenAsync();
+            }
+
+            LoginStatus = LoginStatus.Success;
+            return new AuthenticationState(CreateAuthenticatedUser(email));
+        }
+        catch (HttpRequestException)
+        {
+            LoginStatus = LoginStatus.Failed;
+            LoginFailureMessage = "The Identity server could not be reached.";
+            return new AuthenticationState(DefaultUser);
+        }
+        catch (JsonException)
+        {
+            LoginStatus = LoginStatus.Failed;
+            LoginFailureMessage = "The Identity server returned an invalid response.";
+            return new AuthenticationState(DefaultUser);
+        }
+    }
+
+    private async Task<AuthenticationState> RestoreAuthenticationStateAsync()
+    {
+        _persistToken = true;
+        if (!await UpdateAndValidateAccessTokenAsync() || _accessToken is null)
+        {
+            return new AuthenticationState(DefaultUser);
+        }
+
+        LoginStatus = LoginStatus.Success;
+        return new AuthenticationState(CreateAuthenticatedUser(_accessToken.Email));
+    }
+
+    private async Task<bool> UpdateAndValidateAccessTokenAsync()
+    {
+        if (_accessToken is null)
+        {
+            _accessToken = await TokenStorage.GetTokenFromSecureStorageAsync();
+            _persistToken = _accessToken is not null;
+        }
+
+        if (_accessToken is null)
+        {
+            return false;
+        }
+
+        if (DateTime.UtcNow.AddMinutes(TokenExpirationBufferMinutes) < _accessToken.AccessTokenExpiration)
+        {
+            return true;
+        }
+
+        await _refreshLock.WaitAsync();
+        try
+        {
+            if (_accessToken is null)
+            {
+                return false;
+            }
+
+            if (DateTime.UtcNow.AddMinutes(TokenExpirationBufferMinutes) < _accessToken.AccessTokenExpiration)
+            {
+                return true;
+            }
+
+            var epoch = Volatile.Read(ref _authEpoch);
+            using var client = HttpClientHelper.GetHttpClient();
+            using var response = await client.PostAsJsonAsync(
+                HttpClientHelper.RefreshUrl,
+                new { _accessToken.LoginResponse.RefreshToken });
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
+
+            var refreshed = await response.Content.ReadFromJsonAsync<LoginResponse>();
+            if (refreshed is null || epoch != Volatile.Read(ref _authEpoch))
+            {
+                return false;
+            }
+
+            var replacement = TokenStorage.DeserializeToken(
+                JsonSerializer.Serialize(refreshed),
+                _accessToken.Email);
+            if (replacement is null)
+            {
+                return false;
+            }
+
+            _accessToken = _persistToken
+                ? await TokenStorage.SaveTokenToSecureStorageAsync(JsonSerializer.Serialize(refreshed), replacement.Email)
+                : replacement;
+            return _accessToken is not null && epoch == Volatile.Read(ref _authEpoch);
+        }
+        catch (HttpRequestException)
+        {
+            return false;
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+        finally
+        {
+            _refreshLock.Release();
+        }
+    }
+
+    private static async Task<string?> GetAuthoritativeEmailAsync(HttpClient client, LoginResponse token)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, HttpClientHelper.ManageInfoUrl);
+        request.Headers.Authorization = new AuthenticationHeaderValue(token.TokenType, token.AccessToken);
+        using var response = await client.SendAsync(request);
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
             return null;
         }
 
-        public void Logout()
-        {
-            LoginStatus = LoginStatus.None;
-            _currentAuthState = _defaultAuthState;
-            _accessToken = null;
-            TokenStorage.RemoveToken();
-            NotifyAuthenticationStateChanged(_defaultAuthState);
-        }
-
-        public Task LogInAsync(LoginRequest loginModel)
-        {
-            _currentAuthState = LogInAsyncCore(loginModel);
-            NotifyAuthenticationStateChanged(_currentAuthState);
-
-            return _currentAuthState;
-
-            async Task<AuthenticationState> LogInAsyncCore(LoginRequest loginModel)
-            {
-                var user = await LoginWithProviderAsync(loginModel);
-                return new AuthenticationState(user);
-            }
-        }
-
-        private async Task<ClaimsPrincipal> LoginWithProviderAsync(LoginRequest loginModel)
-        {
-            var authenticatedUser = _defaultUser;
-            LoginStatus = LoginStatus.None;
-
-            try
-            {
-                //Call the Login endpoint and pass the email and password
-                var httpClient = HttpClientHelper.GetHttpClient();
-                var loginData = new { loginModel.Email, loginModel.Password };
-                using var response = await httpClient.PostAsJsonAsync(HttpClientHelper.LoginUrl, loginData);
-
-                LoginStatus = response.IsSuccessStatusCode ? LoginStatus.Success : LoginStatus.Failed;
-
-                if (LoginStatus == LoginStatus.Success)
-                {
-                    var token = await response.Content.ReadAsStringAsync();
-
-                    if (loginModel.RememberMe)
-                    {
-                        // Save token to secure storage so the user doesn't have to login every time
-                        _accessToken = await TokenStorage.SaveTokenToSecureStorageAsync(token, loginModel.Email);
-                    }
-                    else
-                    {
-                        // Keep token in memory only — cleared when app closes
-                        _accessToken = TokenStorage.DeserializeToken(token, loginModel.Email);
-                    }
-
-                    authenticatedUser = CreateAuthenticatedUser(loginModel.Email);
-                    LoginStatus = LoginStatus.Success;
-                }
-                else
-                {
-                    LoginFailureMessage = "Invalid Email or Password. Please try again.";
-                    LoginStatus = LoginStatus.Failed;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error logging in: {ex}");
-                LoginFailureMessage = "Server error.";
-                LoginStatus = LoginStatus.Failed;
-            }
-
-            return authenticatedUser;
-        }
-
-        private async Task<AuthenticationState> CreateAuthenticationStateFromSecureStorageAsync()
-        {
-            var authenticatedUser = _defaultUser;
-            LoginStatus = LoginStatus.None;
-
-            if (await UpdateAndValidateAccessTokenAsync())
-            {
-                authenticatedUser = CreateAuthenticatedUser(_accessToken!.Email);
-                LoginStatus = LoginStatus.Success;
-            }
-
-            return new AuthenticationState(authenticatedUser);
-        }
-
-        private async Task<bool> UpdateAndValidateAccessTokenAsync()
-        {
-            try
-            {
-                var now = DateTime.UtcNow;
-                var thirtyMinutesFromNow = now.AddMinutes(TokenExpirationBuffer);
-
-                if (_accessToken is null || thirtyMinutesFromNow > _accessToken.AccessTokenExpiration)
-                {
-                    _accessToken = await TokenStorage.GetTokenFromSecureStorageAsync();
-                }
-
-                if (_accessToken is null)
-                {
-                    return false;
-                }
-
-                // The refresh token expiration is unknown, so we always try to refresh even if the access token expires. It defaults to 14 days.
-                // However, we start trying to refresh the access token 30 minutes before it expires to avoid race conditions.
-                if (thirtyMinutesFromNow >= _accessToken.AccessTokenExpiration)
-                {
-                    return await RefreshAccessTokenAsync(_accessToken.LoginResponse.RefreshToken, _accessToken.Email);
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error checking token for validity: {ex}");
-                return false;
-            }
-        }
-
-        private async Task<bool> RefreshAccessTokenAsync(string refreshToken, string email)
-        {
-            try
-            {
-                if (refreshToken != null)
-                {
-                    //Call the Refresh endpoint and pass the refresh token
-                    var httpClient = HttpClientHelper.GetHttpClient();
-                    var refreshData = new { refreshToken };
-                    using var response = await httpClient.PostAsJsonAsync(HttpClientHelper.RefreshUrl, refreshData);
-                    response.EnsureSuccessStatusCode();
-                    var token = await response.Content.ReadAsStringAsync();
-                    _accessToken = await TokenStorage.SaveTokenToSecureStorageAsync(token, email);
-                    return true;
-                }
-
-                return false;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error refreshing access token: {ex}");
-                throw;
-            }
-        }
-
-        private ClaimsPrincipal CreateAuthenticatedUser(string email)
-        {
-            var claims = new[] { new Claim(ClaimTypes.Name, email) };  //TODO: Add more claims as needed
-            var identity = new ClaimsIdentity(claims, AuthenticationType);
-            return new ClaimsPrincipal(identity);
-        }
+        return (await response.Content.ReadFromJsonAsync<ManageInfoResponse>())?.Email;
     }
+
+    private static ClaimsPrincipal CreateAuthenticatedUser(string email) =>
+        new(new ClaimsIdentity([new Claim(ClaimTypes.Name, email)], AuthenticationType));
+
+    private static string GetLoginFailureMessage(string? code) => code switch
+    {
+        "requires_two_factor" => "Two-factor authentication is required.",
+        "locked_out" => "This account is locked out.",
+        "not_allowed" => "This account is not allowed to sign in. Confirm its email first.",
+        _ => "The email address or password is incorrect.",
+    };
+
+    private sealed record LoginFailureResponse(string Code);
+
+    private sealed record ManageInfoResponse(string? Email, bool IsEmailConfirmed);
 }

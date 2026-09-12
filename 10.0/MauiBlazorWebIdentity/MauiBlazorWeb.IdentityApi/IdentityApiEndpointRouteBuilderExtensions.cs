@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace MauiBlazorWeb.IdentityApi;
 
@@ -132,7 +133,8 @@ public static class IdentityApiEndpointRouteBuilderExtensions
                 {
                     var code = await userManager.GenerateChangeEmailTokenAsync(user, request.NewEmail);
                     var userId = await userManager.GetUserIdAsync(user);
-                    var confirmationUrl = BuildConfirmationUrl(context, userId, code, request.NewEmail);
+                    var routeOptions = services.GetRequiredService<IOptions<IdentityApiRouteOptions>>().Value;
+                    var confirmationUrl = BuildConfirmationUrl(context, routeOptions.StockIdentityPrefix, userId, code, request.NewEmail);
                     var emailSender = services.GetRequiredService<IEmailSender<TUser>>();
                     await emailSender.SendConfirmationLinkAsync(user, request.NewEmail, confirmationUrl);
                 }
@@ -609,10 +611,11 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             logins.Select(login => login.LoginProvider).Distinct(StringComparer.Ordinal).ToArray());
     }
 
-    private static string BuildConfirmationUrl(HttpContext context, string userId, string code, string changedEmail)
+    private static string BuildConfirmationUrl(HttpContext context, string stockIdentityPrefix, string userId, string code, string changedEmail)
     {
         var encodedCode = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-        return $"{context.Request.Scheme}://{context.Request.Host}/identity/confirmEmail?userId={Uri.EscapeDataString(userId)}&code={Uri.EscapeDataString(encodedCode)}&changedEmail={Uri.EscapeDataString(changedEmail)}";
+        var prefix = stockIdentityPrefix.Trim('/');
+        return $"{context.Request.Scheme}://{context.Request.Host}/{prefix}/confirmEmail?userId={Uri.EscapeDataString(userId)}&code={Uri.EscapeDataString(encodedCode)}&changedEmail={Uri.EscapeDataString(changedEmail)}";
     }
 
     private static ValidationProblem CreateValidationProblem(IdentityResult result) =>
@@ -650,6 +653,13 @@ public static class LoginFailureCodes
     public const string RequiresTwoFactor = "requires_two_factor";
     public const string LockedOut = "locked_out";
     public const string NotAllowed = "not_allowed";
+}
+
+/// <summary>Configures stock Identity route links used by the override endpoints.</summary>
+public sealed class IdentityApiRouteOptions
+{
+    /// <summary>The mount path of the application's stock MapIdentityApi endpoints.</summary>
+    public string StockIdentityPrefix { get; set; } = "/identity";
 }
 
 /// <summary>Failure response for <c>/identity-overrides/login</c>.</summary>

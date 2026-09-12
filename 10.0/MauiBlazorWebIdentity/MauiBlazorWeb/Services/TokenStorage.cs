@@ -1,37 +1,40 @@
-using System.Diagnostics;
 using System.Text.Json;
 using MauiBlazorWeb.Models;
 
 namespace MauiBlazorWeb.Services
 {
-    /// <summary>
-    /// This class is used to store and retrieve the access token from the SecureStorage.
-    /// </summary>
     internal class TokenStorage
     {
         private const string StorageKeyName = "access_token";
+        private static readonly SemaphoreSlim StorageLock = new(1, 1);
 
-        public static void RemoveToken()
+        public static async Task RemoveTokenAsync()
         {
-            SecureStorage.Remove(StorageKeyName);
+            await StorageLock.WaitAsync();
+            try
+            {
+                SecureStorage.Remove(StorageKeyName);
+            }
+            finally
+            {
+                StorageLock.Release();
+            }
         }
 
         public static async Task<AccessTokenInfo?> GetTokenFromSecureStorageAsync()
         {
+            await StorageLock.WaitAsync();
             try
             {
                 var token = await SecureStorage.GetAsync(StorageKeyName);
-
-                if (!string.IsNullOrEmpty(token))
-                {
-                    return JsonSerializer.Deserialize<AccessTokenInfo>(token);
-                }
+                return string.IsNullOrEmpty(token)
+                    ? null
+                    : JsonSerializer.Deserialize<AccessTokenInfo>(token);
             }
-            catch (Exception ex)
+            finally
             {
-                Debug.WriteLine("Unable to retrieve AccessTokenInfo from SecureStorage." + ex);
+                StorageLock.Release();
             }
-            return null;
         }
 
         public static AccessTokenInfo? DeserializeToken(string token, string email)
@@ -57,21 +60,24 @@ namespace MauiBlazorWeb.Services
 
         public static async Task<AccessTokenInfo?> SaveTokenToSecureStorageAsync(string token, string email)
         {
-            AccessTokenInfo? accessToken = null;
+            var accessToken = DeserializeToken(token, email);
+            if (accessToken is null)
+            {
+                return null;
+            }
+
+            await StorageLock.WaitAsync();
             try
             {
-                accessToken = DeserializeToken(token, email);
-                if (accessToken != null)
-                {
-                    await SecureStorage.SetAsync(StorageKeyName, JsonSerializer.Serialize<AccessTokenInfo>(accessToken));
-                }
+                // The complete access/refresh pair is one serialized value, so a
+                // successful SecureStorage write cannot expose a mixed pair.
+                await SecureStorage.SetAsync(StorageKeyName, JsonSerializer.Serialize(accessToken));
+                return accessToken;
             }
-            catch (Exception ex)
+            finally
             {
-                Debug.WriteLine("Unable to save AccessTokenInfo to SecureStorage." + ex);
-                accessToken = null;
+                StorageLock.Release();
             }
-            return accessToken;
         }
     }
 }

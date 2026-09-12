@@ -37,6 +37,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var passkeyOrigins = builder.Configuration.GetSection("Passkeys:AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.Configure<IdentityApiRouteOptions>(options => options.StockIdentityPrefix = "/identity");
 builder.Services.Configure<IdentityPasskeyOptions>(options =>
 {
     options.ServerDomain = builder.Configuration["Passkeys:ServerDomain"];
