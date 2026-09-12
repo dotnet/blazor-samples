@@ -34,6 +34,41 @@ infrastructure and experimental limitations.
 | List and unlink linked providers | Partially supported | **New:** `GET/DELETE /identity/manage/external-logins/{provider}` | Account screen | Test proves a final sign-in method cannot be unlinked. Browser provider challenge, callback, and link handoff are deferred until a real provider is configured. |
 | Local logout and logout all devices | Fully supported | Local MAUI token cleanup; **New:** `POST /identity/manage/logout-all` | `Logout.razor` and Account screen | Test proves security-stamp logout invalidates the refresh token but leaves the presented access token usable until expiry. |
 
+## Route-contract coverage
+
+The route rows below identify the suite and test that exercise each public
+Identity endpoint. "Failure" is a deliberate public validation or
+authentication assertion; "happy path" makes a successful request against a
+fresh SQLite database. Stock endpoints remain framework-owned; the sample only
+tests their documented HTTP contracts.
+
+| Route | Contract source | Coverage suite and test | Assertion | Remaining gap |
+| --- | --- | --- | --- | --- |
+| `POST /identity/register` | Stock | API: `Development_notification_confirms_a_stock_registration`; Playwright: `Register_confirm_and_login_complete_through_hosted_pages` | Registers and confirms an account | None |
+| `GET /identity/confirmEmail` | Stock | API: `Development_notification_confirms_a_stock_registration`; Playwright: `Register_confirm_and_login_complete_through_hosted_pages` | Completes a generated confirmation action | None |
+| `POST /identity/resendConfirmationEmail` | Stock | API: `Stock_resend_forgot_reset_login_refresh_and_manage_routes_have_happy_paths` | Queues a Development confirmation action for an unconfirmed account | Non-disclosure response is framework behavior |
+| `POST /identity/forgotPassword` | Stock | API: `Stock_resend_forgot_reset_login_refresh_and_manage_routes_have_happy_paths`; Playwright: `Forgot_and_reset_password_complete_through_hosted_pages` | Queues reset action without disclosing account details | None |
+| `POST /identity/resetPassword` | Stock | API: `Stock_resend_forgot_reset_login_refresh_and_manage_routes_have_happy_paths`; Playwright: `Forgot_and_reset_password_complete_through_hosted_pages` | Resets with a public `UserManager`-issued token | Invalid-token matrix remains framework-owned |
+| `POST /identity/login` | Stock | API: `Stock_resend_forgot_reset_login_refresh_and_manage_routes_have_happy_paths`; Playwright: both hosted ceremony tests | Issues bearer tokens and accepts reset password | Browser cookie details remain framework-owned |
+| `POST /identity/refresh` | Stock | API: `Stock_resend_forgot_reset_login_refresh_and_manage_routes_have_happy_paths`; `Logout_all_invalidates_refresh_tokens_but_not_the_current_access_token` | Refreshes valid token and rejects after logout-all | None |
+| `GET/POST /identity/manage/info` | Stock | API: `Stock_resend_forgot_reset_login_refresh_and_manage_routes_have_happy_paths` | Reads profile and changes password | Pending-email confirmation ceremony is covered by stock confirmation route |
+| `POST /identity/manage/2fa` | Stock | API: `Stock_resend_forgot_reset_login_refresh_and_manage_routes_have_happy_paths` | Generates a new authenticator shared key | Real TOTP enable/disable and recovery-code ceremony |
+| `POST /identity-overrides/login` | Override | API: `Override_login_returns_stable_invalid_credentials_code`; DevFlow: `Incorrect_login_displays_a_failure_through_the_Maui_DOM` | Maps invalid credentials to stable code and client alert | Deterministic TOTP/recovery branches |
+| `GET/POST /identity-overrides/manage/info` | Override | API: `Override_profile_and_two_factor_status_return_safe_extended_data`; `Override_account_update_requires_exactly_one_operation_and_confirms_the_current_password`; DevFlow: `Register_confirm_login_update_phone_and_logout_through_the_Maui_DOM` | Reads safe profile; validates and applies phone/password changes | Email-change confirmation flow |
+| `GET /identity-overrides/manage/2fa` | Override | API: `Override_profile_and_two_factor_status_return_safe_extended_data` | Returns status without shared key | State after a real TOTP ceremony |
+| `GET /identity/manage/passkeys` | New | API: `Passkey_management_and_registration_validate_public_failure_paths` | Returns an empty passkey collection for a new account | Populated-list assertion requires a real passkey |
+| `PATCH/DELETE /identity/manage/passkeys/{credentialId}` | New | API: `Passkey_management_and_registration_validate_public_failure_paths` | Validates malformed IDs for rename/delete | Rename/delete happy paths require a real passkey |
+| `POST /identity/passkeys/register/begin` | New | API: `Passkey_management_and_registration_validate_public_failure_paths` | Produces creation options for a bearer-authenticated user | Real platform attestation |
+| `POST /identity/passkeys/register/finish` | New | API: `Passkey_management_and_registration_validate_public_failure_paths` | Reports invalid attestation deterministically | Real platform attestation |
+| `POST /identity/passkeys/login/begin` | New | API: `Passkey_login_begin_writes_temporary_identity_cookie` | Writes official ceremony cookie | None |
+| `POST /identity/passkeys/login/finish` | New | API: `Passkey_login_finish_without_the_begin_cookie_returns_a_stable_ceremony_failure` | Maps missing ceremony to stable failure | Real platform assertion |
+| `GET /identity/manage/personal-data` | New | API: `Personal_data_and_external_login_management_exclude_sensitive_data`; DevFlow: `Register_confirm_login_update_phone_and_logout_through_the_Maui_DOM` | Returns profile while excluding secrets | None |
+| `DELETE /identity/manage/account` | New | API: `Account_deletion_requires_the_current_password_and_deletes_only_after_confirmation`; DevFlow: `Logout_all_and_account_deletion_leave_the_Maui_client_anonymous` | Requires password and removes user | Passwordless recent-reauthentication contract |
+| `POST /identity/manage/logout-all` | New | API: `Logout_all_invalidates_refresh_tokens_but_not_the_current_access_token`; DevFlow: `Logout_all_and_account_deletion_leave_the_Maui_client_anonymous` | Invalidates refresh state and returns client to anonymous navigation | Access token naturally remains valid to expiration |
+| `GET /identity/manage/external-logins` | New | API: `Personal_data_and_external_login_management_exclude_sensitive_data`; `External_login_unlink_cannot_remove_the_last_sign_in_method` | Lists no providers for a new account, then the linked provider | Real provider challenge and callback |
+| `DELETE /identity/manage/external-logins/{provider}` | New | API: `Personal_data_and_external_login_management_exclude_sensitive_data`; `External_login_unlink_cannot_remove_the_last_sign_in_method` | Unlinks a provider and rejects last-method removal | Real provider challenge and callback |
+| `GET /development/notifications` | Development only | API: `Development_notifications_are_not_mapped_in_production`; `Development_notification_confirms_a_stock_registration`; Playwright: both hosted ceremony tests | Production-gated and executes generated actions only in Development | Not a production email transport |
+
 ## Route coexistence and framework proposal
 
 The generic endpoint library never maps an existing method/path pair below

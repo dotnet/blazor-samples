@@ -97,11 +97,58 @@ public sealed class DevFlowLiveTests
                 $"document.querySelector(\"[data-test='phone-input']\")?.value === '{phone}'",
                 "phone round trip");
 
+            const string changedPassword = "DevFlow!Changed-Password42";
+            await environment.DevFlow.FillAsync("[data-test='password-current-input']", password);
+            await environment.DevFlow.FillAsync("[data-test='password-new-input']", changedPassword);
+            await environment.DevFlow.ClickAsync("[data-test='password-save']");
+            await environment.DevFlow.WaitForConditionAsync(
+                "document.querySelector(\"[data-test='account-result']\")?.classList.contains('alert-success') === true",
+                "password-change success");
+
+            await environment.DevFlow.ClickAsync("[data-test='personal-data-load']");
+            await environment.DevFlow.WaitForConditionAsync(
+                $"document.querySelector(\"[data-test='personal-data']\")?.textContent.includes('{email}') === true",
+                "personal data visibility");
+
             await environment.DevFlow.ClickAsync("[data-test='nav-logout']");
             await environment.DevFlow.WaitForSelectorAsync("[data-test='nav-login']");
             await environment.DevFlow.WaitForConditionAsync(
                 "document.querySelector(\"[data-test='nav-account']\") === null",
                 "anonymous navigation state");
+        }
+        finally
+        {
+            await environment.DevFlow.ReleaseMutationLeaseAsync();
+        }
+    }
+
+    [TestMethod]
+    [TestCategory("Live")]
+    public async Task Logout_all_and_account_deletion_leave_the_Maui_client_anonymous()
+    {
+        using var environment = await LiveEnvironment.RequireServerAndDevFlowAsync();
+        try
+        {
+            var credentials = await environment.RegisterAndConfirmAsync();
+            await environment.DevFlow.SignInAsync(credentials.Email, credentials.Password);
+
+            await environment.DevFlow.ClickAsync("[data-test='nav-account']");
+            await environment.DevFlow.WaitForSelectorAsync("[data-test='logout-all']");
+            await environment.DevFlow.ClickAsync("[data-test='logout-all']");
+            await environment.DevFlow.WaitForSelectorAsync("[data-test='nav-login']");
+            await environment.DevFlow.WaitForConditionAsync(
+                "document.querySelector(\"[data-test='nav-account']\") === null",
+                "logout-all anonymous navigation state");
+
+            await environment.DevFlow.SignInAsync(credentials.Email, credentials.Password);
+            await environment.DevFlow.ClickAsync("[data-test='nav-account']");
+            await environment.DevFlow.WaitForSelectorAsync("[data-test='delete-password-input']");
+            await environment.DevFlow.FillAsync("[data-test='delete-password-input']", credentials.Password);
+            await environment.DevFlow.ClickAsync("[data-test='delete-account']");
+            await environment.DevFlow.WaitForSelectorAsync("[data-test='nav-register']");
+            Assert.IsFalse(
+                await environment.CanLogInAsync(credentials.Email, credentials.Password),
+                "The deleted account was still accepted by the server login endpoint.");
         }
         finally
         {
@@ -167,6 +214,25 @@ internal sealed class LiveEnvironment : IDisposable
         return response.IsSuccessStatusCode;
     }
 
+    internal async Task<Credentials> RegisterAndConfirmAsync()
+    {
+        var email = $"devflow-{Guid.NewGuid():N}@example.test";
+        const string password = "DevFlow!Test-Password42";
+        await DevFlow.ClickAsync("[data-test='nav-register']");
+        await DevFlow.WaitForSelectorAsync("[data-test='register-email']");
+        await DevFlow.FillAsync("[data-test='register-email']", email);
+        await DevFlow.FillAsync("[data-test='register-password']", password);
+        await DevFlow.ClickAsync("[data-test='register-submit']");
+        await DevFlow.WaitForConditionAsync(
+            "document.querySelector(\"[data-test='registration-result']\")?.classList.contains('alert-success') === true",
+            "registration success");
+
+        var confirmationUrl = await GetConfirmationUrlAsync(email);
+        using var confirmation = await HttpClient.GetAsync(confirmationUrl);
+        Assert.IsTrue(confirmation.IsSuccessStatusCode, "The development confirmation action did not succeed.");
+        return new Credentials(email, password);
+    }
+
     private static LiveEnvironment Create()
     {
         if (!string.Equals(Environment.GetEnvironmentVariable("DEVFLOW_LIVE_TESTS"), "1", StringComparison.Ordinal))
@@ -205,6 +271,8 @@ internal sealed class LiveEnvironment : IDisposable
         DevFlow.Dispose();
         HttpClient.Dispose();
     }
+
+    internal sealed record Credentials(string Email, string Password);
 }
 
 internal sealed class DevFlowClient : IDisposable
@@ -245,6 +313,16 @@ internal sealed class DevFlowClient : IDisposable
     internal async Task WaitForSelectorAsync(string selector)
     {
         await WaitForConditionAsync($"document.querySelector(\"{selector}\") !== null", $"selector {selector}");
+    }
+
+    internal async Task SignInAsync(string email, string password)
+    {
+        await ClickAsync("[data-test='nav-login']");
+        await WaitForSelectorAsync("[data-test='login-email']");
+        await FillAsync("[data-test='login-email']", email);
+        await FillAsync("[data-test='login-password']", password);
+        await ClickAsync("[data-test='login-submit']");
+        await WaitForSelectorAsync("[data-test='nav-account']");
     }
 
     internal async Task WaitForConditionAsync(string expression, string description)

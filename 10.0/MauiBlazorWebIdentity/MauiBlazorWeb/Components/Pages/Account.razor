@@ -11,9 +11,9 @@
 else {
     <section class="mb-4"><h2>Profile</h2>
         <p data-test="account-email"><strong>Email:</strong> @info.Email @if (info.IsEmailConfirmed) { <span class="text-success">(confirmed)</span> } else { <button class="btn btn-link p-0" @onclick="ResendAsync">Resend confirmation</button> }</p>
-        <div class="row g-2"><div class="col-md-5"><InputText @bind-Value="newEmail" class="form-control" placeholder="New email" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangeEmailAsync">Change email</button></div></div>
+        <div class="row g-2"><div class="col-md-5"><InputText @bind-Value="newEmail" class="form-control" placeholder="New email" data-test="email-input" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangeEmailAsync" data-test="email-save">Change email</button></div></div>
         <div class="row g-2 mt-2"><div class="col-md-5"><InputText @bind-Value="phone" class="form-control" placeholder="Phone number" data-test="phone-input" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangePhoneAsync" data-test="phone-save">Save phone</button></div></div>
-        <div class="row g-2 mt-2"><div class="col-md-4"><InputText @bind-Value="oldPassword" type="password" class="form-control" placeholder="Current password" /></div><div class="col-md-4"><InputText @bind-Value="newPassword" type="password" class="form-control" placeholder="New password" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangePasswordAsync">Change password</button></div></div>
+        <div class="row g-2 mt-2"><div class="col-md-4"><InputText @bind-Value="oldPassword" type="password" class="form-control" placeholder="Current password" data-test="password-current-input" /></div><div class="col-md-4"><InputText @bind-Value="newPassword" type="password" class="form-control" placeholder="New password" data-test="password-new-input" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangePasswordAsync" data-test="password-save">Change password</button></div></div>
     </section>
     <section class="mb-4"><h2>Two-factor authentication</h2>
         <p>Enabled: @(twoFactor?.IsTwoFactorEnabled == true ? "Yes" : "No") · Authenticator configured: @(twoFactor?.HasAuthenticator == true ? "Yes" : "No") · Recovery codes remaining: @twoFactor?.RecoveryCodesLeft</p>
@@ -39,12 +39,12 @@ else {
         @foreach (var login in externalLogins) { <div class="mb-2">@login.DisplayName ?? login.Provider <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteProviderAsync(login.Provider)">Unlink</button></div> }
     </section>
     <section class="mb-4"><h2>Personal data</h2>
-        <button class="btn btn-outline-secondary me-2" @onclick="LoadPersonalDataAsync">View personal data</button>
-        @if (personalData is not null) { <dl><dt>Email</dt><dd>@personalData.Email</dd><dt>Phone</dt><dd>@personalData.PhoneNumber</dd></dl> }
+        <button class="btn btn-outline-secondary me-2" @onclick="LoadPersonalDataAsync" data-test="personal-data-load">View personal data</button>
+        @if (personalData is not null) { <dl data-test="personal-data"><dt>Email</dt><dd>@personalData.Email</dd><dt>Phone</dt><dd>@personalData.PhoneNumber</dd></dl> }
     </section>
     <section><h2>Sessions and account</h2>
-        <button class="btn btn-outline-danger me-2" @onclick="LogoutAllAsync">Log out all devices</button>
-        <div class="input-group mt-3 col-md-6"><InputText @bind-Value="deletePassword" type="password" class="form-control" placeholder="Current password to delete account" /><button class="btn btn-danger" @onclick="DeleteAccountAsync">Delete account</button></div>
+        <button class="btn btn-outline-danger me-2" @onclick="LogoutAllAsync" data-test="logout-all">Log out all devices</button>
+        <div class="input-group mt-3 col-md-6"><InputText @bind-Value="deletePassword" type="password" class="form-control" placeholder="Current password to delete account" data-test="delete-password-input" /><button class="btn btn-danger" @onclick="DeleteAccountAsync" data-test="delete-account">Delete account</button></div>
     </section>
 }
 

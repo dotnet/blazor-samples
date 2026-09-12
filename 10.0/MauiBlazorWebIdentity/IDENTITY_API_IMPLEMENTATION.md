@@ -42,6 +42,7 @@ shared, persistent Data Protection keys.
 | 3 | Complete | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
 | 4 | Complete | Development notification UI, complete Microsoft-only integration suite, documentation reconciliation, and platform validation |
 | 5 | Complete | Debug-only DevFlow Mac Catalyst live-test increment with isolated Development state |
+| 6 | Complete | Route-contract test matrix, stock/override/new endpoint coverage, hosted Playwright ceremonies, and expanded DevFlow account flows |
 
 ## Endpoint ledger
 
@@ -72,8 +73,8 @@ shared, persistent Data Protection keys.
 
 ## Validation ledger
 
-Final validation was run after `fbb447d08fce0e35c655aa8fc5ba51ddacab7c1c`
-and before this completion-documentation commit.
+Final validation was run after the DevFlow live-test increment and before the
+route-contract coverage commit.
 
 | Command | Result |
 | --- | --- |
@@ -87,7 +88,9 @@ and before this completion-documentation commit.
 | `dotnet build MauiBlazorWeb/MauiBlazorWeb.csproj -f net10.0-android --no-restore` | Passed |
 | `dotnet build MauiBlazorWeb.sln --no-restore` | Passed for web, Mac Catalyst, iOS, and Android; existing upstream package and unsigned local development entitlement warnings remain |
 | SecureStorage boundary validation | Passed by build review: reads/removes fall back to logged-out/best-effort cleanup with diagnostics; failed writes retain the valid in-memory pair and disable restart persistence |
-| `dotnet test MauiBlazorWeb.IdentityApi.Tests/MauiBlazorWeb.IdentityApi.Tests.csproj --no-restore` | Passed: 10 tests for route separation, stable invalid login, bearer isolation, Development-only notification gating, account-mutation ambiguity/current-password checks, logout-all refresh invalidation, safe deletion, external-login final-method protection, and passkey temporary-cookie failure behavior; per-factory SQLite files and WAL/SHM sidecars are cleaned |
+| `dotnet test MauiBlazorWeb.IdentityApi.Tests/MauiBlazorWeb.IdentityApi.Tests.csproj --no-restore` | Passed: 15 tests covering each stock, override, and new route with a public success, authorization, or validation assertion; per-factory SQLite files and WAL/SHM sidecars are cleaned |
+| `WEB_UI_TESTS=1 DEVFLOW_SERVER_URL=https://localhost:7157 dotnet test MauiBlazorWeb.WebUi.Tests` | Passed: hosted Playwright registration/confirmation/login and forgot/reset-password/login ceremonies |
+| `DEVFLOW_LIVE_TESTS=1 DEVFLOW_SERVER_URL=https://localhost:7157 DEVFLOW_AGENT_PORT=10223 dotnet test MauiBlazorWeb.DevFlow.Tests` | Passed: 4 live Mac Catalyst DevFlow tests, including profile password/personal-data, logout-all, and deletion |
 
 The separately discoverable `MauiBlazorWeb.DevFlow.Tests` project is opt-in
 live coverage. It uses Microsoft test infrastructure and the official

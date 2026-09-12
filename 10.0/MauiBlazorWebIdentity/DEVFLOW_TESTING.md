@@ -41,7 +41,8 @@ removed on exit.
 * The official `Microsoft.Maui.DevFlow.Client` `AgentClient` validates the
   native app host through the `IdentityBlazorWebView` AutomationId and uses CDP
   for the Blazor DOM: registration, Development-only
-  confirmation, failed and valid login, profile phone update, and logout.
+  confirmation, failed and valid login, profile phone/password update, personal
+  data visibility, logout-all, deletion, and anonymous navigation.
 
 Live tests are intentionally opt-in and separately discoverable:
 
@@ -78,6 +79,7 @@ normal sandbox entitlement file.
 
 Experimental limitations: Mac Catalyst launch/signing remains host-dependent,
 and WebKit/CDP availability requires supported iOS or Mac Catalyst versions.
-Next coverage should add deterministic 2FA, real passkey ceremonies, and an
-external-provider browser callback once real provider/authenticator fixtures
-are available.
+The hosted Microsoft Playwright suite covers registration/confirmation/login
+and forgot/reset-password/login browser ceremonies. Next coverage should add
+deterministic 2FA, real passkey ceremonies, and an external-provider browser
+callback once real provider/authenticator fixtures are available.
