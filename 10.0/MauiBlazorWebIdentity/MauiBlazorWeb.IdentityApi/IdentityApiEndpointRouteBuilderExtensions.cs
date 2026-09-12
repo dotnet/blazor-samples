@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Authorization;
@@ -210,7 +211,375 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         where TUser : class
     {
         ArgumentNullException.ThrowIfNull(endpoints);
-        return endpoints.MapGroup("").WithTags("Identity extensions");
+
+        var group = endpoints.MapGroup("")
+            .WithTags("Identity extensions");
+        var bearerOnly = new AuthorizeAttribute
+        {
+            AuthenticationSchemes = IdentityConstants.BearerScheme,
+        };
+
+        group.MapGet("/manage/passkeys", async Task<IResult> (ClaimsPrincipal principal, [FromServices] UserManager<TUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var passkeys = await userManager.GetPasskeysAsync(user);
+            return TypedResults.Ok(passkeys.Select(passkey => new PasskeyResponse(
+                WebEncoders.Base64UrlEncode(passkey.CredentialId),
+                passkey.Name,
+                passkey.CreatedAt,
+                passkey.IsUserVerified,
+                passkey.IsBackedUp)).ToArray());
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityManagePasskeys")
+        .WithSummary("Lists the authenticated user's passkeys without exposing key material.")
+        .Produces<PasskeyResponse[]>();
+
+        group.MapPatch("/manage/passkeys/{credentialId}", async Task<IResult> (
+            string credentialId,
+            [FromBody] RenamePasskeyRequest request,
+            ClaimsPrincipal principal,
+            [FromServices] UserManager<TUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            if (!TryDecodeCredentialId(credentialId, out var credentialIdBytes))
+            {
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["credentialId"] = ["The credential ID must be base64url encoded."],
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["name"] = ["A passkey name is required."],
+                });
+            }
+
+            var passkey = await userManager.GetPasskeyAsync(user, credentialIdBytes);
+            if (passkey is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            passkey.Name = request.Name.Trim();
+            var result = await userManager.AddOrUpdatePasskeyAsync(user, passkey);
+            return result.Succeeded
+                ? TypedResults.NoContent()
+                : CreateValidationProblem(result);
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityRenamePasskey")
+        .WithSummary("Renames one passkey.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+        group.MapDelete("/manage/passkeys/{credentialId}", async Task<IResult> (
+            string credentialId,
+            ClaimsPrincipal principal,
+            [FromServices] UserManager<TUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            if (!TryDecodeCredentialId(credentialId, out var credentialIdBytes))
+            {
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["credentialId"] = ["The credential ID must be base64url encoded."],
+                });
+            }
+
+            var result = await userManager.RemovePasskeyAsync(user, credentialIdBytes);
+            return result.Succeeded
+                ? TypedResults.NoContent()
+                : CreateValidationProblem(result);
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityDeletePasskey")
+        .WithSummary("Removes one passkey.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+        var passkeyGroup = group.MapGroup("/passkeys").DisableAntiforgery();
+
+        passkeyGroup.MapPost("/register/begin", async Task<IResult> (
+            ClaimsPrincipal principal,
+            [FromServices] UserManager<TUser> userManager,
+            [FromServices] SignInManager<TUser> signInManager) =>
+        {
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var userId = await userManager.GetUserIdAsync(user);
+            var userName = await userManager.GetUserNameAsync(user) ?? userId;
+            var optionsJson = await signInManager.MakePasskeyCreationOptionsAsync(new PasskeyUserEntity
+            {
+                Id = userId,
+                Name = userName,
+                DisplayName = userName,
+            });
+
+            return TypedResults.Content(optionsJson, "application/json");
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityBeginPasskeyRegistration")
+        .WithSummary("Begins passkey registration and writes the official temporary Identity ceremony cookie.");
+
+        passkeyGroup.MapPost("/register/finish", async Task<IResult> (
+            [FromBody] JsonElement credential,
+            [FromQuery] string? name,
+            ClaimsPrincipal principal,
+            [FromServices] UserManager<TUser> userManager,
+            [FromServices] SignInManager<TUser> signInManager) =>
+        {
+            PasskeyAttestationResult attestation;
+            try
+            {
+                attestation = await signInManager.PerformPasskeyAttestationAsync(credential.GetRawText());
+            }
+            catch (InvalidOperationException)
+            {
+                return TypedResults.BadRequest(new PasskeyCeremonyFailureResponse(
+                    "passkey_ceremony_not_found",
+                    "No passkey registration is in progress. Begin a new registration and return its temporary Identity cookie."));
+            }
+
+            if (!attestation.Succeeded)
+            {
+                return TypedResults.BadRequest(new PasskeyCeremonyFailureResponse(
+                    "passkey_attestation_failed",
+                    "The passkey attestation could not be verified."));
+            }
+
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var userId = await userManager.GetUserIdAsync(user);
+            if (!string.Equals(userId, attestation.UserEntity.Id, StringComparison.Ordinal))
+            {
+                return TypedResults.BadRequest(new PasskeyCeremonyFailureResponse(
+                    "passkey_user_mismatch",
+                    "The passkey ceremony belongs to a different account."));
+            }
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                attestation.Passkey.Name = name.Trim();
+            }
+
+            var result = await userManager.AddOrUpdatePasskeyAsync(user, attestation.Passkey);
+            return result.Succeeded
+                ? TypedResults.Ok(new PasskeyRegistrationResponse(true, attestation.Passkey.Name))
+                : CreateValidationProblem(result);
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityFinishPasskeyRegistration")
+        .WithSummary("Completes passkey registration using the temporary Identity ceremony cookie.");
+
+        passkeyGroup.MapPost("/login/begin", async Task<IResult> ([FromServices] SignInManager<TUser> signInManager) =>
+        {
+            var optionsJson = await signInManager.MakePasskeyRequestOptionsAsync(user: null);
+            return TypedResults.Content(optionsJson, "application/json");
+        })
+        .WithName("IdentityBeginPasskeyLogin")
+        .WithSummary("Begins discoverable passkey login and writes the official temporary Identity ceremony cookie.");
+
+        passkeyGroup.MapPost("/login/finish", async Task<IResult> (
+            [FromBody] JsonElement credential,
+            [FromServices] SignInManager<TUser> signInManager) =>
+        {
+            signInManager.AuthenticationScheme = IdentityConstants.BearerScheme;
+            Microsoft.AspNetCore.Identity.SignInResult result;
+            try
+            {
+                result = await signInManager.PasskeySignInAsync(credential.GetRawText());
+            }
+            catch (InvalidOperationException)
+            {
+                return TypedResults.BadRequest(new PasskeyCeremonyFailureResponse(
+                    "passkey_ceremony_not_found",
+                    "No passkey login is in progress. Begin a new login and return its temporary Identity cookie."));
+            }
+
+            if (!result.Succeeded)
+            {
+                return TypedResults.Json(
+                    new LoginFailureResponse(GetLoginFailureCode(result)),
+                    statusCode: StatusCodes.Status401Unauthorized);
+            }
+
+            return TypedResults.Empty;
+        })
+        .WithName("IdentityFinishPasskeyLogin")
+        .WithSummary("Completes passkey login and emits an in-box opaque bearer token response.");
+
+        group.MapGet("/manage/personal-data", async Task<IResult> (ClaimsPrincipal principal, [FromServices] UserManager<TUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            return TypedResults.Ok(new PersonalDataResponse(
+                await userManager.GetUserIdAsync(user),
+                await userManager.GetUserNameAsync(user),
+                await userManager.GetEmailAsync(user),
+                await userManager.GetPhoneNumberAsync(user),
+                await userManager.IsEmailConfirmedAsync(user),
+                await userManager.GetTwoFactorEnabledAsync(user)));
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityPersonalData")
+        .WithSummary("Returns a fixed safe subset of personal data.")
+        .Produces<PersonalDataResponse>();
+
+        group.MapDelete("/manage/account", async Task<IResult> (
+            [FromBody] DeleteAccountRequest request,
+            ClaimsPrincipal principal,
+            [FromServices] UserManager<TUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            if (!await userManager.HasPasswordAsync(user))
+            {
+                return CreateValidationProblem(
+                    "PasswordlessRecentAuthenticationRequired",
+                    "Passwordless deletion requires a recent interactive reauthentication flow, which this sample does not implement.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.CurrentPassword))
+            {
+                return CreateValidationProblem("CurrentPasswordRequired", "The current password is required to delete this account.");
+            }
+
+            if (!await userManager.CheckPasswordAsync(user, request.CurrentPassword))
+            {
+                return CreateValidationProblem("InvalidCurrentPassword", "The current password is incorrect.");
+            }
+
+            var result = await userManager.DeleteAsync(user);
+            return result.Succeeded
+                ? TypedResults.NoContent()
+                : CreateValidationProblem(result);
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityDeleteAccount")
+        .WithSummary("Deletes a password account after validating its current password.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+        group.MapPost("/manage/logout-all", async Task<IResult> (ClaimsPrincipal principal, [FromServices] UserManager<TUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var result = await userManager.UpdateSecurityStampAsync(user);
+            return result.Succeeded
+                ? TypedResults.NoContent()
+                : CreateValidationProblem(result);
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityLogoutAll")
+        .WithSummary("Invalidates refresh tokens by updating the security stamp; access tokens remain valid until expiry.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+        group.MapGet("/manage/external-logins", async Task<IResult> (ClaimsPrincipal principal, [FromServices] UserManager<TUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var logins = await userManager.GetLoginsAsync(user);
+            return TypedResults.Ok(logins.Select(login => new ExternalLoginResponse(
+                login.LoginProvider,
+                login.ProviderDisplayName)).ToArray());
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityExternalLogins")
+        .WithSummary("Lists linked external login providers without provider keys.")
+        .Produces<ExternalLoginResponse[]>();
+
+        group.MapDelete("/manage/external-logins/{provider}", async Task<IResult> (
+            string provider,
+            ClaimsPrincipal principal,
+            [FromServices] UserManager<TUser> userManager) =>
+        {
+            var user = await userManager.GetUserAsync(principal);
+            if (user is null)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var logins = await userManager.GetLoginsAsync(user);
+            var linkedLogins = logins
+                .Where(login => string.Equals(login.LoginProvider, provider, StringComparison.Ordinal))
+                .ToArray();
+            if (linkedLogins.Length == 0)
+            {
+                return TypedResults.NotFound();
+            }
+
+            var hasOtherLogin = logins.Any(login => !string.Equals(login.LoginProvider, provider, StringComparison.Ordinal));
+            var hasPassword = await userManager.HasPasswordAsync(user);
+            var hasPasskey = (await userManager.GetPasskeysAsync(user)).Count > 0;
+            if (!hasOtherLogin && !hasPassword && !hasPasskey)
+            {
+                return CreateValidationProblem(
+                    "LastSignInMethod",
+                    "Removing this provider would leave the account without a usable sign-in method.");
+            }
+
+            foreach (var login in linkedLogins)
+            {
+                var result = await userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
+                if (!result.Succeeded)
+                {
+                    return CreateValidationProblem(result);
+                }
+            }
+
+            return TypedResults.NoContent();
+        })
+        .RequireAuthorization(bearerOnly)
+        .WithName("IdentityDeleteExternalLogin")
+        .WithSummary("Unlinks an external provider without exposing provider keys or removing the final sign-in method.")
+        .Produces(StatusCodes.Status204NoContent)
+        .ProducesValidationProblem();
+
+        return endpoints;
     }
 
     private static string GetLoginFailureCode(Microsoft.AspNetCore.Identity.SignInResult result) =>
@@ -258,6 +627,20 @@ public static class IdentityApiEndpointRouteBuilderExtensions
         {
             [code] = [description],
         });
+
+    private static bool TryDecodeCredentialId(string credentialId, out byte[] credentialIdBytes)
+    {
+        try
+        {
+            credentialIdBytes = WebEncoders.Base64UrlDecode(credentialId);
+            return credentialIdBytes.Length > 0;
+        }
+        catch (FormatException)
+        {
+            credentialIdBytes = [];
+            return false;
+        }
+    }
 }
 
 /// <summary>Stable machine-readable values returned for unsuccessful override login attempts.</summary>
@@ -302,3 +685,35 @@ public sealed record TwoFactorStatusResponse(
     bool HasAuthenticator,
     int RecoveryCodesLeft,
     bool IsMachineRemembered);
+
+/// <summary>Safe metadata about one passkey.</summary>
+public sealed record PasskeyResponse(
+    string CredentialId,
+    string? Name,
+    DateTimeOffset CreatedAt,
+    bool IsUserVerified,
+    bool IsBackedUp);
+
+/// <summary>Request to rename a passkey.</summary>
+public sealed record RenamePasskeyRequest(string? Name);
+
+/// <summary>Non-secret passkey registration completion response.</summary>
+public sealed record PasskeyRegistrationResponse(bool Registered, string? Name);
+
+/// <summary>Machine-readable passkey ceremony failure response.</summary>
+public sealed record PasskeyCeremonyFailureResponse(string Code, string Message);
+
+/// <summary>A safe explicit personal-data projection.</summary>
+public sealed record PersonalDataResponse(
+    string UserId,
+    string? UserName,
+    string? Email,
+    string? PhoneNumber,
+    bool IsEmailConfirmed,
+    bool IsTwoFactorEnabled);
+
+/// <summary>Current-password confirmation for deleting an account.</summary>
+public sealed record DeleteAccountRequest(string? CurrentPassword);
+
+/// <summary>External login metadata without a provider key.</summary>
+public sealed record ExternalLoginResponse(string Provider, string? DisplayName);

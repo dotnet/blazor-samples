@@ -36,6 +36,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+var passkeyOrigins = builder.Configuration.GetSection("Passkeys:AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.Configure<IdentityPasskeyOptions>(options =>
+{
+    options.ServerDomain = builder.Configuration["Passkeys:ServerDomain"];
+    options.ValidateOrigin = context => ValueTask.FromResult(
+        !context.CrossOrigin && passkeyOrigins.Contains(context.Origin, StringComparer.Ordinal));
+});
+
 // Needed for external clients to log in
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
     {
@@ -44,7 +52,16 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<DevelopmentEmailSender>();
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>>(services =>
+        services.GetRequiredService<DevelopmentEmailSender>());
+}
+else
+{
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+}
 
 // For more information on OpenAPI support in ASP.NET Core,
 // see OpenAPI support in ASP.NET Core API apps at
@@ -64,6 +81,8 @@ if (app.Environment.IsDevelopment())
     }
     app.UseMigrationsEndPoint();
     app.MapOpenApi();
+    app.MapGet("/development/notifications", (DevelopmentEmailSender sender) =>
+        Results.Content(DevelopmentNotificationPage.Render(sender), "text/html"));
 }
 else
 {

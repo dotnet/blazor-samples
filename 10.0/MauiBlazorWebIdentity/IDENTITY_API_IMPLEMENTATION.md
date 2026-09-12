@@ -16,7 +16,7 @@ provider.
 | Item | Value |
 | --- | --- |
 | Base commit | `567732e0a78d2c1b2a22c3677f86c673d7527bed` (`origin/main`) |
-| Current commit | `953b2e8` tracker baseline; endpoint-library increment in progress |
+| Current commit | `3183f04` generic override endpoint increment; portable endpoint and development-notification increment in progress |
 | Stock API | `app.MapGroup("/identity").MapIdentityApi<ApplicationUser>()` |
 | New endpoints | `MauiBlazorWeb.IdentityApi.MapNewIdentityApi<TUser>()`, mapped on `/identity` only for stock-absent routes |
 | Overrides | `MapOverrideIdentityApi<TUser>()`, mapped only under `/identity-overrides` |
@@ -36,23 +36,23 @@ shared, persistent Data Protection keys.
 | 0 | Complete | Tracker, capability ledger, project inventory |
 | 1 | Pending | Stock endpoint typed MAUI client, durable token lifecycle, account UI |
 | 2 | In progress | Generic override endpoint library and `/identity-overrides` client use |
-| 3 | Pending | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
-| 4 | Pending | Development notification UI, integration tests, platform validation |
+| 3 | In progress | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
+| 4 | In progress | Development notification UI, integration tests, platform validation |
 
 ## Endpoint ledger
 
 | Endpoint group | Endpoint | Status | Notes |
 | --- | --- | --- | --- |
 | Stock | `/identity/*` | Existing | MapIdentityApi remains the direct comparison surface |
-| Override | `/identity-overrides/login` | Pending | Stable failure codes |
-| Override | `/identity-overrides/manage/info` | Pending | Extended profile and unambiguous mutations |
-| Override | `/identity-overrides/manage/2fa` | Pending | Read-only 2FA status |
-| New | `/identity/manage/passkeys` | Pending | List, rename, remove |
-| New | `/identity/passkeys/*` | Pending | Official Identity ceremony APIs and temporary cookie continuity |
-| New | `/identity/manage/personal-data` | Pending | Explicit filtered DTO |
-| New | `/identity/manage/account` | Pending | Password/recent-auth deletion protection |
-| New | `/identity/manage/logout-all` | Pending | Security-stamp refresh invalidation |
-| New | `/identity/manage/external-logins` | Pending | List/unlink with last-method safeguard |
+| Override | `/identity-overrides/login` | Complete | Stable failure codes |
+| Override | `/identity-overrides/manage/info` | Complete | Extended profile and unambiguous mutations |
+| Override | `/identity-overrides/manage/2fa` | Complete | Read-only 2FA status |
+| New | `/identity/manage/passkeys` | Complete | List, rename, remove |
+| New | `/identity/passkeys/*` | Complete | Official Identity ceremony APIs and temporary cookie continuity |
+| New | `/identity/manage/personal-data` | Complete | Explicit filtered DTO |
+| New | `/identity/manage/account` | Partial | Password accounts supported; passwordless deletion explicitly requires an unimplemented recent interactive reauthentication flow |
+| New | `/identity/manage/logout-all` | Complete | Security-stamp refresh invalidation |
+| New | `/identity/manage/external-logins` | Complete | List/unlink with last-method safeguard |
 
 ## Client feature ledger
 
@@ -71,14 +71,17 @@ shared, persistent Data Protection keys.
 | Command | Result |
 | --- | --- |
 | `dotnet --info` | SDK 11 preview and .NET 10 SDK/runtime installed |
-| `dotnet build MauiBlazorWeb.sln` | Pending |
+| `dotnet build MauiBlazorWeb.Web/MauiBlazorWeb.Web.csproj --no-restore` | Passed; known upstream package vulnerability warnings remain |
+| HTTPS development smoke test | Passed; stock, override, and new routes present; bearer-only passkey route returns 401 without bearer credential |
+| Production development-notification smoke test | Passed; `/development/notifications` returns 404 outside Development |
+| Passkey login-begin smoke test | Passed; emits an `Identity.TwoFactorUserId` temporary ceremony cookie |
 | Web, Mac Catalyst, iOS, Android builds | Pending |
 | Microsoft-only integration tests | Pending project creation |
 
 ## Known blockers and deferred work
 
 * The current worktree has only the main sample's legacy MAUI login client. No
-  endpoint extension library or integration-test project exists yet.
+  typed REST account client or integration-test project exists yet.
 * Native passkey ceremony execution is deferred behind a small client seam until
   the .NET 11 MAUI passkey APIs are used. The net10 UI will inspect the server's
   sanitized options JSON only.
@@ -87,5 +90,5 @@ shared, persistent Data Protection keys.
 
 ## Resume instructions
 
-**Next task:** test the new override routes against an in-memory host, then
-replace the legacy MAUI authentication provider with the typed stock REST client.
+**Next task:** replace the legacy MAUI authentication provider with the typed
+stock REST client, including atomic token-pair replacement and auth epochs.
