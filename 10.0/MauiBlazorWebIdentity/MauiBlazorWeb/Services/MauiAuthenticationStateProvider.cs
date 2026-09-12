@@ -122,9 +122,17 @@ public sealed class MauiAuthenticationStateProvider : AuthenticationStateProvide
             }
 
             _persistToken = login.RememberMe;
-            _accessToken = login.RememberMe
-                ? await TokenStorage.SaveTokenToSecureStorageAsync(JsonSerializer.Serialize(responseToken), email)
-                : token;
+            if (login.RememberMe)
+            {
+                var saved = await TokenStorage.SaveTokenToSecureStorageAsync(JsonSerializer.Serialize(responseToken), email);
+                _accessToken = saved?.Token ?? token;
+                _persistToken = saved?.IsPersisted == true;
+            }
+            else
+            {
+                _accessToken = token;
+            }
+
             if (_accessToken is null || epoch != Volatile.Read(ref _authEpoch))
             {
                 return new AuthenticationState(DefaultUser);
@@ -219,9 +227,17 @@ public sealed class MauiAuthenticationStateProvider : AuthenticationStateProvide
                 return false;
             }
 
-            _accessToken = _persistToken
-                ? await TokenStorage.SaveTokenToSecureStorageAsync(JsonSerializer.Serialize(refreshed), replacement.Email)
-                : replacement;
+            if (_persistToken)
+            {
+                var saved = await TokenStorage.SaveTokenToSecureStorageAsync(JsonSerializer.Serialize(refreshed), replacement.Email);
+                _accessToken = saved?.Token ?? replacement;
+                _persistToken = saved?.IsPersisted == true;
+            }
+            else
+            {
+                _accessToken = replacement;
+            }
+
             return _accessToken is not null && epoch == Volatile.Read(ref _authEpoch);
         }
         catch (HttpRequestException)

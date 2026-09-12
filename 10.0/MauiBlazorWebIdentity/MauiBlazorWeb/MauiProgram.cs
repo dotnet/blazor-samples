@@ -32,6 +32,7 @@ namespace MauiBlazorWeb
             // Use our custom provider when the app needs an AuthenticationStateProvider
             builder.Services.AddScoped<AuthenticationStateProvider>(s
                 => (MauiAuthenticationStateProvider)s.GetRequiredService<MauiAuthenticationStateProvider>());
+            builder.Services.AddScoped<AccountClient>();
 
             // Add device-specific services used by the MauiBlazorWeb.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();

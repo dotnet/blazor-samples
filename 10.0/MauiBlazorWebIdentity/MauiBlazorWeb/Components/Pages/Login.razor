@@ -21,11 +21,23 @@
                     <label for="Input.Email" class="form-label">Email</label>
                     <ValidationMessage For="() => LoginModel.Email" class="text-danger" />
                 </div>
+                @if (requiresTwoFactor)
+                {
+                    <div class="form-floating mb-3">
+                        <InputText @bind-Value="LoginModel.TwoFactorCode" id="Input.TwoFactorCode" class="form-control" autocomplete="one-time-code" placeholder="123456" />
+                        <label for="Input.TwoFactorCode">Authenticator code</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <InputText @bind-Value="LoginModel.TwoFactorRecoveryCode" id="Input.TwoFactorRecoveryCode" class="form-control" autocomplete="off" placeholder="Recovery code" />
+                        <label for="Input.TwoFactorRecoveryCode">Or recovery code</label>
+                    </div>
+                }
                 <div class="form-floating mb-3">
                     <InputText type="password" @bind-Value="LoginModel.Password" id="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
                     <label for="Input.Password" class="form-label">Password</label>
                     <ValidationMessage For="() => LoginModel.Password" class="text-danger" />
                 </div>
+                <p class="mt-3"><a href="register">Register</a> · <a href="password-help">Forgot your password?</a></p>
                 <div class="checkbox mb-3">
                     <label class="form-label">
                         <InputCheckbox @bind-Value="LoginModel.RememberMe" class="darker-border-checkbox form-check-input" />
@@ -44,6 +56,7 @@
 
     private LoginRequest LoginModel { get; set; } = new();
     private bool loginFailureHidden = true;
+    private bool requiresTwoFactor;
 
     protected override void OnInitialized()
     {
@@ -60,6 +73,7 @@
         if (AuthStateProvider.LoginStatus != LoginStatus.Success)
         {
             loginFailureHidden = false;
+            requiresTwoFactor = AuthStateProvider.LoginFailureMessage == "Two-factor authentication is required.";
             return;
         }
 

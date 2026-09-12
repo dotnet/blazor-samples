@@ -26,6 +26,9 @@ namespace MauiBlazorWeb.Services
         public static string OverrideLoginUrl => $"{BaseUrl}identity-overrides/login";
         public static string RefreshUrl => $"{BaseUrl}identity/refresh";
         public static string ManageInfoUrl => $"{BaseUrl}identity/manage/info";
+        public static string IdentityUrl => $"{BaseUrl}identity/";
+        public static string OverrideIdentityUrl => $"{BaseUrl}identity-overrides/";
+        public static string DevelopmentNotificationsUrl => $"{BaseUrl}development/notifications";
         public static string WeatherUrl => $"{BaseUrl}api/weather";
 
         public static HttpClient GetHttpClient()

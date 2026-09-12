@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using MauiBlazorWeb.Models;
 
@@ -8,12 +9,18 @@ namespace MauiBlazorWeb.Services
         private const string StorageKeyName = "access_token";
         private static readonly SemaphoreSlim StorageLock = new(1, 1);
 
-        public static async Task RemoveTokenAsync()
+        public static async Task<bool> RemoveTokenAsync()
         {
             await StorageLock.WaitAsync();
             try
             {
                 SecureStorage.Remove(StorageKeyName);
+                return true;
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                Debug.WriteLine($"Unable to remove the Identity token from secure storage: {exception.Message}");
+                return false;
             }
             finally
             {
@@ -30,6 +37,11 @@ namespace MauiBlazorWeb.Services
                 return string.IsNullOrEmpty(token)
                     ? null
                     : JsonSerializer.Deserialize<AccessTokenInfo>(token);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                Debug.WriteLine($"Unable to retrieve the Identity token from secure storage: {exception.Message}");
+                return null;
             }
             finally
             {
@@ -58,7 +70,7 @@ namespace MauiBlazorWeb.Services
             };
         }
 
-        public static async Task<AccessTokenInfo?> SaveTokenToSecureStorageAsync(string token, string email)
+        public static async Task<TokenStorageWriteResult?> SaveTokenToSecureStorageAsync(string token, string email)
         {
             var accessToken = DeserializeToken(token, email);
             if (accessToken is null)
@@ -72,12 +84,21 @@ namespace MauiBlazorWeb.Services
                 // The complete access/refresh pair is one serialized value, so a
                 // successful SecureStorage write cannot expose a mixed pair.
                 await SecureStorage.SetAsync(StorageKeyName, JsonSerializer.Serialize(accessToken));
-                return accessToken;
+                return new TokenStorageWriteResult(accessToken, IsPersisted: true);
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                Debug.WriteLine($"Unable to persist the Identity token in secure storage: {exception.Message}");
+                // The server-issued pair remains valid for the current process.
+                // Callers must keep it in memory but not assume it survives restart.
+                return new TokenStorageWriteResult(accessToken, IsPersisted: false);
             }
             finally
             {
                 StorageLock.Release();
             }
         }
+
+        internal sealed record TokenStorageWriteResult(AccessTokenInfo Token, bool IsPersisted);
     }
 }

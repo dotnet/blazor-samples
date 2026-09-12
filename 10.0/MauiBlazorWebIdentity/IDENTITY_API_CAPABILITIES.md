@@ -11,33 +11,33 @@ public `UserManager<TUser>` and `SignInManager<TUser>` APIs.
 
 | Capability | Stock route | MAUI usage | Support |
 | --- | --- | --- | --- |
-| Register | `POST /identity/register` | Account registration | Planned |
-| Password login and tokens | `POST /identity/login?useCookies=false` | Typed token client | Planned |
-| Refresh | `POST /identity/refresh` | Serialized token refresh | Planned |
-| Confirm/resend email | `/identity/confirmEmail`, `POST /identity/resendConfirmationEmail` | Confirmation UI | Planned |
-| Forgot/reset password | `POST /identity/forgotPassword`, `POST /identity/resetPassword` | Reset UI | Planned |
-| Profile/email/password | `GET/POST /identity/manage/info` | Profile editor | Planned |
-| Authenticator and recovery codes | `POST /identity/manage/2fa` | 2FA editor | Planned |
+| Register | `POST /identity/register` | Registration page | Implemented |
+| Password login and tokens | `POST /identity/login?useCookies=false` | Typed token client | Implemented |
+| Refresh | `POST /identity/refresh` | Serialized token refresh | Implemented |
+| Confirm/resend email | `/identity/confirmEmail`, `POST /identity/resendConfirmationEmail` | Registration/account pages | Implemented |
+| Forgot/reset password | `POST /identity/forgotPassword`, `POST /identity/resetPassword` | Password-help page | Implemented |
+| Profile/email/password | `GET/POST /identity/manage/info` | Account editor | Implemented |
+| Authenticator and recovery codes | `POST /identity/manage/2fa` | Account editor and login continuation | Implemented |
 
 ### Partial stock APIs proposed for override
 
 | Capability | Stock limitation | Override route | Support |
 | --- | --- | --- | --- |
-| Login outcomes | Generic unsuccessful response does not expose a stable outcome | `POST /identity-overrides/login` | Pending |
-| Manage info | Does not return phone, password, authenticators, passkeys, recovery code count, or external providers | `GET /identity-overrides/manage/info` | Pending |
-| Manage info mutations | Cannot set phone or add a first local password; combination semantics are opaque | `POST /identity-overrides/manage/info` | Pending |
-| 2FA inspection | Stock handler is mutating/configuration-oriented | `GET /identity-overrides/manage/2fa` | Pending |
+| Login outcomes | Generic unsuccessful response does not expose a stable outcome | `POST /identity-overrides/login` | Implemented |
+| Manage info | Does not return phone, password, authenticators, passkeys, recovery code count, or external providers | `GET /identity-overrides/manage/info` | Implemented |
+| Manage info mutations | Cannot set phone or add a first local password; combination semantics are opaque | `POST /identity-overrides/manage/info` | Implemented |
+| 2FA inspection | Stock handler is mutating/configuration-oriented | `GET /identity-overrides/manage/2fa` | Implemented |
 
 ### Missing stock APIs proposed as new routes
 
 | Capability | New route(s) | Support |
 | --- | --- | --- |
-| Passkey list/manage | `GET/PATCH/DELETE /identity/manage/passkeys` | Pending |
-| Passkey registration and login | `/identity/passkeys/register/*`, `/identity/passkeys/login/*` | Pending |
-| Filtered personal data | `GET /identity/manage/personal-data` | Pending |
-| Delete account | `DELETE /identity/manage/account` | Pending |
-| Invalidate refresh sessions | `POST /identity/manage/logout-all` | Pending |
-| List/unlink external logins | `GET/DELETE /identity/manage/external-logins` | Pending |
+| Passkey list/manage | `GET/PATCH/DELETE /identity/manage/passkeys` | Implemented; MAUI previews native begin JSON pending .NET 11 |
+| Passkey registration and login | `/identity/passkeys/register/*`, `/identity/passkeys/login/*` | Server implemented; native MAUI ceremony deferred to .NET 11 |
+| Filtered personal data | `GET /identity/manage/personal-data` | Implemented |
+| Delete account | `DELETE /identity/manage/account` | Implemented for password accounts; passwordless recent reauth deferred |
+| Invalidate refresh sessions | `POST /identity/manage/logout-all` | Implemented |
+| List/unlink external logins | `GET/DELETE /identity/manage/external-logins` | Implemented |
 
 ## Hosted Account feature inventory
 
@@ -79,3 +79,13 @@ for `CreateAsync` and `AssertAsync`.
 The generic endpoint library never maps an existing method/path pair on
 `/identity`; enhanced handlers live under `/identity-overrides` so callers can
 compare stock and proposed behavior without route collisions.
+
+## Implementation map
+
+| Surface | Server implementation | MAUI usage |
+| --- | --- | --- |
+| Stock and proposed endpoint mappings | `MauiBlazorWeb.IdentityApi/IdentityApiEndpointRouteBuilderExtensions.cs` | `MauiBlazorWeb/Services/AccountClient.cs` |
+| Bearer-only host configuration | `MauiBlazorWeb.Web/Program.cs` | `MauiBlazorWeb/Services/MauiAuthenticationStateProvider.cs` |
+| Development notifications | `MauiBlazorWeb.Web/Components/Account/DevelopmentEmailSender.cs` | `MauiBlazorWeb/Components/Pages/Register.razor` |
+| Account management UI | `MauiBlazorWeb.IdentityApi/IdentityApiEndpointRouteBuilderExtensions.cs` | `MauiBlazorWeb/Components/Pages/Account.razor` |
+| Registration and recovery | `MauiBlazorWeb.Web/Program.cs` | `MauiBlazorWeb/Components/Pages/Register.razor`, `PasswordHelp.razor` |

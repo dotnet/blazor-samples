@@ -16,7 +16,7 @@ provider.
 | Item | Value |
 | --- | --- |
 | Base commit | `567732e0a78d2c1b2a22c3677f86c673d7527bed` (`origin/main`) |
-| Current commit | `9786023` portable endpoint increment; MAUI typed-client increment in progress |
+| Current commit | `HEAD` (MAUI REST account UI and resilient SecureStorage increment) |
 | Stock API | `app.MapGroup("/identity").MapIdentityApi<ApplicationUser>()` |
 | New endpoints | `MauiBlazorWeb.IdentityApi.MapNewIdentityApi<TUser>()`, mapped on `/identity` only for stock-absent routes |
 | Overrides | `MapOverrideIdentityApi<TUser>()`, mapped only under `/identity-overrides` |
@@ -34,8 +34,8 @@ shared, persistent Data Protection keys.
 | Phase | Status | Scope |
 | --- | --- | --- |
 | 0 | Complete | Tracker, capability ledger, project inventory |
-| 1 | In progress | Stock endpoint typed MAUI client, durable token lifecycle, account UI |
-| 2 | In progress | Generic override endpoint library and `/identity-overrides` client use |
+| 1 | Complete | Stock endpoint typed MAUI client, durable token lifecycle, account UI |
+| 2 | Complete | Generic override endpoint library and `/identity-overrides` client use |
 | 3 | Complete | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
 | 4 | In progress | Development notification UI, integration tests, platform validation |
 
@@ -58,13 +58,13 @@ shared, persistent Data Protection keys.
 
 | Feature | Status | Intended client surface |
 | --- | --- | --- |
-| Password register/login/refresh | Existing partial | Replace legacy provider with typed client |
-| Email confirmation and password reset | Pending | Account pages |
-| Profile, email, phone, passwords | Pending | Account pages |
-| Authenticator and recovery codes | Pending | Account pages |
-| Passkey management | Pending | JSON preview with `.NET 11 Passkeys API coming soon` |
-| Personal data/deletion | Pending | Account pages |
-| External logins and logout-all | Pending | Account pages |
+| Password register/login/refresh | Complete | Typed client with serialized refresh and auth epochs |
+| Email confirmation and password reset | Complete | Registration and password-help pages |
+| Profile, email, phone, passwords | Complete | Account page |
+| Authenticator and recovery codes | Complete | Account page and login continuation |
+| Passkey management | Partial | List/remove and JSON preview with `.NET 11 Passkeys API coming soon` |
+| Personal data/deletion | Complete | Account page |
+| External logins and logout-all | Complete | Account page |
 
 ## Validation ledger
 
@@ -76,13 +76,14 @@ shared, persistent Data Protection keys.
 | Production development-notification smoke test | Passed; `/development/notifications` returns 404 outside Development |
 | Passkey login-begin smoke test | Passed; emits an `Identity.TwoFactorUserId` temporary ceremony cookie |
 | `dotnet build MauiBlazorWeb/MauiBlazorWeb.csproj -f net10.0-maccatalyst --no-restore` | Passed; existing unsigned local development entitlement warning |
+| SecureStorage boundary validation | Passed by build review: reads/removes fall back to logged-out/best-effort cleanup with diagnostics; failed writes retain the valid in-memory pair and disable restart persistence |
 | Web, Mac Catalyst, iOS, Android builds | Pending |
 | Microsoft-only integration tests | Pending project creation |
 
 ## Known blockers and deferred work
 
-* The current worktree has only the main sample's legacy MAUI login client. No
-  typed REST account client or integration-test project exists yet.
+* The MAUI client uses typed REST account methods and an operation/auth epoch.
+  A Microsoft-only integration-test project has not been added yet.
 * Native passkey ceremony execution is deferred behind a small client seam until
   the .NET 11 MAUI passkey APIs are used. The net10 UI will inspect the server's
   sanitized options JSON only.
@@ -91,5 +92,6 @@ shared, persistent Data Protection keys.
 
 ## Resume instructions
 
-**Next task:** add the typed REST account client methods and MAUI account pages
-for confirmation, reset, profile, passwords, and two-factor operations.
+**Next task:** add Microsoft-only integration tests for route layout, bearer
+isolation, login outcomes, passkey ceremony continuity, and development-route
+environment gating.
