@@ -17,7 +17,8 @@ provider.
 | --- | --- |
 | Base commit | `567732e0a78d2c1b2a22c3677f86c673d7527bed` (`origin/main`) |
 | Starting commit for this increment | `94b3e0da570f36addc395be53c709edb96b98283` |
-| Current implementation status | Authenticated endpoint fixtures are complete; final capability and README reconciliation remains |
+| Current implementation commit | `fbb447d08fce0e35c655aa8fc5ba51ddacab7c1c` (authenticated fixtures) |
+| Current completion status | Endpoint implementation and authenticated fixtures are complete; this documentation commit finalizes the ledger and README, after which all requested builds run |
 | Stock API | `app.MapGroup("/identity").MapIdentityApi<ApplicationUser>()` |
 | New endpoints | `MauiBlazorWeb.IdentityApi.MapNewIdentityApi<TUser>()`, mapped on `/identity` only for stock-absent routes |
 | Overrides | `MapOverrideIdentityApi<TUser>()`, mapped only under `/identity-overrides` |
@@ -38,7 +39,7 @@ shared, persistent Data Protection keys.
 | 1 | Complete | Stock endpoint typed MAUI client, durable token lifecycle, account UI |
 | 2 | Complete | Generic override endpoint library and `/identity-overrides` client use |
 | 3 | Complete | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
-| 4 | Complete | Development notification UI and Microsoft-only integration tests, including authenticated account invariants |
+| 4 | Complete | Development notification UI, complete Microsoft-only integration suite, documentation reconciliation, and platform validation |
 
 ## Endpoint ledger
 
@@ -69,6 +70,9 @@ shared, persistent Data Protection keys.
 
 ## Validation ledger
 
+Final validation was run after `fbb447d08fce0e35c655aa8fc5ba51ddacab7c1c`
+and before this completion-documentation commit.
+
 | Command | Result |
 | --- | --- |
 | `dotnet --info` | SDK 11 preview and .NET 10 SDK/runtime installed |
@@ -98,8 +102,15 @@ shared, persistent Data Protection keys.
 
 ## Resume instructions
 
-**Next task:** reconcile the capability ledger and sample README with the
-completed endpoint and fixture inventory, then run the web and MAUI platform
-builds. Lockout, TOTP, recovery-code, and successful passkey-finish tests remain
-deliberately out of scope because their realistic inputs require clocks,
-authenticator hardware, or private protocol fixtures.
+## Completion and resume status
+
+**Completion target:** all implemented routes and the hosted-feature ledger are
+complete. The final validation run is recorded below before this documentation
+increment is committed.
+
+**Deliberate limits:** lockout, TOTP, recovery-code, and successful
+passkey-finish integration tests are not synthesized: realistic inputs require
+clock control, an authenticator, or private protocol fixtures. The suite covers
+the closest stable public behavior instead. Passwordless deletion requires a
+future recent-interactive-reauthentication contract, and external-provider
+browser handoff is deferred until a provider is configured.

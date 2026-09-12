@@ -12,10 +12,11 @@ The sample:
 
 ## Identity REST API exploration
 
-The sample retains the framework stock API at `/identity` and adds proposed
-portable account endpoints under `/identity` only where the framework does not
-already provide a route. Enhanced replacements are deliberately isolated under
-`/identity-overrides` so their behavior can be compared directly.
+The sample retains the framework stock API at `/identity`. It adds
+contribution-oriented first-party account endpoints under `/identity` only
+where the framework has no route, while enhanced replacements are deliberately
+isolated at `/identity-overrides`. This prevents route collisions and makes
+stock versus proposed behavior directly comparable.
 
 * [Identity REST API implementation tracker](IDENTITY_API_IMPLEMENTATION.md)
   records the phased status, endpoint ledger, and validation results.
@@ -28,6 +29,29 @@ are reusable and there is no device registry, replay detection, or individual
 token revocation. Updating the security stamp invalidates refresh tokens but
 does not invalidate an issued access token before it expires. Production hosts
 must share persistent Data Protection keys.
+
+The completed portable surface includes stable login outcomes, extended account
+profile/password/phone operations, 2FA status, safe personal-data projection,
+password-confirmed account deletion, security-stamp logout-all, and linked
+provider listing/unlinking. It also exposes official Identity passkey ceremony
+begin/finish routes and passkey management. See the capability matrix for every
+hosted feature's full, partial, or deferred classification and test mapping.
+
+The net10 MAUI UI lists/removes passkeys and previews the registration-begin
+JSON. It intentionally defers real native WebAuthn `CreateAsync`/`AssertAsync`
+calls to the .NET 11 MAUI passkey API seam. Successful passkey ceremonies
+require an authenticator, so integration tests cover the official temporary
+cookie and the stable missing-cookie failure rather than fabricated protocol
+internals. Likewise, external-provider browser challenge/callback handoff is
+deferred until a real provider is configured; the REST surface safely manages
+links that already exist.
+
+`/development/notifications` is a bounded in-memory development aid, available
+only in the Development environment. It is not a production email sender.
+Configure a real `IEmailSender` for deployment, persist/share Data Protection
+keys, use HTTPS, and apply normal platform signing/provisioning for MAUI
+packages. Local unsigned Mac Catalyst development warnings are expected and are
+not a deployment configuration.
 
 For more information, see [.NET MAUI Blazor Hybrid and Web App with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/hybrid/security/maui-blazor-web-identity).
 
