@@ -12,6 +12,7 @@ using MauiBlazorWeb.Web.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -303,9 +304,15 @@ public sealed class IdentityApiTests
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if (disposing && File.Exists(_databasePath))
+            if (disposing)
             {
-                File.Delete(_databasePath);
+                SqliteConnection.ClearAllPools();
+                var directory = Path.GetDirectoryName(_databasePath)!;
+                var fileName = Path.GetFileName(_databasePath);
+                foreach (var path in Directory.GetFiles(directory, $"{fileName}*"))
+                {
+                    File.Delete(path);
+                }
             }
         }
 

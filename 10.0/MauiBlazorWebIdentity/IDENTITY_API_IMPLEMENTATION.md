@@ -18,8 +18,8 @@ provider.
 | Base commit | `567732e0a78d2c1b2a22c3677f86c673d7527bed` (`origin/main`) |
 | Starting commit for this increment | `94b3e0da570f36addc395be53c709edb96b98283` |
 | Current implementation commit | `fbb447d08fce0e35c655aa8fc5ba51ddacab7c1c` (authenticated fixtures) |
-| Current documentation baseline | `d78feb481ce3fe408074175e5c2cdf8e015382b1` (capability/README reconciliation) |
-| Current completion status | Endpoint implementation, authenticated fixtures, documentation, and requested builds are complete; this status update corrects the documented stock OpenAPI URL |
+| Current documentation baseline | `c04d9fde79c3d7683fb47616d60f8f0d8ff6d894` (OpenAPI URL correction) |
+| Current completion status | Endpoint implementation, authenticated fixtures, documentation, and requested builds are complete; this status update records fixture artifact cleanup |
 | Stock API | `app.MapGroup("/identity").MapIdentityApi<ApplicationUser>()` |
 | New endpoints | `MauiBlazorWeb.IdentityApi.MapNewIdentityApi<TUser>()`, mapped on `/identity` only for stock-absent routes |
 | Overrides | `MapOverrideIdentityApi<TUser>()`, mapped only under `/identity-overrides` |
@@ -86,7 +86,7 @@ and before this completion-documentation commit.
 | `dotnet build MauiBlazorWeb/MauiBlazorWeb.csproj -f net10.0-android --no-restore` | Passed |
 | `dotnet build MauiBlazorWeb.sln --no-restore` | Passed for web, Mac Catalyst, iOS, and Android; existing upstream package and unsigned local development entitlement warnings remain |
 | SecureStorage boundary validation | Passed by build review: reads/removes fall back to logged-out/best-effort cleanup with diagnostics; failed writes retain the valid in-memory pair and disable restart persistence |
-| `dotnet test MauiBlazorWeb.IdentityApi.Tests/MauiBlazorWeb.IdentityApi.Tests.csproj --no-restore` | Passed: 10 tests for route separation, stable invalid login, bearer isolation, Development-only notification gating, account-mutation ambiguity/current-password checks, logout-all refresh invalidation, safe deletion, external-login final-method protection, and passkey temporary-cookie failure behavior |
+| `dotnet test MauiBlazorWeb.IdentityApi.Tests/MauiBlazorWeb.IdentityApi.Tests.csproj --no-restore` | Passed: 10 tests for route separation, stable invalid login, bearer isolation, Development-only notification gating, account-mutation ambiguity/current-password checks, logout-all refresh invalidation, safe deletion, external-login final-method protection, and passkey temporary-cookie failure behavior; per-factory SQLite files and WAL/SHM sidecars are cleaned |
 
 ## Known blockers and deferred work
 
