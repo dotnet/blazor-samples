@@ -16,7 +16,8 @@ provider.
 | Item | Value |
 | --- | --- |
 | Base commit | `567732e0a78d2c1b2a22c3677f86c673d7527bed` (`origin/main`) |
-| Current commit | `HEAD` (MAUI REST account UI and resilient SecureStorage increment) |
+| Starting commit for this increment | `94b3e0da570f36addc395be53c709edb96b98283` |
+| Current implementation status | Authenticated endpoint fixtures are complete; final capability and README reconciliation remains |
 | Stock API | `app.MapGroup("/identity").MapIdentityApi<ApplicationUser>()` |
 | New endpoints | `MauiBlazorWeb.IdentityApi.MapNewIdentityApi<TUser>()`, mapped on `/identity` only for stock-absent routes |
 | Overrides | `MapOverrideIdentityApi<TUser>()`, mapped only under `/identity-overrides` |
@@ -37,7 +38,7 @@ shared, persistent Data Protection keys.
 | 1 | Complete | Stock endpoint typed MAUI client, durable token lifecycle, account UI |
 | 2 | Complete | Generic override endpoint library and `/identity-overrides` client use |
 | 3 | Complete | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
-| 4 | In progress | Development notification UI, initial Microsoft-only integration tests, platform validation |
+| 4 | Complete | Development notification UI and Microsoft-only integration tests, including authenticated account invariants |
 
 ## Endpoint ledger
 
@@ -80,22 +81,25 @@ shared, persistent Data Protection keys.
 | `dotnet build MauiBlazorWeb/MauiBlazorWeb.csproj -f net10.0-android --no-restore` | Passed |
 | `dotnet build MauiBlazorWeb.sln --no-restore` | Passed for web, Mac Catalyst, iOS, and Android; existing upstream package and unsigned local development entitlement warnings remain |
 | SecureStorage boundary validation | Passed by build review: reads/removes fall back to logged-out/best-effort cleanup with diagnostics; failed writes retain the valid in-memory pair and disable restart persistence |
-| `dotnet test MauiBlazorWeb.IdentityApi.Tests/MauiBlazorWeb.IdentityApi.Tests.csproj --no-restore` | Passed: 5 tests for route separation, stable invalid login, bearer isolation, temporary passkey cookie, and Development-only notification gating |
+| `dotnet test MauiBlazorWeb.IdentityApi.Tests/MauiBlazorWeb.IdentityApi.Tests.csproj --no-restore` | Passed: 10 tests for route separation, stable invalid login, bearer isolation, Development-only notification gating, account-mutation ambiguity/current-password checks, logout-all refresh invalidation, safe deletion, external-login final-method protection, and passkey temporary-cookie failure behavior |
 
 ## Known blockers and deferred work
 
 * The MAUI client uses typed REST account methods and an operation/auth epoch.
-  The Microsoft-only integration suite covers endpoint layout and environment
-  boundaries; authenticated account mutation and protocol-fixture coverage is
-  the remaining test expansion.
+  The Microsoft-only integration suite covers stable public account invariants.
+  A full passkey attestation/assertion cannot be manufactured without a platform
+  authenticator; tests instead cover the official begin-cookie contract and
+  finish-without-cookie failure. This avoids test-only protocol internals.
 * Native passkey ceremony execution is deferred behind a small client seam until
-  the .NET 11 MAUI passkey APIs are used. The net10 UI will inspect the server's
-  sanitized options JSON only.
-* Browser external-provider login/link completion is designed but deferred until
-  a real provider is configured.
+  the .NET 11 MAUI passkey APIs are used. The net10 UI only previews the server
+  begin JSON.
+* Browser external-provider login/link completion remains deferred until a real
+  provider is configured.
 
 ## Resume instructions
 
-**Next task:** expand `MauiBlazorWeb.IdentityApi.Tests` with authenticated
-fixtures for lockout/TOTP/recovery, passkey finish/replay, deletion, logout-all,
-and external-login safeguards.
+**Next task:** reconcile the capability ledger and sample README with the
+completed endpoint and fixture inventory, then run the web and MAUI platform
+builds. Lockout, TOTP, recovery-code, and successful passkey-finish tests remain
+deliberately out of scope because their realistic inputs require clocks,
+authenticator hardware, or private protocol fixtures.

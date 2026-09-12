@@ -31,9 +31,10 @@ builder.Services.AddAuthentication(options =>
         options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
     });
 
-var connectionString = builder.Environment.IsEnvironment("Testing")
-    ? $"Data Source={Path.Combine(Path.GetTempPath(), "MauiBlazorWebIdentity.Tests.db")}"
-    : builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? (builder.Environment.IsEnvironment("Testing")
+        ? $"Data Source={Path.Combine(Directory.GetCurrentDirectory(), "MauiBlazorWebIdentity.Tests.db")}"
+        : throw new InvalidOperationException("Connection string 'DefaultConnection' not found."));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
