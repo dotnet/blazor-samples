@@ -6,13 +6,13 @@
 
 <PageTitle>Account</PageTitle>
 <h1>Account</h1>
-@if (message is not null) { <div class="alert @alertClass" role="alert">@message</div> }
+@if (message is not null) { <div class="alert @alertClass" role="alert" data-test="account-result">@message</div> }
 @if (info is null) { <p>Loading account information…</p> }
 else {
     <section class="mb-4"><h2>Profile</h2>
-        <p><strong>Email:</strong> @info.Email @if (info.IsEmailConfirmed) { <span class="text-success">(confirmed)</span> } else { <button class="btn btn-link p-0" @onclick="ResendAsync">Resend confirmation</button> }</p>
+        <p data-test="account-email"><strong>Email:</strong> @info.Email @if (info.IsEmailConfirmed) { <span class="text-success">(confirmed)</span> } else { <button class="btn btn-link p-0" @onclick="ResendAsync">Resend confirmation</button> }</p>
         <div class="row g-2"><div class="col-md-5"><InputText @bind-Value="newEmail" class="form-control" placeholder="New email" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangeEmailAsync">Change email</button></div></div>
-        <div class="row g-2 mt-2"><div class="col-md-5"><InputText @bind-Value="phone" class="form-control" placeholder="Phone number" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangePhoneAsync">Save phone</button></div></div>
+        <div class="row g-2 mt-2"><div class="col-md-5"><InputText @bind-Value="phone" class="form-control" placeholder="Phone number" data-test="phone-input" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangePhoneAsync" data-test="phone-save">Save phone</button></div></div>
         <div class="row g-2 mt-2"><div class="col-md-4"><InputText @bind-Value="oldPassword" type="password" class="form-control" placeholder="Current password" /></div><div class="col-md-4"><InputText @bind-Value="newPassword" type="password" class="form-control" placeholder="New password" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangePasswordAsync">Change password</button></div></div>
     </section>
     <section class="mb-4"><h2>Two-factor authentication</h2>
@@ -52,7 +52,7 @@ else {
     private AccountInfo? info; private TwoFactorStatus? twoFactor; private Passkey[] passkeys = []; private ExternalLogin[] externalLogins = [];
     private PersonalData? personalData; private string? passkeyPreview, message, newEmail, phone, oldPassword, newPassword, deletePassword, twoFactorCode, sharedKey; private string[]? recoveryCodes; private string alertClass = "alert-info";
     protected override async Task OnInitializedAsync() => await ReloadAsync();
-    private async Task ReloadAsync() { var a = await AccountClient.GetInfoAsync(); if (!a.Succeeded) { Set(a.WithoutValue()); return; } info = a.Value; var t = await AccountClient.GetTwoFactorAsync(); twoFactor = t.Value; var p = await AccountClient.GetPasskeysAsync(); passkeys = p.Value ?? []; var e = await AccountClient.GetExternalLoginsAsync(); externalLogins = e.Value ?? []; }
+    private async Task ReloadAsync() { var a = await AccountClient.GetInfoAsync(); if (!a.Succeeded) { Set(a.WithoutValue()); return; } info = a.Value; phone = info?.PhoneNumber; var t = await AccountClient.GetTwoFactorAsync(); twoFactor = t.Value; var p = await AccountClient.GetPasskeysAsync(); passkeys = p.Value ?? []; var e = await AccountClient.GetExternalLoginsAsync(); externalLogins = e.Value ?? []; }
     private async Task ResendAsync() { if (info is not null) Set(await AccountClient.ResendConfirmationAsync(info.Email ?? "")); }
     private async Task ChangeEmailAsync() { Set(await AccountClient.UpdateEmailAsync(newEmail ?? "")); await ReloadAsync(); }
     private async Task ChangePhoneAsync() { Set(await AccountClient.UpdatePhoneAsync(phone ?? "")); await ReloadAsync(); }

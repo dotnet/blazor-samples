@@ -71,6 +71,7 @@ else
 // see OpenAPI support in ASP.NET Core API apps at
 // https://learn.microsoft.com/aspnet/core/fundamentals/openapi/overview
 builder.Services.AddOpenApi();
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
@@ -92,6 +93,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
         app.MapGet("/development/notifications", (DevelopmentEmailSender sender) =>
             Results.Content(DevelopmentNotificationPage.Render(sender), "text/html"));
     }
+
+    app.MapHealthChecks("/health");
 }
 else
 {

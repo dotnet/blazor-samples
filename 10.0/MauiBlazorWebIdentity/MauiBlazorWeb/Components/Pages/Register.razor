@@ -5,10 +5,10 @@
 <h1>Create an account</h1>
 <div class="row"><div class="col-lg-6"><EditForm Model="model" OnValidSubmit="RegisterAsync">
     <DataAnnotationsValidator /><ValidationSummary class="text-danger" />
-    @if (message is not null) { <div class="alert @alertClass" role="alert">@message</div> }
-    <div class="form-floating mb-3"><InputText @bind-Value="model.Email" class="form-control" autocomplete="email" placeholder="name@example.com" /><label>Email</label></div>
-    <div class="form-floating mb-3"><InputText @bind-Value="model.Password" type="password" class="form-control" autocomplete="new-password" placeholder="Password" /><label>Password</label></div>
-    <button class="btn btn-primary" disabled="@busy">Create account</button>
+    @if (message is not null) { <div class="alert @alertClass" role="alert" data-test="registration-result">@message</div> }
+    <div class="form-floating mb-3"><InputText @bind-Value="model.Email" class="form-control" autocomplete="email" placeholder="name@example.com" data-test="register-email" /><label>Email</label></div>
+    <div class="form-floating mb-3"><InputText @bind-Value="model.Password" type="password" class="form-control" autocomplete="new-password" placeholder="Password" data-test="register-password" /><label>Password</label></div>
+    <button class="btn btn-primary" disabled="@busy" data-test="register-submit">Create account</button>
 </EditForm></div></div>
 @if (message is not null && alertClass == "alert-success")
 {

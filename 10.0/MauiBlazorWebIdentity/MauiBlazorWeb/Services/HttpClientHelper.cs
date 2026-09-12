@@ -12,6 +12,15 @@ namespace MauiBlazorWeb.Services
             get
             {
 #if DEBUG
+                var testServerUrl = Environment.GetEnvironmentVariable("DEVFLOW_SERVER_URL");
+                if (Uri.TryCreate(testServerUrl, UriKind.Absolute, out var testServerUri) &&
+                    (testServerUri.Scheme == Uri.UriSchemeHttp || testServerUri.Scheme == Uri.UriSchemeHttps))
+                {
+                    _baseUrl = testServerUri.AbsoluteUri.EndsWith("/", StringComparison.Ordinal)
+                        ? testServerUri.AbsoluteUri
+                        : $"{testServerUri.AbsoluteUri}/";
+                }
+
                 //See: https://learn.microsoft.com/dotnet/maui/data-cloud/local-web-services
                 //Android Emulator uses 10.0.2.2 to refer to localhost
                 if (DeviceInfo.Platform == DevicePlatform.Android)

@@ -85,7 +85,9 @@ internal static class DevelopmentNotificationPage
             if (notification.ActionLink is not null)
             {
                 body.Append(": <a href=\"")
-                    .Append(WebUtility.HtmlEncode(notification.ActionLink))
+                    // LinkGenerator returns a URL formatted for HTML. Decode it before
+                    // encoding the containing attribute so each query separator is encoded once.
+                    .Append(WebUtility.HtmlEncode(WebUtility.HtmlDecode(notification.ActionLink)))
                     .Append("\">complete action</a>");
             }
             else if (notification.Code is not null)

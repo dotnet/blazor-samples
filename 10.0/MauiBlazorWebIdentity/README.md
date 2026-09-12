@@ -23,6 +23,21 @@ stock versus proposed behavior directly comparable.
 * [Identity REST API capability matrix](IDENTITY_API_CAPABILITIES.md) maps every
   hosted `/Account/*` feature to stock, override, or proposed new REST support.
 
+  ## DevFlow live testing
+
+  The Debug-only Mac Catalyst test increment uses experimental
+  `Microsoft.Maui.DevFlow.Agent` and `Microsoft.Maui.DevFlow.Blazor`
+  `0.1.0-preview.12.26421.1` packages. It uses the official DevFlow AgentClient
+  API to validate the native host and `IdentityBlazorWebView`, DevFlow CDP to
+  validate interactive Blazor forms, and Microsoft Playwright to cover hosted
+  Razor account pages alongside the existing server API integration suite. See
+  [DEVFLOW_TESTING.md](DEVFLOW_TESTING.md) for prerequisites, the opt-in test
+  environment, limitations, and the single runner command:
+
+  ```bash
+  ./scripts/run-devflow-live-tests.sh
+  ```
+
 The access and refresh tokens are opaque Data Protection tickets, not JWTs.
 Access tokens default to one hour and refresh tokens to 14 days. Refresh tokens
 are reusable and there is no device registry, replay detection, or individual

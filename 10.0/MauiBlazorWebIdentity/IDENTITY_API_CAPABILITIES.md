@@ -8,6 +8,11 @@ complete hosted Identity feature, including its MAUI experience.
 
 `MauiBlazorWeb.IdentityApi.Tests/IdentityApiTests.cs` is the Microsoft-only
 integration suite. It uses MSTest, `WebApplicationFactory`, and SQLite.
+`MauiBlazorWeb.DevFlow.Tests` is a separately discoverable, opt-in live MSTest
+suite: the official DevFlow `AgentClient` verifies the native MAUI host and
+BlazorWebView AutomationId, then drives the MAUI Blazor DOM through CDP. It
+does not replace API coverage; see [DEVFLOW_TESTING.md](DEVFLOW_TESTING.md) for
+infrastructure and experimental limitations.
 
 ## Capability inventory
 

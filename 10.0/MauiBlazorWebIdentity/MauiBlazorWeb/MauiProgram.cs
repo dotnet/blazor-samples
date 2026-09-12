@@ -2,6 +2,10 @@ using MauiBlazorWeb.Services;
 using MauiBlazorWeb.Shared.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
+#if DEBUG
+using Microsoft.Maui.DevFlow.Agent;
+using Microsoft.Maui.DevFlow.Blazor;
+#endif
 
 namespace MauiBlazorWeb
 {
@@ -22,6 +26,12 @@ namespace MauiBlazorWeb
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
+            DevFlowWebViewInspector.Enable();
+            builder.AddMauiDevFlowAgent(options =>
+            {
+                options.Port = ResolveDevFlowAgentPort();
+            });
+            builder.AddMauiBlazorDevFlowTools();
 #endif
 
             //Register needed elements for authentication:
@@ -40,5 +50,17 @@ namespace MauiBlazorWeb
 
             return builder.Build();
         }
+
+#if DEBUG
+        private static int ResolveDevFlowAgentPort()
+        {
+            const int defaultPort = 10223;
+            var configuredPort = Environment.GetEnvironmentVariable("DEVFLOW_AGENT_PORT")
+                ?? Environment.GetEnvironmentVariable("DEVFLOW_TEST_PORT");
+            return int.TryParse(configuredPort, out var port) && port is > 0 and <= 65535
+                ? port
+                : defaultPort;
+        }
+#endif
     }
 }

@@ -41,6 +41,7 @@ shared, persistent Data Protection keys.
 | 2 | Complete | Generic override endpoint library and `/identity-overrides` client use |
 | 3 | Complete | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
 | 4 | Complete | Development notification UI, complete Microsoft-only integration suite, documentation reconciliation, and platform validation |
+| 5 | Complete | Debug-only DevFlow Mac Catalyst live-test increment with isolated Development state |
 
 ## Endpoint ledger
 
@@ -87,6 +88,16 @@ and before this completion-documentation commit.
 | `dotnet build MauiBlazorWeb.sln --no-restore` | Passed for web, Mac Catalyst, iOS, and Android; existing upstream package and unsigned local development entitlement warnings remain |
 | SecureStorage boundary validation | Passed by build review: reads/removes fall back to logged-out/best-effort cleanup with diagnostics; failed writes retain the valid in-memory pair and disable restart persistence |
 | `dotnet test MauiBlazorWeb.IdentityApi.Tests/MauiBlazorWeb.IdentityApi.Tests.csproj --no-restore` | Passed: 10 tests for route separation, stable invalid login, bearer isolation, Development-only notification gating, account-mutation ambiguity/current-password checks, logout-all refresh invalidation, safe deletion, external-login final-method protection, and passkey temporary-cookie failure behavior; per-factory SQLite files and WAL/SHM sidecars are cleaned |
+
+The separately discoverable `MauiBlazorWeb.DevFlow.Tests` project is opt-in
+live coverage. It uses Microsoft test infrastructure and the official
+`Microsoft.Maui.DevFlow.Client` `AgentClient` API for coordinated CDP
+automation; the runner also exercises the current `maui devflow webview`,
+`agent`, and `broker` CLI commands for readiness diagnostics. It validates the
+real Debug Mac Catalyst host/`IdentityBlazorWebView`, then drives registration,
+Development-only confirmation, login, phone update, and logout through CDP.
+See [DEVFLOW_TESTING.md](DEVFLOW_TESTING.md); no token, confirmation-code, or
+full-response diagnostics are emitted.
 
 ## Known blockers and deferred work
 
