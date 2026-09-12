@@ -37,7 +37,7 @@ shared, persistent Data Protection keys.
 | 1 | Complete | Stock endpoint typed MAUI client, durable token lifecycle, account UI |
 | 2 | Complete | Generic override endpoint library and `/identity-overrides` client use |
 | 3 | Complete | Generic new endpoint library: passkeys, personal data, deletion, external logins, logout-all |
-| 4 | In progress | Development notification UI, integration tests, platform validation |
+| 4 | In progress | Development notification UI, initial Microsoft-only integration tests, platform validation |
 
 ## Endpoint ledger
 
@@ -80,13 +80,14 @@ shared, persistent Data Protection keys.
 | `dotnet build MauiBlazorWeb/MauiBlazorWeb.csproj -f net10.0-android --no-restore` | Passed |
 | `dotnet build MauiBlazorWeb.sln --no-restore` | Passed for web, Mac Catalyst, iOS, and Android; existing upstream package and unsigned local development entitlement warnings remain |
 | SecureStorage boundary validation | Passed by build review: reads/removes fall back to logged-out/best-effort cleanup with diagnostics; failed writes retain the valid in-memory pair and disable restart persistence |
-| Web, Mac Catalyst, iOS, Android builds | Pending |
-| Microsoft-only integration tests | Pending project creation |
+| `dotnet test MauiBlazorWeb.IdentityApi.Tests/MauiBlazorWeb.IdentityApi.Tests.csproj --no-restore` | Passed: 5 tests for route separation, stable invalid login, bearer isolation, temporary passkey cookie, and Development-only notification gating |
 
 ## Known blockers and deferred work
 
 * The MAUI client uses typed REST account methods and an operation/auth epoch.
-  A Microsoft-only integration-test project has not been added yet.
+  The Microsoft-only integration suite covers endpoint layout and environment
+  boundaries; authenticated account mutation and protocol-fixture coverage is
+  the remaining test expansion.
 * Native passkey ceremony execution is deferred behind a small client seam until
   the .NET 11 MAUI passkey APIs are used. The net10 UI will inspect the server's
   sanitized options JSON only.
@@ -95,6 +96,6 @@ shared, persistent Data Protection keys.
 
 ## Resume instructions
 
-**Next task:** add Microsoft-only integration tests for route layout, bearer
-isolation, login outcomes, passkey ceremony continuity, and development-route
-environment gating.
+**Next task:** expand `MauiBlazorWeb.IdentityApi.Tests` with authenticated
+fixtures for lockout/TOTP/recovery, passkey finish/replay, deletion, logout-all,
+and external-login safeguards.

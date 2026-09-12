@@ -31,7 +31,9 @@ builder.Services.AddAuthentication(options =>
         options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
     });
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Environment.IsEnvironment("Testing")
+    ? $"Data Source={Path.Combine(Path.GetTempPath(), "MauiBlazorWebIdentity.Tests.db")}"
+    : builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -72,18 +74,23 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
 {
-    // Apply migrations & create database if needed at startup
-    using (var scope = app.Services.CreateScope())
+    if (app.Environment.IsDevelopment())
     {
+        // Apply migrations & create database if needed at startup
+        using var scope = app.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         dbContext.Database.Migrate();
     }
+
     app.UseMigrationsEndPoint();
     app.MapOpenApi();
-    app.MapGet("/development/notifications", (DevelopmentEmailSender sender) =>
-        Results.Content(DevelopmentNotificationPage.Render(sender), "text/html"));
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapGet("/development/notifications", (DevelopmentEmailSender sender) =>
+            Results.Content(DevelopmentNotificationPage.Render(sender), "text/html"));
+    }
 }
 else
 {
@@ -121,3 +128,5 @@ app.MapGet("/api/weather", async (IWeatherService weatherService) =>
 });
 
 app.Run();
+
+public partial class Program;
