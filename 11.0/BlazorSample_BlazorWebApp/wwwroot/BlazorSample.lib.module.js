@@ -1,5 +1,5 @@
-// JavaScript initializer for the app. The Blazor.formValidation service is created while
-// Blazor starts, so custom client-side validators are registered from afterWebStarted.
+// A JavaScript initializer works with automatic or manual Blazor startup. The validation service
+// is available when afterWebStarted runs, even if the current page contains no validated form.
 export function afterWebStarted(blazor) {
   blazor.formValidation.addValidator('startswith', (context) => {
     const value = context.value;

@@ -19,7 +19,13 @@ public sealed class StartsWithAttribute : ValidationAttribute, IClientValidation
     protected override ValidationResult? IsValid(object? value,
         ValidationContext validationContext)
     {
-        if (value is string text && !text.StartsWith(prefix, StringComparison.Ordinal))
+        // Leave empty values to RequiredAttribute, matching the client-side validator.
+        if (value is not string text || text.Length == 0)
+        {
+            return ValidationResult.Success;
+        }
+
+        if (!text.StartsWith(prefix, StringComparison.Ordinal))
         {
             return new ValidationResult(ErrorMessage, [validationContext.MemberName!]);
         }

@@ -11,6 +11,7 @@ builder.Services.AddScoped(sp =>
 
 var app = builder.Build();
 
+app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
