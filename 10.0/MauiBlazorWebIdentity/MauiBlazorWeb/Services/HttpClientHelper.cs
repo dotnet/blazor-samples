@@ -12,6 +12,15 @@ namespace MauiBlazorWeb.Services
             get
             {
 #if DEBUG
+                var testServerUrl = Environment.GetEnvironmentVariable("DEVFLOW_SERVER_URL");
+                if (Uri.TryCreate(testServerUrl, UriKind.Absolute, out var testServerUri) &&
+                    (testServerUri.Scheme == Uri.UriSchemeHttp || testServerUri.Scheme == Uri.UriSchemeHttps))
+                {
+                    _baseUrl = testServerUri.AbsoluteUri.EndsWith("/", StringComparison.Ordinal)
+                        ? testServerUri.AbsoluteUri
+                        : $"{testServerUri.AbsoluteUri}/";
+                }
+
                 //See: https://learn.microsoft.com/dotnet/maui/data-cloud/local-web-services
                 //Android Emulator uses 10.0.2.2 to refer to localhost
                 if (DeviceInfo.Platform == DevicePlatform.Android)
@@ -23,7 +32,12 @@ namespace MauiBlazorWeb.Services
             }
         }
         public static string LoginUrl => $"{BaseUrl}identity/login";
+        public static string OverrideLoginUrl => $"{BaseUrl}identity-overrides/login";
         public static string RefreshUrl => $"{BaseUrl}identity/refresh";
+        public static string ManageInfoUrl => $"{BaseUrl}identity/manage/info";
+        public static string IdentityUrl => $"{BaseUrl}identity/";
+        public static string OverrideIdentityUrl => $"{BaseUrl}identity-overrides/";
+        public static string DevelopmentNotificationsUrl => $"{BaseUrl}development/notifications";
         public static string WeatherUrl => $"{BaseUrl}api/weather";
 
         public static HttpClient GetHttpClient()
