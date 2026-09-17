@@ -76,7 +76,7 @@
                 ?? throw new InvalidOperationException(
                     "The validation response didn't contain a response body.");
 
-            _remoteErrors.DisplayErrors(problem.Errors);
+            _remoteErrors!.DisplayErrors(problem.Errors);
             return;
         }
 

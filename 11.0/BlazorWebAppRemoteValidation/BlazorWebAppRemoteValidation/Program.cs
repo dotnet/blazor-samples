@@ -20,6 +20,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.MapStaticAssets();
 
+// <snippet_ValidationEndpoint>
 app.MapPost("/api/starships/validate", (StarshipModel model) =>
 {
     Dictionary<string, string[]> errors = [];
@@ -38,6 +39,7 @@ app.MapPost("/api/starships/validate", (StarshipModel model) =>
 
     return Results.NoContent();
 });
+// </snippet_ValidationEndpoint>
 
 app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()

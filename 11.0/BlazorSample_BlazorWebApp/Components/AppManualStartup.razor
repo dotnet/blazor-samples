@@ -1,0 +1,7 @@
+<script src="@Assets["_framework/blazor.web.js"]" autostart="false"></script>
+<script src="@Assets["js/custom-validation.js"]"></script>
+<script>
+    Blazor.start().then(() => {
+        registerCustomValidators(Blazor);
+    });
+</script>
