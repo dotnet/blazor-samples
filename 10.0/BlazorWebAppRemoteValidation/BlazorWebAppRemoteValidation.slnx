@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="BlazorSample.Client/BlazorSample.Client.csproj" />
+  <Project Path="BlazorSample/BlazorSample.csproj" />
+  <Project Path="MinimalApiJwt/MinimalApiJwt.csproj" />
+</Solution>

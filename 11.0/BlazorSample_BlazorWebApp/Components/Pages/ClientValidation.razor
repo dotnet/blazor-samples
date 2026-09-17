@@ -1,0 +1,34 @@
+@page "/client-validation"
+
+<h1>Client-side validation</h1>
+
+@if (submitted)
+{
+    <p role="status">The form was submitted successfully.</p>
+}
+
+<EditForm Model="Model" FormName="client-validation" method="post" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>
+            Registry:
+            <InputText @bind-Value="Model!.Registry" />
+        </label>
+        <ValidationMessage For="() => Model!.Registry" />
+    </div>
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+@code {
+    private bool submitted;
+
+    [SupplyParameterFromForm]
+    private ShipModel? Model { get; set; }
+
+    protected override void OnInitialized() => Model ??= new();
+
+    private void Submit() => submitted = true;
+}

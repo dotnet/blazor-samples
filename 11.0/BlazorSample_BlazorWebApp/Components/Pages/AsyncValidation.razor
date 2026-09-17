@@ -1,0 +1,45 @@
+@page "/async-validation"
+@rendermode InteractiveServer
+
+@* Displays pending and faulted validation state for a field that's validated
+   asynchronously. *@
+
+<h1>Register</h1>
+
+<EditForm EditContext="editContext" OnValidSubmit="RegisterAsync">
+    <UsernameUniquenessValidator Model="Model" />
+
+    <div>
+        <label>
+            Username:
+            <InputText @bind-Value="Model.Username" />
+        </label>
+        <ValidationMessage For="() => Model.Username" />
+
+        @if (editContext!.IsValidationPending(() => Model.Username))
+        {
+            <span class="spinner" aria-live="polite">Checking&hellip;</span>
+        }
+        else if (editContext.IsValidationFaulted(() => Model.Username))
+        {
+            <span class="validation-faulted" aria-live="polite">
+                Validation could not be completed.
+            </span>
+        }
+    </div>
+
+    @* Disabled while any field in the form has validation in flight. *@
+    <button type="submit" disabled="@editContext.IsValidationPending()">
+        Register
+    </button>
+</EditForm>
+
+@code {
+    private EditContext? editContext;
+
+    private RegistrationModel Model { get; set; } = new();
+
+    protected override void OnInitialized() => editContext = new(Model);
+
+    private Task RegisterAsync() => Task.CompletedTask;
+}

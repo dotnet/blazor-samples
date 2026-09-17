@@ -1,0 +1,88 @@
+﻿@page "/"
+@using System.Net
+@using System.Net.Http.Json
+@using BlazorWebAppRemoteValidation.Client.Models
+@inject HttpClient Http
+
+<PageTitle>Remote validation</PageTitle>
+
+<h1>Remote validation</h1>
+
+<p>Local validation runs before the form calls the remote endpoint. The endpoint validates the model again and applies a private business rule that requires a description for defense ships.</p>
+
+<EditForm Model="Model" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <CustomValidation @ref="_remoteErrors" />
+    <ValidationSummary />
+
+    <p>
+        <label>
+            Identifier:
+            <InputText id="identifier" @bind-Value="Model.Identifier" />
+        </label>
+        <ValidationMessage For="() => Model.Identifier" />
+    </p>
+
+    <p>
+        <label>
+            Classification:
+            <InputSelect id="classification" @bind-Value="Model.Classification">
+                <option value="">Select...</option>
+                <option value="Exploration">Exploration</option>
+                <option value="Defense">Defense</option>
+            </InputSelect>
+        </label>
+        <ValidationMessage For="() => Model.Classification" />
+    </p>
+
+    <p>
+        <label>
+            Description:
+            <InputText id="description" @bind-Value="Model.Description" />
+        </label>
+        <ValidationMessage For="() => Model.Description" />
+    </p>
+
+    <button id="submit" type="submit">Submit</button>
+</EditForm>
+
+@if (_accepted)
+{
+    <p id="accepted" role="status">The server accepted the form.</p>
+}
+
+@code {
+    private StarshipModel Model { get; } = new();
+    private CustomValidation? _remoteErrors;
+    private bool _accepted;
+
+    private async Task Submit()
+    {
+        _accepted = false;
+
+        using var response = await Http.PostAsJsonAsync(
+            "api/starships/validate", Model);
+
+        if (response.IsSuccessStatusCode)
+        {
+            _accepted = true;
+            return;
+        }
+
+        if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var problem = await response.Content
+                .ReadFromJsonAsync<ValidationProblemResponse>()
+                ?? throw new InvalidOperationException(
+                    "The validation response didn't contain a response body.");
+
+            _remoteErrors!.DisplayErrors(problem.Errors);
+            return;
+        }
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    private sealed record ValidationProblemResponse(
+        Dictionary<string, string[]> Errors);
+}
