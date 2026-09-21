@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="BlazorWebAppRemoteValidation.Client/BlazorWebAppRemoteValidation.Client.csproj" />
-  <Project Path="BlazorWebAppRemoteValidation/BlazorWebAppRemoteValidation.csproj" />
-</Solution>
