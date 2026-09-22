@@ -95,22 +95,27 @@
 
             if (SearchResultItems?.Results?.Any() == true)
             {
-                var index = 1;
                 foreach (var result in SearchResultItems.Results.Take(MaxResults))
                 {
-                    var client = ClientFactory.CreateClient();
-                    var encodedUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
-                    using var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{encodedUrl}");
-                    using var response = await client.SendAsync(request);
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    var match = Regex.Match(content, "<meta name=\"ms.assetid\" content=\"(.+?)\" />");
-                    if (match.Success)
+                    if (!string.IsNullOrEmpty(result.DisplayName))
                     {
-                        result.Link = match.Groups[1].Value.Replace("*", "%2A").Replace("`", "%60");
+
+                        if (result.ItemType == "Constructor")
+                        {
+                            result.Link = Regex.Replace(result.DisplayName, @"\(.*\)", ".%23ctor%2A");
+                        }
+                        else if (result.ItemType == "Method")
+                        {
+                            result.Link = Regex.Replace(result.DisplayName, @"\(.*\)", "%2A");
+                        }
+                        else
+                        {
+                            result.Link = result.DisplayName;
+                        }
+
+                        result.Link = Regex.Replace(result.Link ?? string.Empty, @"<([^>]+)>", "%601");
                     }
 
-                    result.Index = index++;
                     ResultsToRender.Add(result);
                     StateHasChanged();
                 }
