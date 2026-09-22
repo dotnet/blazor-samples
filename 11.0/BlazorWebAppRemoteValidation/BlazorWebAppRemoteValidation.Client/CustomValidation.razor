@@ -4,13 +4,13 @@
     [CascadingParameter]
     private EditContext? CurrentEditContext { get; set; }
 
-    private ValidationMessageStore _messages = default!;
+    private ValidationMessageStore messages = default!;
 
     protected override void OnInitialized()
     {
         ArgumentNullException.ThrowIfNull(CurrentEditContext);
 
-        _messages = new(CurrentEditContext);
+        messages = new(CurrentEditContext);
         CurrentEditContext.OnValidationRequested += HandleValidationRequested;
         CurrentEditContext.OnFieldChanged += HandleFieldChanged;
     }
@@ -19,7 +19,7 @@
     {
         foreach (var (fieldName, messages) in errors)
         {
-            _messages.Add(CurrentEditContext!.Field(fieldName), messages);
+            this.messages.Add(CurrentEditContext!.Field(fieldName), messages);
         }
 
         CurrentEditContext!.NotifyValidationStateChanged();
@@ -27,7 +27,7 @@
 
     public void ClearErrors()
     {
-        _messages.Clear();
+        messages.Clear();
         CurrentEditContext!.NotifyValidationStateChanged();
     }
 
@@ -37,7 +37,7 @@
 
     private void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
     {
-        _messages.Clear(e.FieldIdentifier);
+        messages.Clear(e.FieldIdentifier);
         CurrentEditContext!.NotifyValidationStateChanged();
     }
 

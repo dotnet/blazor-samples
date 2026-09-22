@@ -11,12 +11,12 @@
     [Parameter, EditorRequired]
     public RegistrationModel Model { get; set; } = default!;
 
-    private ValidationMessageStore? _messages;
+    private ValidationMessageStore? messages;
 
     protected override void OnInitialized()
     {
         ArgumentNullException.ThrowIfNull(CurrentEditContext);
-        _messages = new ValidationMessageStore(CurrentEditContext);
+        messages = new ValidationMessageStore(CurrentEditContext);
         CurrentEditContext.OnValidationRequested += OnValidationRequested;
         CurrentEditContext.OnFieldChanged += OnFieldChanged;
     }
@@ -46,7 +46,7 @@
 
     private async Task CheckAsync(FieldIdentifier field, CancellationToken token)
     {
-        _messages!.Clear(field);
+        messages!.Clear(field);
 
         var available = await Http.GetFromJsonAsync<bool>(
             $"api/usernames/available?value={Uri.EscapeDataString(Model.Username)}",
@@ -54,7 +54,7 @@
 
         if (!available)
         {
-            _messages.Add(field, "The username is already taken.");
+            messages.Add(field, "The username is already taken.");
         }
 
         CurrentEditContext!.NotifyValidationStateChanged();

@@ -12,7 +12,7 @@
 
 <EditForm Model="Model" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
-    <CustomValidation @ref="_remoteErrors" />
+    <CustomValidation @ref="remoteErrors" />
     <ValidationSummary />
 
     <p>
@@ -46,26 +46,26 @@
     <button id="submit" type="submit">Submit</button>
 </EditForm>
 
-@if (_accepted)
+@if (accepted)
 {
     <p id="accepted" role="status">The server accepted the form.</p>
 }
 
 @code {
     private StarshipModel Model { get; } = new();
-    private CustomValidation? _remoteErrors;
-    private bool _accepted;
+    private CustomValidation? remoteErrors;
+    private bool accepted;
 
     private async Task Submit()
     {
-        _accepted = false;
+        accepted = false;
 
         using var response = await Http.PostAsJsonAsync(
             "api/starships/validate", Model);
 
         if (response.IsSuccessStatusCode)
         {
-            _accepted = true;
+            accepted = true;
             return;
         }
 
@@ -76,7 +76,7 @@
                 ?? throw new InvalidOperationException(
                     "The validation response didn't contain a response body.");
 
-            _remoteErrors!.DisplayErrors(problem.Errors);
+            remoteErrors!.DisplayErrors(problem.Errors);
             return;
         }
 
