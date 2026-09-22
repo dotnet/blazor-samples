@@ -1,5 +1,6 @@
 @page "/"
 @using System.Net
+@using System.Text
 @using System.Text.RegularExpressions
 @inject IHttpClientFactory ClientFactory
 
@@ -102,7 +103,7 @@
                             result.Link = result.DisplayName;
                         }
 
-                        result.Link = Regex.Replace(result.Link ?? string.Empty, @"<([^>]+)>", "%601");
+                        result.Link = ReplaceGenericArity(result.Link ?? string.Empty);
                     }
 
                     result.Index = ResultsToRender.Count + 1;
@@ -130,6 +131,68 @@
         ResultsToRender.Clear();
         Model!.SearchText = string.Empty;
         message = string.Empty;
+    }
+
+    private static string ReplaceGenericArity(string value)
+    {
+        var builder = new StringBuilder();
+
+        for (var index = 0; index < value.Length; index++)
+        {
+            if (value[index] != '<')
+            {
+                builder.Append(value[index]);
+                continue;
+            }
+
+            var depth = 1;
+            var endIndex = index + 1;
+
+            while (endIndex < value.Length && depth > 0)
+            {
+                if (value[endIndex] == '<')
+                {
+                    depth++;
+                }
+                else if (value[endIndex] == '>')
+                {
+                    depth--;
+                }
+
+                endIndex++;
+            }
+
+            if (depth > 0)
+            {
+                builder.Append(value[index]);
+                continue;
+            }
+
+            var genericArguments = value[(index + 1)..(endIndex - 1)];
+            var arity = 1;
+            var argumentDepth = 0;
+
+            foreach (var character in genericArguments)
+            {
+                if (character == '<')
+                {
+                    argumentDepth++;
+                }
+                else if (character == '>')
+                {
+                    argumentDepth--;
+                }
+                else if (character == ',' && argumentDepth == 0)
+                {
+                    arity++;
+                }
+            }
+
+            builder.Append($"%60{arity}");
+            index = endIndex - 1;
+        }
+
+        return builder.ToString();
     }
 
     public class FormModel
