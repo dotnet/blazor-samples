@@ -10,17 +10,6 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Search</h3>
-                        <span style="float:right">
-                            <InputSelect @bind-Value="dotNetVersion">
-                                <option>aspnetcore-10.0</option>
-                                <option>aspnetcore-9.0</option>
-                                <option>aspnetcore-8.0</option>
-                                <option>aspnetcore-7.0</option>
-                                <option>aspnetcore-6.0</option>
-                                <option>aspnetcore-5.0</option>
-                                <option>aspnetcore-3.1</option>
-                            </InputSelect>
-                        </span>
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
@@ -68,7 +57,6 @@
     private SearchResults? SearchResultItems { get; set; }
     private List<Result> ResultsToRender { get; set; } = new();
     public string? message;
-    private string? dotNetVersion;
 
     private const int MaxResults = 22;
 
@@ -83,6 +71,7 @@
         message = string.Empty;
 
         var apiClient = ClientFactory.CreateClient("APIClient");
+
         if (string.IsNullOrEmpty(Model?.SearchText) || apiClient == null)
         {
             isSearching = false;
@@ -91,7 +80,7 @@
 
         try
         {
-            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={Model.SearchText}");
+            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?search={Model.SearchText}");
 
             if (SearchResultItems?.Results?.Any() == true)
             {
