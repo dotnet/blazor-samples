@@ -17,9 +17,9 @@
 
     public void DisplayErrors(IDictionary<string, string[]> errors)
     {
-        foreach (var (fieldName, messages) in errors)
+        foreach (var (fieldName, fieldMessages) in errors)
         {
-            this.messages.Add(CurrentEditContext!.Field(fieldName), messages);
+            messages.Add(CurrentEditContext!.Field(fieldName), fieldMessages);
         }
 
         CurrentEditContext!.NotifyValidationStateChanged();
