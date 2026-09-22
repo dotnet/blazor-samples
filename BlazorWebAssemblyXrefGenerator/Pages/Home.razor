@@ -105,6 +105,7 @@
                         result.Link = Regex.Replace(result.Link ?? string.Empty, @"<([^>]+)>", "%601");
                     }
 
+                    result.Index = ResultsToRender.Count + 1;
                     ResultsToRender.Add(result);
                     StateHasChanged();
                 }
