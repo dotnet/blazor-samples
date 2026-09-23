@@ -91,6 +91,8 @@ else
             if (!MovieExists(Movie!.Id))
             {
                 NavigationManager.NotFound();
+
+                return;
             }
             else
             {
