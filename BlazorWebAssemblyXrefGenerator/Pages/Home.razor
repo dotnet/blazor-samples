@@ -11,17 +11,6 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Search</h3>
-                        <span style="float:right">
-                            <InputSelect @bind-Value="dotNetVersion">
-                                <option>aspnetcore-10.0</option>
-                                <option>aspnetcore-9.0</option>
-                                <option>aspnetcore-8.0</option>
-                                <option>aspnetcore-7.0</option>
-                                <option>aspnetcore-6.0</option>
-                                <option>aspnetcore-5.0</option>
-                                <option>aspnetcore-3.1</option>
-                            </InputSelect>
-                        </span>
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
@@ -69,16 +58,36 @@
     private SearchResults? SearchResultItems { get; set; }
     private List<Result> ResultsToRender { get; set; } = new();
     public string? message;
-    private string? dotNetVersion;
 
     private const int MaxResults = 22;
 
     private bool isSearching = false;
 
+    private static readonly Regex NestedBracketRegex = new Regex(
+        @"\[(?:[^\[\]]+|(?<Open>\[)|(?<-Open>\]))*(?(Open)(?!))\]",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex TypeSegmentRegex = new Regex(
+        @"(?<=-)(\d+)",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex NestedAngleBracketRegex = new Regex(
+        @"<(?:[^<>]+|(?<Open><)|(?<-Open>>))*(?(Open)(?!))>",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex NestedParenthesesRegex = new Regex(
+        @"\((?:[^()]+|(?<Open>\()|(?<-Open>\)))+(?(Open)(?!))\)",
+        RegexOptions.Compiled
+    );
+
     protected override void OnInitialized() => Model ??= new();
 
     public async Task GetSearchResults()
     {
+
         isSearching = true;
         ResultsToRender.Clear();
         message = string.Empty;
@@ -93,29 +102,46 @@
 
         try
         {
-            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?search={Model.SearchText}");
+            var urlEncodedSearchText = WebUtility.UrlEncode(Model.SearchText);
+
+            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?search={urlEncodedSearchText}");
 
             if (SearchResultItems?.Results?.Any() == true)
             {
                 foreach (var result in SearchResultItems.Results.Take(MaxResults))
                 {
-                    if (!string.IsNullOrEmpty(result.DisplayName))
+                    if (!string.IsNullOrEmpty(result.DisplayName) && !string.IsNullOrEmpty(result.Url))
                     {
-
                         if (result.ItemType == "Constructor")
                         {
                             result.Link = Regex.Replace(result.DisplayName, @"\(.*\)", ".%23ctor%2A");
+                            //result.Link = NestedParenthesesRegex.Replace(result.Link, ".%23ctor%2A");
                         }
                         else if (result.ItemType == "Method")
                         {
+
                             result.Link = Regex.Replace(result.DisplayName, @"\(.*\)", "%2A");
+                            //result.Link = NestedParenthesesRegex.Replace(result.Link, ".%2A");
+                        }
+                        else if (result.ItemType == "Property")
+                        {
+                            result.Link = NestedBracketRegex.Replace(result.DisplayName, "%2A");
                         }
                         else
                         {
                             result.Link = result.DisplayName;
                         }
 
-                        result.Link = ReplaceGenericArity(result.Link ?? string.Empty);
+                        var captureTypeSegmentMatch = TypeSegmentRegex.Match(result.Url).Value;
+
+                        if (captureTypeSegmentMatch is not null)
+                        {
+                            result.Link = Regex.Replace(result.Link, @"<.*>", $"%60{captureTypeSegmentMatch}");
+
+                            //var angleBracketMatch = NestedAngleBracketRegex.Match(result.DisplayName);
+                            //var angleBracketMatchValue = angleBracketMatch.Value;
+                            //result.Link = NestedAngleBracketRegex.Replace(result.DisplayName, $"%60{angleBracketMatchValue}");
+                        }
                     }
 
                     result.Index = ResultsToRender.Count + 1;
@@ -132,72 +158,14 @@
         {
             message = "Bad Request! No results returned.";
         }
+        catch (HttpRequestException ex)
+        {
+            message = $"A general error occurred. {ex.Message}";
+        }
         finally
         {
             isSearching = false;
         }
-    }
-
-    private static string ReplaceGenericArity(string value)
-    {
-        var builder = new StringBuilder();
-
-        for (var index = 0; index < value.Length; index++)
-        {
-            if (value[index] != '<')
-            {
-                builder.Append(value[index]);
-                continue;
-            }
-
-            var depth = 1;
-            var endIndex = index + 1;
-
-            while (endIndex < value.Length && depth > 0)
-            {
-                if (value[endIndex] == '<')
-                {
-                    depth++;
-                }
-                else if (value[endIndex] == '>')
-                {
-                    depth--;
-                }
-
-                endIndex++;
-            }
-
-            if (depth > 0)
-            {
-                builder.Append(value[index]);
-                continue;
-            }
-
-            var genericArguments = value[(index + 1)..(endIndex - 1)];
-            var arity = 1;
-            var argumentDepth = 0;
-
-            foreach (var character in genericArguments)
-            {
-                if (character == '<')
-                {
-                    argumentDepth++;
-                }
-                else if (character == '>')
-                {
-                    argumentDepth--;
-                }
-                else if (character == ',' && argumentDepth == 0)
-                {
-                    arity++;
-                }
-            }
-
-            builder.Append($"%60{arity}");
-            index = endIndex - 1;
-        }
-
-        return builder.ToString();
     }
 
     private void ClearUI()
