@@ -1,5 +1,6 @@
 @page "/"
 @using System.Net
+@using System.Text
 @using System.Text.RegularExpressions
 @inject IHttpClientFactory ClientFactory
 
@@ -83,6 +84,7 @@
         message = string.Empty;
 
         var apiClient = ClientFactory.CreateClient("APIClient");
+
         if (string.IsNullOrEmpty(Model?.SearchText) || apiClient == null)
         {
             isSearching = false;
@@ -91,26 +93,32 @@
 
         try
         {
-            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={Model.SearchText}");
+            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?search={Model.SearchText}");
 
             if (SearchResultItems?.Results?.Any() == true)
             {
-                var index = 1;
                 foreach (var result in SearchResultItems.Results.Take(MaxResults))
                 {
-                    var client = ClientFactory.CreateClient();
-                    var encodedUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
-                    using var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{encodedUrl}");
-                    using var response = await client.SendAsync(request);
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    var match = Regex.Match(content, "<meta name=\"ms.assetid\" content=\"(.+?)\" />");
-                    if (match.Success)
+                    if (!string.IsNullOrEmpty(result.DisplayName))
                     {
-                        result.Link = match.Groups[1].Value.Replace("*", "%2A").Replace("`", "%60");
+
+                        if (result.ItemType == "Constructor")
+                        {
+                            result.Link = Regex.Replace(result.DisplayName, @"\(.*\)", ".%23ctor%2A");
+                        }
+                        else if (result.ItemType == "Method")
+                        {
+                            result.Link = Regex.Replace(result.DisplayName, @"\(.*\)", "%2A");
+                        }
+                        else
+                        {
+                            result.Link = result.DisplayName;
+                        }
+
+                        result.Link = ReplaceGenericArity(result.Link ?? string.Empty);
                     }
 
-                    result.Index = index++;
+                    result.Index = ResultsToRender.Count + 1;
                     ResultsToRender.Add(result);
                     StateHasChanged();
                 }
@@ -128,6 +136,68 @@
         {
             isSearching = false;
         }
+    }
+
+    private static string ReplaceGenericArity(string value)
+    {
+        var builder = new StringBuilder();
+
+        for (var index = 0; index < value.Length; index++)
+        {
+            if (value[index] != '<')
+            {
+                builder.Append(value[index]);
+                continue;
+            }
+
+            var depth = 1;
+            var endIndex = index + 1;
+
+            while (endIndex < value.Length && depth > 0)
+            {
+                if (value[endIndex] == '<')
+                {
+                    depth++;
+                }
+                else if (value[endIndex] == '>')
+                {
+                    depth--;
+                }
+
+                endIndex++;
+            }
+
+            if (depth > 0)
+            {
+                builder.Append(value[index]);
+                continue;
+            }
+
+            var genericArguments = value[(index + 1)..(endIndex - 1)];
+            var arity = 1;
+            var argumentDepth = 0;
+
+            foreach (var character in genericArguments)
+            {
+                if (character == '<')
+                {
+                    argumentDepth++;
+                }
+                else if (character == '>')
+                {
+                    argumentDepth--;
+                }
+                else if (character == ',' && argumentDepth == 0)
+                {
+                    arity++;
+                }
+            }
+
+            builder.Append($"%60{arity}");
+            index = endIndex - 1;
+        }
+
+        return builder.ToString();
     }
 
     private void ClearUI()
