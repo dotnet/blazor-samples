@@ -83,6 +83,16 @@
         RegexOptions.Compiled
     );
 
+    private static readonly Regex SingleParenthesesRegex = new Regex(
+        @"\(\)",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex CommasOfAngleBracketRegex = new Regex(
+        @",(?=[^<>]*>)",
+        RegexOptions.Compiled
+    );
+
     protected override void OnInitialized() => Model ??= new();
 
     public async Task GetSearchResults()
@@ -114,18 +124,19 @@
                     {
                         if (result.ItemType == "Constructor")
                         {
-                            result.Link = Regex.Replace(result.DisplayName, @"\(.*\)", ".%23ctor%2A");
-                            //result.Link = NestedParenthesesRegex.Replace(result.Link, ".%23ctor%2A");
+                            result.Link = NestedParenthesesRegex.Replace(result.DisplayName, ".%23ctor*");
+                            // If the prior line didn't match, we still want to replace empty parentheses with the ctor postfix
+                            result.Link = SingleParenthesesRegex.Replace(result.Link, ".%23ctor*");
                         }
                         else if (result.ItemType == "Method")
                         {
-
-                            result.Link = Regex.Replace(result.DisplayName, @"\(.*\)", "%2A");
-                            //result.Link = NestedParenthesesRegex.Replace(result.Link, ".%2A");
+                            result.Link = NestedParenthesesRegex.Replace(result.DisplayName, "*");
+                            // If the prior line didn't match, we still want to replace empty parentheses with an asterisk
+                            result.Link = SingleParenthesesRegex.Replace(result.Link, "*");
                         }
                         else if (result.ItemType == "Property")
                         {
-                            result.Link = NestedBracketRegex.Replace(result.DisplayName, "%2A");
+                            result.Link = NestedBracketRegex.Replace(result.DisplayName, "*");
                         }
                         else
                         {
@@ -136,11 +147,10 @@
 
                         if (captureTypeSegmentMatch is not null)
                         {
-                            result.Link = Regex.Replace(result.Link, @"<.*>", $"%60{captureTypeSegmentMatch}");
-
-                            //var angleBracketMatch = NestedAngleBracketRegex.Match(result.DisplayName);
-                            //var angleBracketMatchValue = angleBracketMatch.Value;
-                            //result.Link = NestedAngleBracketRegex.Replace(result.DisplayName, $"%60{angleBracketMatchValue}");
+                            var angleBracketMatch = NestedAngleBracketRegex.Match(result.Link);
+                            var angleBracketMatchValue = angleBracketMatch.Value;
+                            var count = angleBracketMatch.Value.Count(c => c == ',');
+                            result.Link = NestedAngleBracketRegex.Replace(result.Link, $"`{count + 1}");
                         }
                     }
 
