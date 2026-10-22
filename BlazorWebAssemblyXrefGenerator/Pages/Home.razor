@@ -1,5 +1,6 @@
 @page "/"
 @using System.Net
+@using System.Text
 @using System.Text.RegularExpressions
 @inject IHttpClientFactory ClientFactory
 
@@ -10,17 +11,6 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">Search</h3>
-                        <span style="float:right">
-                            <InputSelect @bind-Value="dotNetVersion">
-                                <option>aspnetcore-10.0</option>
-                                <option>aspnetcore-9.0</option>
-                                <option>aspnetcore-8.0</option>
-                                <option>aspnetcore-7.0</option>
-                                <option>aspnetcore-6.0</option>
-                                <option>aspnetcore-5.0</option>
-                                <option>aspnetcore-3.1</option>
-                            </InputSelect>
-                        </span>
                     </div>
                     <div class="panel-body">
                         <div class="form-group">
@@ -68,21 +58,57 @@
     private SearchResults? SearchResultItems { get; set; }
     private List<Result> ResultsToRender { get; set; } = new();
     public string? message;
-    private string? dotNetVersion;
 
     private const int MaxResults = 22;
 
     private bool isSearching = false;
 
+    private static readonly Regex NestedBracketRegex = new Regex(
+        @"\[(?:[^\[\]]+|(?<Open>\[)|(?<-Open>\]))*(?(Open)(?!))\]",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex TypeSegmentRegex = new Regex(
+        @"(?<=-)(\d+)",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex NestedAngleBracketRegex = new Regex(
+        @"<(?:[^<>]+|(?<Open><)|(?<-Open>>))*(?(Open)(?!))>",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex NestedParenthesesRegex = new Regex(
+        @"\((?:[^()]+|(?<Open>\()|(?<-Open>\)))+(?(Open)(?!))\)",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex SingleParenthesesRegex = new Regex(
+        @"\(\)",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex CommasOfAngleBracketRegex = new Regex(
+        @",(?=[^<>]*>)",
+        RegexOptions.Compiled
+    );
+
+    private static readonly Regex TrailingGenericParameterListRegex = new Regex(
+        @"<[^<>]*>(?=\*$)",
+        RegexOptions.Compiled
+    );
+
     protected override void OnInitialized() => Model ??= new();
 
     public async Task GetSearchResults()
     {
+
         isSearching = true;
         ResultsToRender.Clear();
         message = string.Empty;
 
         var apiClient = ClientFactory.CreateClient("APIClient");
+
         if (string.IsNullOrEmpty(Model?.SearchText) || apiClient == null)
         {
             isSearching = false;
@@ -91,26 +117,48 @@
 
         try
         {
-            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?api-version=0.2&search={Model.SearchText}");
+            var urlEncodedSearchText = WebUtility.UrlEncode(Model.SearchText);
+
+            SearchResultItems = await apiClient.GetFromJsonAsync<SearchResults>($"api/apibrowser/dotnet/search?search={urlEncodedSearchText}");
 
             if (SearchResultItems?.Results?.Any() == true)
             {
-                var index = 1;
                 foreach (var result in SearchResultItems.Results.Take(MaxResults))
                 {
-                    var client = ClientFactory.CreateClient();
-                    var encodedUrl = WebUtility.UrlEncode($"https://learn.microsoft.com/en-us{result.Url}?view={dotNetVersion}");
-                    using var request = new HttpRequestMessage(HttpMethod.Get, $"https://corsproxy.io/?{encodedUrl}");
-                    using var response = await client.SendAsync(request);
-                    var content = await response.Content.ReadAsStringAsync();
-
-                    var match = Regex.Match(content, "<meta name=\"ms.assetid\" content=\"(.+?)\" />");
-                    if (match.Success)
+                    if (!string.IsNullOrEmpty(result.DisplayName) && !string.IsNullOrEmpty(result.Url))
                     {
-                        result.Link = match.Groups[1].Value.Replace("*", "%2A").Replace("`", "%60");
+                        if (result.ItemType == "Constructor")
+                        {
+                            result.Link = NestedParenthesesRegex.Replace(result.DisplayName, ".%23ctor*");
+                            // If the prior line didn't match, we still want to replace empty parentheses with the ctor postfix
+                            result.Link = SingleParenthesesRegex.Replace(result.Link, ".%23ctor*");
+                        }
+                        else if (result.ItemType == "Method")
+                        {
+                            result.Link = NestedParenthesesRegex.Replace(result.DisplayName, "*");
+                            // If the prior line didn't match, we still want to replace empty parentheses with an asterisk
+                            result.Link = SingleParenthesesRegex.Replace(result.Link, "*");
+                            result.Link = TrailingGenericParameterListRegex.Replace(result.Link, string.Empty);
+                        }
+                        else if (result.ItemType == "Property")
+                        {
+                            result.Link = NestedBracketRegex.Replace(result.DisplayName, "*");
+                        }
+                        else
+                        {
+                            result.Link = result.DisplayName;
+                        }
+
+                        var captureTypeSegmentMatch = TypeSegmentRegex.Match(result.Url).Value;
+
+                        if (captureTypeSegmentMatch is not null)
+                        {
+                            result.Link = NestedAngleBracketRegex.Replace(result.Link,
+                                match => $"`{match.Value.Count(c => c == ',') + 1}");
+                        }
                     }
 
-                    result.Index = index++;
+                    result.Index = ResultsToRender.Count + 1;
                     ResultsToRender.Add(result);
                     StateHasChanged();
                 }
@@ -123,6 +171,10 @@
         catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.BadRequest)
         {
             message = "Bad Request! No results returned.";
+        }
+        catch (HttpRequestException ex)
+        {
+            message = $"A general error occurred. {ex.Message}";
         }
         finally
         {
