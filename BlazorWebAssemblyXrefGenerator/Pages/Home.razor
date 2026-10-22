@@ -133,6 +133,7 @@
                             result.Link = NestedParenthesesRegex.Replace(result.DisplayName, "*");
                             // If the prior line didn't match, we still want to replace empty parentheses with an asterisk
                             result.Link = SingleParenthesesRegex.Replace(result.Link, "*");
+                            result.Link = NestedAngleBracketRegex.Replace(result.Link, string.Empty);
                         }
                         else if (result.ItemType == "Property")
                         {
@@ -147,10 +148,8 @@
 
                         if (captureTypeSegmentMatch is not null)
                         {
-                            var angleBracketMatch = NestedAngleBracketRegex.Match(result.Link);
-                            var angleBracketMatchValue = angleBracketMatch.Value;
-                            var count = angleBracketMatch.Value.Count(c => c == ',');
-                            result.Link = NestedAngleBracketRegex.Replace(result.Link, $"`{count + 1}");
+                            result.Link = NestedAngleBracketRegex.Replace(result.Link,
+                                match => $"`{match.Value.Count(c => c == ',') + 1}");
                         }
                     }
 
