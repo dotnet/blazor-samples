@@ -93,6 +93,11 @@
         RegexOptions.Compiled
     );
 
+    private static readonly Regex TrailingGenericParameterListRegex = new Regex(
+        @"<[^<>]*>(?=\*$)",
+        RegexOptions.Compiled
+    );
+
     protected override void OnInitialized() => Model ??= new();
 
     public async Task GetSearchResults()
@@ -133,7 +138,7 @@
                             result.Link = NestedParenthesesRegex.Replace(result.DisplayName, "*");
                             // If the prior line didn't match, we still want to replace empty parentheses with an asterisk
                             result.Link = SingleParenthesesRegex.Replace(result.Link, "*");
-                            result.Link = NestedAngleBracketRegex.Replace(result.Link, string.Empty);
+                            result.Link = TrailingGenericParameterListRegex.Replace(result.Link, string.Empty);
                         }
                         else if (result.ItemType == "Property")
                         {
