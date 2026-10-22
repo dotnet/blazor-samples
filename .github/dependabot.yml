@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "nuget"
+    directories:
+      - "/**"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      nuget:
+        patterns:
+          - "*"
+        group-by: dependency-name
+
+  - package-ecosystem: "npm"
+    directories:
+      - "/**"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      npm:
+        patterns:
+          - "*"
+        group-by: dependency-name
