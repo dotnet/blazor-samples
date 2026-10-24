@@ -19,7 +19,6 @@ updates:
       nuget:
         patterns:
           - "*"
-        group-by: dependency-name
 
   - package-ecosystem: "npm"
     directories:
