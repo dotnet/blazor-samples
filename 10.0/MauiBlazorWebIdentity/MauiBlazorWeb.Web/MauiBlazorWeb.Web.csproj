@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MauiBlazorWeb.Shared\MauiBlazorWeb.Shared.csproj" />
+    <ProjectReference Include="..\MauiBlazorWeb.IdentityApi\MauiBlazorWeb.IdentityApi.csproj" />
   </ItemGroup>
 
 </Project>

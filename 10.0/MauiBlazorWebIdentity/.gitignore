@@ -366,3 +366,4 @@ FodyWeavers.xsd
 *.db
 *.db-shm
 *.db-wal
+scripts/.devflow-state-*/
