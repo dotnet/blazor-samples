@@ -3,7 +3,9 @@ using MauiBlazorWeb.Web.Components;
 using MauiBlazorWeb.Web.Components.Account;
 using MauiBlazorWeb.Web.Data;
 using MauiBlazorWeb.Web.Services;
+using MauiBlazorWeb.IdentityApi;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,10 +31,22 @@ builder.Services.AddAuthentication(options =>
         options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
     });
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? (builder.Environment.IsEnvironment("Testing")
+        ? $"Data Source={Path.Combine(Directory.GetCurrentDirectory(), "MauiBlazorWebIdentity.Tests.db")}"
+        : throw new InvalidOperationException("Connection string 'DefaultConnection' not found."));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+var passkeyOrigins = builder.Configuration.GetSection("Passkeys:AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.Configure<IdentityApiRouteOptions>(options => options.StockIdentityPrefix = "/identity");
+builder.Services.Configure<IdentityPasskeyOptions>(options =>
+{
+    options.ServerDomain = builder.Configuration["Passkeys:ServerDomain"];
+    options.ValidateOrigin = context => ValueTask.FromResult(
+        !context.CrossOrigin && passkeyOrigins.Contains(context.Origin, StringComparer.Ordinal));
+});
 
 // Needed for external clients to log in
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
@@ -42,26 +56,45 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
     })
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSingleton<DevelopmentEmailSender>();
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>>(services =>
+        services.GetRequiredService<DevelopmentEmailSender>());
+}
+else
+{
+    builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+}
 
 // For more information on OpenAPI support in ASP.NET Core,
 // see OpenAPI support in ASP.NET Core API apps at
 // https://learn.microsoft.com/aspnet/core/fundamentals/openapi/overview
 builder.Services.AddOpenApi();
+builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Testing"))
 {
-    // Apply migrations & create database if needed at startup
-    using (var scope = app.Services.CreateScope())
+    if (app.Environment.IsDevelopment())
     {
+        // Apply migrations & create database if needed at startup
+        using var scope = app.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         dbContext.Database.Migrate();
     }
+
     app.UseMigrationsEndPoint();
     app.MapOpenApi();
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapGet("/development/notifications", (DevelopmentEmailSender sender) =>
+            Results.Content(DevelopmentNotificationPage.Render(sender), "text/html"));
+    }
+
+    app.MapHealthChecks("/health");
 }
 else
 {
@@ -81,7 +114,10 @@ app.MapRazorComponents<App>()
     .AddAdditionalAssemblies(typeof(MauiBlazorWeb.Shared._Imports).Assembly);
 
 // Needed for external clients to log in
-app.MapGroup("/identity").MapIdentityApi<ApplicationUser>();
+var identity = app.MapGroup("/identity");
+identity.MapIdentityApi<ApplicationUser>();
+identity.MapNewIdentityApi<ApplicationUser>();
+app.MapGroup("/identity-overrides").MapOverrideIdentityApi<ApplicationUser>();
 // Needed for Identity Blazor components
 app.MapAdditionalIdentityEndpoints();
 
@@ -90,6 +126,11 @@ app.MapGet("/api/weather", async (IWeatherService weatherService) =>
 {
     var forecasts = await weatherService.GetWeatherForecastsAsync();
     return Results.Ok(forecasts);
-}).RequireAuthorization();
+}).RequireAuthorization(new AuthorizeAttribute
+{
+    AuthenticationSchemes = IdentityConstants.BearerScheme,
+});
 
 app.Run();
+
+public partial class Program;
