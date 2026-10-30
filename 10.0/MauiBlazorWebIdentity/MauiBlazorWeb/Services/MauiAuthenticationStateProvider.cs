@@ -25,6 +25,7 @@ namespace MauiBlazorWeb.Services
 
         private Task<AuthenticationState> _currentAuthState = _defaultAuthState;
         private AccessTokenInfo? _accessToken;
+        private bool rememberMe;
 
         public override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
@@ -55,6 +56,7 @@ namespace MauiBlazorWeb.Services
             LoginStatus = LoginStatus.None;
             _currentAuthState = _defaultAuthState;
             _accessToken = null;
+            rememberMe = false;
             TokenStorage.RemoveToken();
             NotifyAuthenticationStateChanged(_defaultAuthState);
         }
@@ -90,8 +92,9 @@ namespace MauiBlazorWeb.Services
                 if (LoginStatus == LoginStatus.Success)
                 {
                     var token = await response.Content.ReadAsStringAsync();
+                    rememberMe = loginModel.RememberMe;
 
-                    if (loginModel.RememberMe)
+                    if (rememberMe)
                     {
                         // Save token to secure storage so the user doesn't have to login every time
                         _accessToken = await TokenStorage.SaveTokenToSecureStorageAsync(token, loginModel.Email);
@@ -99,7 +102,13 @@ namespace MauiBlazorWeb.Services
                     else
                     {
                         // Keep token in memory only — cleared when app closes
+                        TokenStorage.RemoveToken();
                         _accessToken = TokenStorage.DeserializeToken(token, loginModel.Email);
+                    }
+
+                    if (_accessToken is null)
+                    {
+                        throw new InvalidOperationException("Unable to read or store the access token.");
                     }
 
                     authenticatedUser = CreateAuthenticatedUser(loginModel.Email);
@@ -142,9 +151,10 @@ namespace MauiBlazorWeb.Services
                 var now = DateTime.UtcNow;
                 var thirtyMinutesFromNow = now.AddMinutes(TokenExpirationBuffer);
 
-                if (_accessToken is null || thirtyMinutesFromNow > _accessToken.AccessTokenExpiration)
+                if (_accessToken is null)
                 {
                     _accessToken = await TokenStorage.GetTokenFromSecureStorageAsync();
+                    rememberMe = _accessToken is not null;
                 }
 
                 if (_accessToken is null)
@@ -180,7 +190,15 @@ namespace MauiBlazorWeb.Services
                     using var response = await httpClient.PostAsJsonAsync(HttpClientHelper.RefreshUrl, refreshData);
                     response.EnsureSuccessStatusCode();
                     var token = await response.Content.ReadAsStringAsync();
-                    _accessToken = await TokenStorage.SaveTokenToSecureStorageAsync(token, email);
+                    _accessToken = rememberMe
+                        ? await TokenStorage.SaveTokenToSecureStorageAsync(token, email)
+                        : TokenStorage.DeserializeToken(token, email);
+
+                    if (_accessToken is null)
+                    {
+                        throw new InvalidOperationException("Unable to read or store the refreshed access token.");
+                    }
+
                     return true;
                 }
 
