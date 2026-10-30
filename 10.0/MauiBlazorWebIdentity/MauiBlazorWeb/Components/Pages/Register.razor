@@ -1,0 +1,172 @@
+@page "/register"
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Extensions.Logging
+@using Microsoft.Maui.ApplicationModel
+@inject IConfiguration Configuration
+@inject IdentityApiClient IdentityApiClient
+@inject ILogger<Register> Logger
+
+<PageTitle>Register</PageTitle>
+
+<h1>Register</h1>
+
+@if (errorMessage is not null)
+{
+    <div class="alert alert-danger" role="alert">@errorMessage</div>
+}
+
+@if (registeredEmail is not null)
+{
+    <p role="status">Your account for <strong>@registeredEmail</strong> was created.</p>
+    <p>Complete email confirmation before signing in. Continue in your browser for instructions from the server.</p>
+    <button class="btn btn-primary" @onclick="ContinueRegistration" disabled="@isOpeningBrowser">
+        Continue registration
+    </button>
+    <p class="mt-3"><NavLink href="login">Back to sign in</NavLink></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-lg-6">
+            <EditForm Model="Input" OnValidSubmit="RegisterUser" FormName="register">
+                <DataAnnotationsValidator />
+                <h2>Create a new account.</h2>
+                <hr />
+                <ValidationSummary class="text-danger" role="alert" />
+                @if (identityErrors.Any())
+                {
+                    <ul class="text-danger" role="alert">
+                        @foreach (var error in identityErrors)
+                        {
+                            <li>@error.Description</li>
+                        }
+                    </ul>
+                }
+                <div class="form-floating mb-3">
+                    <InputText @bind-Value="Input.Email" id="Input.Email" class="form-control" autocomplete="username"
+                               aria-required="true" placeholder="name@example.com" disabled="@isSubmitting" />
+                    <label for="Input.Email">Email</label>
+                    <ValidationMessage For="() => Input.Email" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="Input.Password" id="Input.Password" class="form-control"
+                               autocomplete="new-password" aria-required="true" placeholder="password" disabled="@isSubmitting" />
+                    <label for="Input.Password">Password</label>
+                    <ValidationMessage For="() => Input.Password" class="text-danger" />
+                </div>
+                <div class="form-floating mb-3">
+                    <InputText type="password" @bind-Value="Input.ConfirmPassword" id="Input.ConfirmPassword" class="form-control"
+                               autocomplete="new-password" aria-required="true" placeholder="password" disabled="@isSubmitting" />
+                    <label for="Input.ConfirmPassword">Confirm password</label>
+                    <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+                </div>
+                <button type="submit" class="w-100 btn btn-lg btn-primary" disabled="@isSubmitting">Register</button>
+                <p class="mt-3"><NavLink href="login">Already have an account? Log in</NavLink></p>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    private InputModel Input { get; set; } = new();
+    private IEnumerable<IdentityError> identityErrors = [];
+    private string? registeredEmail;
+    private string? errorMessage;
+    private bool isSubmitting;
+    private bool isOpeningBrowser;
+
+    private async Task RegisterUser()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+        identityErrors = [];
+        var email = Input.Email;
+
+        try
+        {
+            var result = await IdentityApiClient.RegisterAsync(new RegisterRequest
+            {
+                Email = email,
+                Password = Input.Password
+            });
+
+            if (!result.Succeeded)
+            {
+                identityErrors = result.Errors;
+                return;
+            }
+
+            registeredEmail = email;
+            Input.Password = "";
+            Input.ConfirmPassword = "";
+        }
+        catch (HttpRequestException ex)
+        {
+            Logger.LogWarning(ex, "The registration request failed.");
+            errorMessage = "Unable to complete registration. Please try again.";
+        }
+        catch (OperationCanceledException ex)
+        {
+            Logger.LogWarning(ex, "The registration request timed out.");
+            errorMessage = "Registration took too long to respond. Please try again.";
+        }
+        catch (JsonException ex)
+        {
+            Logger.LogWarning(ex, "The server returned an invalid registration response.");
+            errorMessage = "The server returned an invalid registration response. Please try again.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private async Task ContinueRegistration()
+    {
+        if (registeredEmail is null)
+        {
+            throw new InvalidOperationException("Registration must succeed before opening the confirmation page.");
+        }
+
+        isOpeningBrowser = true;
+        errorMessage = null;
+        try
+        {
+            var baseAddress = new Uri(Configuration["BackendUrl"]!, UriKind.Absolute);
+            var uri = new Uri(baseAddress, $"Account/RegisterConfirmation?email={Uri.EscapeDataString(registeredEmail)}");
+            if (!await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred))
+            {
+                Logger.LogWarning("Unable to open the registration confirmation page.");
+                errorMessage = "Unable to open your browser. Please try again.";
+            }
+        }
+        catch (FeatureNotSupportedException ex)
+        {
+            Logger.LogWarning(ex, "Opening the registration confirmation page is not supported.");
+            errorMessage = "A browser is not available on this device.";
+        }
+        finally
+        {
+            isOpeningBrowser = false;
+        }
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [StringLength(100, MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        public string Password { get; set; } = "";
+
+        [DataType(DataType.Password)]
+        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = "";
+    }
+}
