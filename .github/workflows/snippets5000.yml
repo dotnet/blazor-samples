@@ -21,6 +21,57 @@ permissions:
   pull-requests: read
 
 jobs:
+  maui-projects:
+    runs-on: ubuntu-latest
+    outputs:
+      samples: ${{ steps.samples.outputs.samples }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        with:
+          egress-policy: audit
+
+      - name: Find affected MAUI samples
+        id: samples
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pull_request }}
+        with:
+          script: |
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              ...context.repo,
+              pull_number: Number(process.env.PR_NUMBER)
+            });
+            const paths = files.flatMap(file => [file.filename, file.previous_filename].filter(Boolean));
+            const ciChanged = paths.some(path => ['.github/workflows/snippets5000.yml', '.github/maui-ci.targets'].includes(path));
+            const builds = [
+              {
+                version: '8.0', sdk: '8.0.427', macos: 'macos-15', xcode: '16.0',
+                projects: [
+                  { root: '8.0/MauiBlazorWeb/', path: '8.0/MauiBlazorWeb/MauiBlazorWeb.Maui/MauiBlazorWeb.Maui.csproj' }
+                ]
+              },
+              {
+                version: '9.0', sdk: '9.0.320', macos: 'macos-26', xcode: '26.5',
+                projects: [
+                  { root: '9.0/MauiBlazorWeb/', path: '9.0/MauiBlazorWeb/MauiBlazorWeb/MauiBlazorWeb.csproj' },
+                  { root: '9.0/MauiBlazorWebIdentity/', path: '9.0/MauiBlazorWebIdentity/MauiBlazorWeb/MauiBlazorWeb/MauiBlazorWeb.csproj' }
+                ]
+              },
+              {
+                version: '10.0', sdk: '10.0.400', macos: 'macos-26', xcode: '26.6',
+                projects: [
+                  { root: '10.0/MauiBlazorWebIdentity/', path: '10.0/MauiBlazorWebIdentity/MauiBlazorWeb/MauiBlazorWeb.csproj' }
+                ]
+              }
+            ];
+            for (const build of builds) {
+              build.projects = build.projects
+                .filter(project => ciChanged || paths.some(path => path.startsWith(project.root)))
+                .map(project => project.path);
+            }
+            core.setOutput('samples', JSON.stringify(builds.filter(build => build.projects.length > 0)));
+
   snippets-build:
     runs-on: windows-2022
 
@@ -60,3 +111,86 @@ jobs:
           REPOSITORY_NAME: ${{ github.event.repository.name }}
         run: |
           dotnet run --project docs-tools\snippets5000\Snippets5000\Snippets5000.csproj -- --sourcepath "$env:GITHUB_WORKSPACE" --pullrequest "$env:PR_NUMBER" --owner "$env:REPOSITORY_OWNER" --repo "$env:REPOSITORY_NAME"
+
+  maui-build:
+    name: MAUI .NET ${{ matrix.sample.version }} (${{ matrix.platform }})
+    needs: maui-projects
+    if: needs.maui-projects.outputs.samples != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        sample: ${{ fromJSON(needs.maui-projects.outputs.samples) }}
+        platform: [windows, macos]
+    runs-on: ${{ matrix.platform == 'windows' && 'windows-2022' || matrix.sample.macos }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      SDK_VERSION: ${{ matrix.sample.sdk }}
+      FRAMEWORK_VERSION: ${{ matrix.sample.version }}
+      PROJECTS: ${{ toJSON(matrix.sample.projects) }}
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.sample.xcode }}.app/Contents/Developer
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@dc2769abcc0fcfbadfc1df54081c1608579ef6b2 # v2.22.2
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pull_request) || github.ref }}
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        env:
+          DOTNET_INSTALL_DIR: ${{ runner.temp }}/dotnet
+        with:
+          dotnet-version: ${{ matrix.sample.sdk }}
+
+      - name: Select native-build SDK
+        run: dotnet new globaljson --sdk-version "$env:SDK_VERSION" --roll-forward disable
+
+      - name: Setup Java
+        if: runner.os == 'Windows'
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Display Xcode version
+        if: runner.os == 'macOS'
+        run: xcodebuild -version
+
+      - name: Install native workloads
+        run: |
+          $workloads = if ($IsWindows) { @('maui-android', 'maui-windows') } else { @('maui-ios', 'maui-maccatalyst') }
+          dotnet workload install @workloads --version "$env:SDK_VERSION"
+
+      - name: Build native apps
+        run: |
+          $projects = $env:PROJECTS | ConvertFrom-Json
+          $frameworks = if ($IsWindows) { @('android', 'windows10.0.19041.0') } else { @('ios', 'maccatalyst') }
+          $architecture = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString().ToLowerInvariant()
+          $targetsPath = Join-Path $env:GITHUB_WORKSPACE '.github/maui-ci.targets'
+          foreach ($project in $projects) {
+            foreach ($platform in $frameworks) {
+              $framework = "net$env:FRAMEWORK_VERSION-$platform"
+              $buildArguments = @($project, '--configuration', 'Debug', '--framework', $framework, "-p:MauiCITargetFramework=$framework", "-p:DirectoryBuildTargetsPath=$targetsPath")
+              if ($platform -eq 'android') {
+                dotnet build @buildArguments '-t:InstallAndroidDependencies' "-p:AndroidSdkDirectory=$env:ANDROID_HOME" "-p:JavaSdkDirectory=$env:JAVA_HOME" '-p:AcceptAndroidSDKLicenses=true'
+                if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+              } elseif ($platform -eq 'ios') {
+                $buildArguments += @("-p:RuntimeIdentifier=iossimulator-$architecture", '-p:EnableCodeSigning=false')
+              } elseif ($platform -eq 'maccatalyst') {
+                $buildArguments += @("-p:RuntimeIdentifier=maccatalyst-$architecture", '-p:EnableCodeSigning=false')
+              } else {
+                $buildArguments += '-p:WindowsPackageType=None'
+              }
+              dotnet build @buildArguments
+              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            }
+          }

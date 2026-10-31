@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup Condition="'$(UseMaui)' == 'true' And '$(MauiCITargetFramework)' != ''">
+    <TargetFrameworks>$(MauiCITargetFramework)</TargetFrameworks>
+  </PropertyGroup>
+</Project>
