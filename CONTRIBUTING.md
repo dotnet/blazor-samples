@@ -26,6 +26,8 @@ For .NET MAUI Blazor Hybrid solutions, a `snippets.5000.json` file beside the so
 
 Separate native-build jobs compile affected Hybrid samples for Android and Windows on Windows, and for iOS Simulator and Mac Catalyst on macOS. These jobs install matching .NET SDKs and MAUI workload sets, select compatible Xcode versions, and use `.github/maui-ci.targets` to limit native restore and build to the platform being checked without retargeting shared projects. Apple builds don't require distribution certificates, and no devices or simulators are launched. Changes to the workflow or CI targets file rebuild all four Hybrid samples; otherwise, only samples with changes under their solution directory are selected.
 
+The .NET 8 Apple build also installs the iOS 18 simulator runtime required by Xcode 16's asset compiler, even though no simulator is launched.
+
 When adding another Hybrid sample, update the native-build matrix in `.github/workflows/snippets5000.yml`. Keep pinned SDK/workload sets and Xcode versions compatible when updating the toolchains.
 
 To rerun the check manually, select **Actions** > **Snippets 5000** > **Run workflow** and enter the pull request number. The workflow checks out that pull request's merge ref and builds its affected samples.

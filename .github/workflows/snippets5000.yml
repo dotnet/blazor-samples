@@ -166,6 +166,10 @@ jobs:
         if: runner.os == 'macOS'
         run: xcodebuild -version
 
+      - name: Install iOS 18 simulator runtime for the .NET 8 asset compiler
+        if: runner.os == 'macOS' && matrix.sample.version == '8.0'
+        run: xcodebuild -downloadPlatform iOS -buildVersion '18.0'
+
       - name: Install native workloads
         run: |
           $workloads = if ($IsWindows) { @('maui-android', 'maui-windows') } else { @('maui-ios', 'maui-maccatalyst') }
