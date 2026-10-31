@@ -28,7 +28,7 @@ builder.Services.AddSingleton(MsalConfig.ExternalId); // Or MsalConfig.Workforce
 builder.Services.AddSingleton<MsalClient>();
 ```
 
-External ID is the default. The selected native `MsalConfig` record is registered once; DI constructor-injects it into `MsalClient` and `MsalAuthenticationService`. Use the same tenant type in both apps, then rebuild/restart them. This is a startup choice, not simultaneous sign-in to two tenants. Browser cookies are isolated between profiles, and MSAL uses the selected application's token cache.
+External ID is the default. The selected native `MsalConfig` record is registered once and constructor-injected into `MsalClient`, which exposes it through `Configuration`. `MsalAuthenticationService` receives the client, not a separate configuration object. Use the same tenant type in both apps, then rebuild/restart them. This is a startup choice, not simultaneous sign-in to two tenants. Browser cookies are isolated between profiles, and MSAL uses the selected application's token cache.
 
 ## Configure the selected tenant
 

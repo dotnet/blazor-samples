@@ -4,7 +4,7 @@ using Microsoft.Identity.Client;
 
 namespace MauiBlazorWebEntra.Services;
 
-public sealed class MsalAuthenticationService(MsalClient msalClient, MsalConfig configuration, ILogger<MsalAuthenticationService> logger) : IDisposable
+public sealed class MsalAuthenticationService(MsalClient msalClient, ILogger<MsalAuthenticationService> logger) : IDisposable
 {
     private static readonly ClaimsPrincipal anonymousUser = new(new ClaimsIdentity());
     private readonly SemaphoreSlim sessionLock = new(1, 1);
@@ -72,7 +72,7 @@ public sealed class MsalAuthenticationService(MsalClient msalClient, MsalConfig 
         {
             try
             {
-                result = await msalClient.Application.AcquireTokenSilent(configuration.Scopes, account)
+                result = await msalClient.Application.AcquireTokenSilent(msalClient.Configuration.Scopes, account)
                     .ExecuteAsync(cancellationToken);
             }
             catch (MsalUiRequiredException ex)
@@ -86,7 +86,7 @@ public sealed class MsalAuthenticationService(MsalClient msalClient, MsalConfig 
         {
             result = await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                var request = msalClient.AcquireTokenInteractive(configuration.Scopes)
+                var request = msalClient.AcquireTokenInteractive()
                     .WithAccount(account);
 
                 if (!string.IsNullOrEmpty(claims))

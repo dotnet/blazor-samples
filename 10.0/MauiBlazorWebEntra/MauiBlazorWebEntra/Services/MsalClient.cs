@@ -4,6 +4,8 @@ namespace MauiBlazorWebEntra.Services;
 
 public sealed class MsalClient
 {
+    public MsalConfig Configuration { get; }
+
     public IPublicClientApplication Application { get; }
 
     public MsalClient(MsalConfig configuration)
@@ -13,6 +15,7 @@ public sealed class MsalClient
             throw new ArgumentException("At least one non-empty API scope is required.", nameof(configuration));
         }
 
+        Configuration = configuration;
         var builder = PublicClientApplicationBuilder.Create(configuration.ClientId)
             .WithAuthority(configuration.Authority)
             .WithRedirectUri(configuration.RedirectUri);
@@ -47,9 +50,9 @@ public sealed class MsalClient
         Application = client;
     }
 
-    public AcquireTokenInteractiveParameterBuilder AcquireTokenInteractive(IEnumerable<string> scopes)
+    public AcquireTokenInteractiveParameterBuilder AcquireTokenInteractive()
     {
-        var request = Application.AcquireTokenInteractive(scopes);
+        var request = Application.AcquireTokenInteractive(Configuration.Scopes);
 #if MACCATALYST
         return request.WithMacCatalystWebView();
 #else
