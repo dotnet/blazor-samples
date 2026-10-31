@@ -1,0 +1,4 @@
+{
+  "host": "custom",
+  "command": "dotnet build \"MauiBlazorWebEntra.Web/MauiBlazorWebEntra.Web.csproj\""
+}

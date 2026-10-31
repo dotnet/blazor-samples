@@ -1,0 +1,59 @@
+@page "/login"
+@using Microsoft.Extensions.Logging
+@using Microsoft.Identity.Client
+@inject NavigationManager Navigation
+@inject MsalAuthenticationService Authentication
+@inject ILogger<Login> Logger
+
+<PageTitle>Log in</PageTitle>
+
+<h1>Log in</h1>
+
+<p>Sign in to your configured Microsoft Entra tenant in your browser.</p>
+
+@if (errorMessage is not null)
+{
+    <div class="alert alert-danger" role="alert">@errorMessage</div>
+}
+
+<button class="btn btn-primary" @onclick="SignIn" disabled="@isSigningIn">
+    Sign in with Microsoft Entra
+</button>
+
+@code {
+    private string? errorMessage;
+    private bool isSigningIn;
+
+    private async Task SignIn()
+    {
+        isSigningIn = true;
+        errorMessage = null;
+        try
+        {
+            await Authentication.SignInAsync();
+            Navigation.NavigateTo("");
+        }
+        catch (MsalClientException ex) when (ex.ErrorCode == "authentication_canceled")
+        {
+            errorMessage = "Sign-in was canceled.";
+        }
+        catch (OperationCanceledException)
+        {
+            errorMessage = "Sign-in was canceled.";
+        }
+        catch (MsalException ex)
+        {
+            Logger.LogWarning("Microsoft Entra sign-in failed: {ErrorCode}.", ex.ErrorCode);
+            errorMessage = $"Sign-in could not be completed ({ex.ErrorCode}). Check the app configuration and try again.";
+        }
+        catch (HttpRequestException ex)
+        {
+            Logger.LogWarning(ex, "Unable to contact Microsoft Entra.");
+            errorMessage = "Unable to contact Microsoft Entra. Check your connection and try again.";
+        }
+        finally
+        {
+            isSigningIn = false;
+        }
+    }
+}
