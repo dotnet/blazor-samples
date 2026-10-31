@@ -1,42 +1,53 @@
 # .NET MAUI Blazor Hybrid and Web App with ASP.NET Core Identity sample app (`MauiBlazorWeb`)
 
-This .NET 10 sample combines a .NET MAUI Blazor Hybrid app, a Blazor Web App, and its WebAssembly client. They share Razor pages and service contracts while using ASP.NET Core Identity local accounts. The WebAssembly client is served by the web host, not run as a standalone app.
+This .NET 10 sample logs users in with ASP.NET Core Identity local accounts from both a .NET MAUI Blazor Hybrid app and a Blazor Web App that share one Razor class library. Home is public; Counter and Weather require login.
 
-The four projects are:
+| Project | Purpose |
+| --- | --- |
+| `MauiBlazorWeb` | Native MAUI Blazor Hybrid app |
+| `MauiBlazorWeb.Web` | Server: Identity, Identity API (`/identity/*`), and the protected `/api/weather` endpoint |
+| `MauiBlazorWeb.Web.Client` | WebAssembly client, hosted by the server |
+| `MauiBlazorWeb.Shared` | Shared Home, Counter, and Weather pages |
 
-* `MauiBlazorWeb.Shared`: runtime-neutral Home, Counter, and Weather pages and service contracts.
-* `MauiBlazorWeb.Web`: ASP.NET Core Identity, static SSR account pages, interactive server rendering, and the authorized `/api/weather` endpoint.
-* `MauiBlazorWeb.Web.Client`: browser-side routing, layout, authentication-state deserialization, and same-origin weather requests.
-* `MauiBlazorWeb`: native MAUI Blazor Hybrid app, with bearer tokens kept in secure device storage.
+The two apps log in differently:
 
-The web app uses **InteractiveAuto**: initially it renders interactively on the server, then uses WebAssembly on later full page loads once the client has downloaded. Identity Account pages remain static SSR. The server serializes authentication state (name and role claims) for the WebAssembly client; the browser relies on the server's Identity cookie for same-origin API requests, not a browser-stored bearer token. The MAUI app continues to authenticate with the `/identity` API and bearer tokens. Sign-in and sign-out use full reloads so the browser's authentication state is refreshed; authorization of weather data is also enforced by the server endpoint.
+* **Web:** [Interactive Auto rendering](https://learn.microsoft.com/aspnet/core/blazor/components/render-modes?view=aspnetcore-10.0#automatic-auto-rendering) with static server-rendered Identity pages. The browser sends the Identity cookie, and the WebAssembly client gets the user from serialized authentication state.
+* **Native:** Uses the Identity API's bearer and refresh tokens (opaque, not JWTs), refreshed automatically. **Remember me** saves them in `SecureStorage` so the login survives restarts; otherwise they stay in memory. Storage is best-effort: errors are logged, not shown. **Log Out** clears the tokens locally without revoking them on the server. Two-factor authentication isn't supported.
 
-In the MAUI app, **Remember me** controls token persistence for both login and refresh. When selected, tokens are saved in secure device storage and restored on later app launches. Otherwise, tokens remain in memory, including after refresh, and any previously saved login is removed. Logout clears both in-memory and stored tokens.
+## Prerequisites
 
-The native app uses `ConfigureHttpClientDefaults` to share the backend address, timeout, and platform handler across its DI-managed HTTP clients. Its `BackendUrl` is defined once in `MauiProgram` using in-memory configuration and read through `IConfiguration` by HTTP-client setup and the Register page. `IdentityApiClient` uses the factory's default client for the server's Identity endpoints without an authorization handler, while `IdentityBearerTokenHandler` is added only to weather API requests. `MauiSignInManager` is the native client counterpart to the server's `SignInManager<ApplicationUser>`: `PasswordSignInAsync` returns Identity's standard `SignInResult`, and `SignOutAsync` clears the native credentials. Its `isPersistent` argument corresponds to the **Remember me** checkbox and controls secure storage instead of a browser cookie. Credential validation, account confirmation, lockout, and token issuance stay on the server; the native sample reports two-factor requirements but doesn't implement a two-factor login UI.
-
-The manager owns the native session, token cache, and persistence through MAUI's `ISecureStorage`, and serializes sign-in, refresh, and sign-out operations. Its private token record is loaded on demand and uses source-generated JSON, preserving the existing stored-token format. The scoped `MauiAuthenticationStateProvider` forwards the current `ClaimsPrincipal` to Blazor and receives updated principals through the manager's `Action<ClaimsPrincipal>` `UserChanged` event. API contracts are grouped in `IdentityApiModels.cs`; form-only fields and user-facing error messages stay in their pages. The Login page maps `SignInResult` and handles request failures without a shared last-error property on the manager. Missing or invalid saved credentials are treated as signed out, with invalid data logged rather than thrown to the UI. Transient network failures don't delete saved credentials. Local development certificate exceptions are limited to Debug builds. The native app references the portable `Microsoft.Extensions.Identity.Core` package for `SignInResult`, not the server's HTTP-dependent Identity managers or user stores.
-
-Native registration calls `/identity/register` and displays Identity's validation errors. It doesn't sign the user in or receive tokens. After success, **Continue registration** opens the same server's `/Account/RegisterConfirmation` page using `BrowserLaunchMode.SystemPreferred`: Custom Tabs on Android, the Safari view controller on iOS/Mac Catalyst, and the default browser on Windows. The server alone decides whether to display the sample confirmation link or instructions to check email. Replacing the no-op email sender with a real sender and removing the server's demo link requires no native client change. For local testing, the browser must trust the server's development HTTPS certificate; the native app's Debug certificate exception doesn't apply to the browser view.
-
-The weather API uses typed JSON results so unauthenticated requests receive HTTP 401 instead of an HTML login redirect. Unauthenticated page requests still redirect to the Identity login page.
-
-For background, see [MAUI Blazor Hybrid with ASP.NET Core Identity](https://learn.microsoft.com/en-us/aspnet/core/blazor/hybrid/security/maui-blazor-web-identity?view=aspnetcore-10.0) and [Blazor authentication state and Interactive Auto security](https://learn.microsoft.com/en-us/aspnet/core/blazor/security/?view=aspnetcore-10.0#secure-data-in-blazor-web-apps-with-interactive-auto-rendering). This structure follows the .NET 10 Individual Accounts template generated with SDK 10, for example: `dotnet new blazor --name IdentityReference --framework net10.0 --auth Individual --interactivity Auto --all-interactive --no-restore --no-update-check`. The sample retains `AddIdentityApiEndpoints` for MAUI instead of replacing it with the template's cookie-only Identity registration.
-
-The iOS and Mac Catalyst apps use the [UIKit scene lifecycle](https://learn.microsoft.com/dotnet/maui/ios/uikit-scene-lifecycle?view=net-maui-10.0) with .NET MAUI 10.0.110. For Xcode 27.0 builds, install a compatible .NET 10 Apple workload, such as [.NET SDK 10.0.401 with workload set 10.0.401.1](https://github.com/dotnet/macios/releases/tag/dotnet-10.0.1xx-xcode27.0-10722). The minimum deployment targets are iOS 15.0 and Mac Catalyst 17.0 (macOS 14).
+* [.NET 10 SDK and .NET MAUI workload](https://learn.microsoft.com/dotnet/maui/get-started/installation?view=net-maui-10.0) (`dotnet workload install maui`), and Visual Studio 2026 or Visual Studio Code with the .NET MAUI extension.
+* A platform to run on: Android 7.0+ (API 24), iOS 15+, Mac Catalyst 17+ (macOS 14+), or Windows 10 1809+. Apple targets need an Xcode version that your .NET Apple workload supports.
+* The ASP.NET Core development certificate, trusted once: `dotnet dev-certs https --trust`.
 
 ## Steps to run the sample
 
-1. Clone this repository or download a ZIP archive of the repository. For more information, see [How to download a sample](https://learn.microsoft.com/aspnet/core/introduction-to-aspnet-core#how-to-download-a-sample).
-1. Make sure you have the [.NET 10 SDK and the .NET MAUI workload installed](https://learn.microsoft.com/dotnet/maui/get-started/installation).
-1. Open the solution in Visual Studio 2026 or later, or VS Code with the .NET MAUI extension installed.
-1. Set the `MauiBlazorWeb` MAUI project as the startup project. In Visual Studio, right-click the project and select **Set as Startup Project**.
-1. Start the `MauiBlazorWeb.Web` project without debugging. In Visual Studio, right-click on the project and select **Debug** > **Start without Debugging**.
-1. Inspect the generated OpenAPI document at `https://localhost:7157/openapi/v1.json` (the sample doesn't include Swagger UI).
-1. Register a user in the Blazor Web App at `https://localhost:7157/account/register`, or use **Register** in the MAUI app. For native registration, select **Continue registration** to open the server's confirmation page. Use its **Click here to confirm your account** link because a real email sender isn't registered for account confirmation.
-1. Start (`F5`) the `MauiBlazorWeb` MAUI project. You can set the debug target to either **Windows** or an Android emulator.
-1. Notice you can only see the `Home`, `Register`, and `Login` pages.
-1. Log in with the user that you registered.
-1. Notice you can now see the shared `Counter` and `Weather` pages.
-1. Log out and notice you can only see the `Home`, `Register`, and `Login` pages again.
-1. Navigate to `https://localhost:7157/` and the web app behaves the same. After the WebAssembly download, reload the page to switch from server interactivity to WebAssembly. The shared Home page reports `WebAssembly` as the platform in the browser client.
+1. Clone this repository or [download a ZIP archive](https://learn.microsoft.com/aspnet/core/fundamentals/#how-to-download-a-sample).
+1. From `10.0/MauiBlazorWebIdentity`, start the web app on `https://localhost:7157`, the address the native app calls (or run it from your IDE with the `https` profile):
+
+   ```bash
+   dotnet run --project MauiBlazorWeb.Web --launch-profile https
+   ```
+
+   Development startup creates a SQLite database at `MauiBlazorWeb.Web/Data/app.db`. Delete it to reset the accounts.
+1. Open `MauiBlazorWeb.sln` and run `MauiBlazorWeb` on an Android emulator, iOS simulator, Mac Catalyst, or Windows.
+1. Register and confirm an account (next section), then log in. Counter and Weather appear. Log out and they disappear.
+1. Browse to `https://localhost:7157/` and log in with the same account. After the WebAssembly client downloads, reload the page and Home says it's running on `WebAssembly`.
+
+## Registration and confirmation
+
+The server requires a confirmed account. Register at `https://localhost:7157/Account/Register`, or from the native app's **Register** page, which posts to `/identity/register` without logging in. **Continue registration** then opens the server's `/Account/RegisterConfirmation` page in the system browser.
+
+The server owns that page. With the sample's no-op email sender, it shows a **Click here to confirm your account** link. Before real use, [configure an email sender](https://aka.ms/aspaccountconf) and remove that demo-link block from `RegisterConfirmation.razor`, because it lets anyone confirm any account. The page then asks users to check their email, and the native app needs no changes.
+
+The system browser doesn't use the native app's Debug-only certificate exception. If it shows a certificate warning (common on simulators and emulators), open `https://localhost:7157/Account/RegisterConfirmation?email=<your-email>` in your desktop browser instead.
+
+## Notes
+
+* **Backend address:** `MauiProgram.cs` sets `BackendUrl` to `https://localhost:7157/`, or `https://10.0.2.2:7157/` in Android Debug builds (the emulator's alias for your machine). For a physical device, use an HTTPS address that it can reach and trust. See [Connect to local web services](https://learn.microsoft.com/dotnet/maui/data-cloud/local-web-services?view=net-maui-10.0).
+* **Apple platforms:** The projects already include the [UIKit scene lifecycle](https://learn.microsoft.com/dotnet/maui/ios/uikit-scene-lifecycle?view=net-maui-10.0) that Xcode 27 builds require. Mac Catalyst also needs a provisioning profile with the keychain entitlement from `Platforms/MacCatalyst/Entitlements.plist` ([capabilities](https://learn.microsoft.com/dotnet/maui/mac-catalyst/capabilities?view=net-maui-10.0)), because ad hoc signed builds don't launch. The iOS simulator is the quickest Apple target.
+
+## More information
+
+* [.NET MAUI Blazor Hybrid and Web App with ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/blazor/hybrid/security/maui-blazor-web-identity?view=aspnetcore-10.0)
+* [How to use Identity to secure a Web API backend for SPAs](https://learn.microsoft.com/aspnet/core/security/authentication/identity-api-authorization?view=aspnetcore-10.0)

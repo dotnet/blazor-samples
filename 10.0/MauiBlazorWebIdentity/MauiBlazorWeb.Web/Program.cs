@@ -6,6 +6,7 @@ using MauiBlazorWeb.Web.Data;
 using MauiBlazorWeb.Web.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,11 +26,12 @@ builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 // Ensure unauthenticated page requests redirect to login rather than receive 401.
-// Only DefaultChallengeScheme is set here; AddIdentityApiEndpoints sets DefaultScheme
-// to BearerAndApplicationScheme which handles both bearer tokens (MAUI) and cookies (web).
+// Keep the template's external sign-in cookie. AddIdentityApiEndpoints sets DefaultScheme
+// to BearerAndApplicationScheme for bearer tokens (MAUI) and cookies (web).
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -87,15 +89,20 @@ app.MapRazorComponents<App>()
         typeof(MauiBlazorWeb.Shared._Imports).Assembly);
 
 // Needed for external clients to log in
-app.MapGroup("/identity").MapIdentityApi<ApplicationUser>();
+app.MapGroup("/identity")
+    .MapIdentityApi<ApplicationUser>()
+    .WithMetadata(new SkipStatusCodePagesAttribute());
+
 // Needed for Identity Blazor components
 app.MapAdditionalIdentityEndpoints();
 
 // Add the weather API endpoint and require authorization
 app.MapGet("/api/weather", async (IWeatherService weatherService) =>
-{
-    var forecasts = await weatherService.GetWeatherForecastsAsync();
-    return TypedResults.Ok(forecasts);
-}).RequireAuthorization();
+    {
+        var forecasts = await weatherService.GetWeatherForecastsAsync();
+        return TypedResults.Ok(forecasts);
+    })
+    .RequireAuthorization()
+    .WithMetadata(new SkipStatusCodePagesAttribute());
 
 app.Run();

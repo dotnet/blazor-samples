@@ -188,25 +188,34 @@ namespace MauiBlazorWeb.Services
                     }
 
                     var savedToken = JsonSerializer.Deserialize(json, StorageJsonContext.Default.AccessTokenInfo);
-                    if (savedToken is null ||
-                        string.IsNullOrWhiteSpace(savedToken.Email) ||
-                        !IsValidTokenResponse(savedToken.Tokens) ||
-                        savedToken.AccessTokenExpiration == default)
+                    if (savedToken is not null &&
+                        !string.IsNullOrWhiteSpace(savedToken.Email) &&
+                        IsValidTokenResponse(savedToken.Tokens) &&
+                        savedToken.AccessTokenExpiration != default)
                     {
-                        logger.LogWarning("Stored sign-in credentials are invalid. Treating the session as signed out.");
+                        token = savedToken;
+                        token.IsPersistent = true;
                         return;
                     }
 
-                    token = savedToken;
-                    token.IsPersistent = true;
+                    logger.LogWarning("Stored sign-in credentials are invalid. Discarding the saved sign-in.");
                 }
                 catch (Exception ex) when (ex is JsonException or CryptographicException or IOException)
                 {
-                    logger.LogWarning(ex, "Unable to read stored sign-in credentials. Treating the session as signed out.");
+                    logger.LogWarning(ex, "Unable to read stored sign-in credentials. Discarding the saved sign-in.");
                 }
                 finally
                 {
                     loaded = true;
+                }
+
+                try
+                {
+                    secureStorage.Remove(StorageKeyName);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarning(ex, "Unable to remove unreadable sign-in credentials. The current session remains signed out.");
                 }
             }
 
@@ -225,13 +234,20 @@ namespace MauiBlazorWeb.Services
                     IsPersistent = isPersistent
                 };
 
-                if (isPersistent)
+                try
                 {
-                    await secureStorage.SetAsync(StorageKeyName, JsonSerializer.Serialize(value, StorageJsonContext.Default.AccessTokenInfo));
+                    if (isPersistent)
+                    {
+                        await secureStorage.SetAsync(StorageKeyName, JsonSerializer.Serialize(value, StorageJsonContext.Default.AccessTokenInfo));
+                    }
+                    else
+                    {
+                        secureStorage.Remove(StorageKeyName);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    secureStorage.Remove(StorageKeyName);
+                    logger.LogError(ex, "Unable to update stored sign-in credentials.");
                 }
 
                 token = value;
@@ -240,7 +256,15 @@ namespace MauiBlazorWeb.Services
 
             public void Clear()
             {
-                secureStorage.Remove(StorageKeyName);
+                try
+                {
+                    secureStorage.Remove(StorageKeyName);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Unable to remove stored sign-in credentials.");
+                }
+
                 token = null;
                 loaded = true;
             }
