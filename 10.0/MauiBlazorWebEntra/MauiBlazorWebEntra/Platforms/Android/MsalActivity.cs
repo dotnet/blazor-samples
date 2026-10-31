@@ -1,6 +1,5 @@
 using Android.App;
 using Android.Content;
-using MauiBlazorWebEntra.Services;
 using Microsoft.Identity.Client;
 
 namespace MauiBlazorWebEntra;
@@ -9,7 +8,7 @@ namespace MauiBlazorWebEntra;
 [IntentFilter([Intent.ActionView],
     Categories = [Intent.CategoryBrowsable, Intent.CategoryDefault],
     DataHost = "auth",
-    DataSchemes = ["msal" + MsalClient.ExternalIdClientId, "msal" + MsalClient.WorkforceIdClientId])]
+    DataSchemes = ["msal" + MsalConfig.ExternalIdClientId, "msal" + MsalConfig.WorkforceIdClientId])]
 public class MsalActivity : BrowserTabActivity
 {
 }

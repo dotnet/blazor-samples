@@ -1,12 +1,10 @@
 using System.Security.Claims;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 
 namespace MauiBlazorWebEntra.Services;
 
-public sealed class MsalAuthenticationService(
-    IPublicClientApplication msalClient, IConfiguration configuration, ILogger<MsalAuthenticationService> logger) : IDisposable
+public sealed class MsalAuthenticationService(MsalClient msalClient, MsalConfig configuration, ILogger<MsalAuthenticationService> logger) : IDisposable
 {
     private static readonly ClaimsPrincipal anonymousUser = new(new ClaimsIdentity());
     private readonly SemaphoreSlim sessionLock = new(1, 1);
@@ -66,16 +64,7 @@ public sealed class MsalAuthenticationService(
 
     private async Task<AuthenticationResult?> AcquireTokenAsync(bool interactive, CancellationToken cancellationToken)
     {
-        var scopes = configuration.GetRequiredSection("Entra:Scopes").GetChildren()
-            .Select(scope => scope.Value
-                ?? throw new InvalidOperationException($"Configuration '{scope.Path}' is missing."))
-            .ToArray();
-        if (scopes.Length == 0 || scopes.Any(string.IsNullOrWhiteSpace))
-        {
-            throw new InvalidOperationException("Configuration 'Entra:Scopes' must contain at least one non-empty API scope.");
-        }
-
-        var account = (await msalClient.GetAccountsAsync()).FirstOrDefault();
+        var account = (await msalClient.Application.GetAccountsAsync()).FirstOrDefault();
         AuthenticationResult? result = null;
         string? claims = null;
 
@@ -83,7 +72,7 @@ public sealed class MsalAuthenticationService(
         {
             try
             {
-                result = await msalClient.AcquireTokenSilent(scopes, account)
+                result = await msalClient.Application.AcquireTokenSilent(configuration.Scopes, account)
                     .ExecuteAsync(cancellationToken);
             }
             catch (MsalUiRequiredException ex)
@@ -97,9 +86,8 @@ public sealed class MsalAuthenticationService(
         {
             result = await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                var request = msalClient.AcquireTokenInteractive(scopes)
-                    .WithAccount(account)
-                    .WithPlatformBrowser();
+                var request = msalClient.AcquireTokenInteractive(configuration.Scopes)
+                    .WithAccount(account);
 
                 if (!string.IsNullOrEmpty(claims))
                 {
@@ -134,9 +122,9 @@ public sealed class MsalAuthenticationService(
         var previousUser = User;
         try
         {
-            foreach (var account in await msalClient.GetAccountsAsync())
+            foreach (var account in await msalClient.Application.GetAccountsAsync())
             {
-                await msalClient.RemoveAsync(account);
+                await msalClient.Application.RemoveAsync(account);
             }
             User = anonymousUser;
             initialized = true;

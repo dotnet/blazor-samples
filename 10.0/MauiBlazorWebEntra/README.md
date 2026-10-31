@@ -24,14 +24,15 @@ var entraConfiguration = builder.Configuration.GetRequiredSection("EntraExternal
 Select the matching configuration in `MauiBlazorWebEntra/MauiProgram.cs`:
 
 ```csharp
-builder.Configuration.AddInMemoryCollection(MsalClient.ExternalId); // Or MsalClient.WorkforceId.
+builder.Services.AddSingleton(MsalConfig.ExternalId); // Or MsalConfig.WorkforceId.
+builder.Services.AddSingleton<MsalClient>();
 ```
 
-External ID is the default. The native profile adds settings to the app's in-memory configuration; native authentication services read them through injected `IConfiguration`. Use the same tenant type in both apps, then rebuild/restart them. This is a startup choice, not simultaneous sign-in to two tenants. Browser cookies are isolated between profiles, and MSAL uses the selected application's token cache.
+External ID is the default. The selected native `MsalConfig` record is registered once; DI constructor-injects it into `MsalClient` and `MsalAuthenticationService`. Use the same tenant type in both apps, then rebuild/restart them. This is a startup choice, not simultaneous sign-in to two tenants. Browser cookies are isolated between profiles, and MSAL uses the selected application's token cache.
 
 ## Configure the selected tenant
 
-| Profile | Web configuration section | Native configuration in `Services/MsalClient.cs` |
+| Profile | Web configuration section | Native configuration in `MsalConfig.cs` |
 | --- | --- | --- |
 | External ID | `EntraExternalId`, with instance `https://<tenant-subdomain>.ciamlogin.com/` | `ExternalIdClientId` and `ExternalId`: authority `https://<tenant-subdomain>.ciamlogin.com/<tenant-id>` |
 | Workforce | `EntraWorkforceId`, with instance `https://login.microsoftonline.com/` | `WorkforceIdClientId` and `WorkforceId`: authority `https://login.microsoftonline.com/<tenant-id>` |
@@ -53,8 +54,8 @@ Register two applications with **Accounts in this organizational directory only*
    ```
 
    For workforce, use `EntraWorkforceId:ClientSecret` instead.
-1. In `MauiBlazorWebEntra/Services/MsalClient.cs`, set the selected profile's **native** client ID, authority, and scope `api://<web-and-api-client-id>/Weather.Read`. The `22222222-...` External ID and `44444444-...` workforce client IDs are placeholders.
-1. In **both** `Platforms/iOS/Info.plist` and `Platforms/MacCatalyst/Info.plist`, replace that profile's placeholder URL scheme with `msal<native-client-id>`. Both profiles' callbacks are registered so switching the selected configuration doesn't require changing the manifests again. Android uses the two constants from `MsalClient.cs` automatically.
+1. In `MauiBlazorWebEntra/MsalConfig.cs`, set the selected profile's **native** client ID, authority, and scope `api://<web-and-api-client-id>/Weather.Read`. The `22222222-...` External ID and `44444444-...` workforce client IDs are placeholders.
+1. In **both** `Platforms/iOS/Info.plist` and `Platforms/MacCatalyst/Info.plist`, replace that profile's placeholder URL scheme with `msal<native-client-id>`. Both profiles' callbacks are registered so switching the selected configuration doesn't require changing the manifests again. Android uses the two constants from `MsalConfig.cs` automatically.
 
 ## Run the sample
 
