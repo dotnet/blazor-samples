@@ -46,8 +46,7 @@ jobs:
             const ciChanged = paths.some(path => ['.github/workflows/snippets5000.yml', '.github/maui-ci.targets'].includes(path));
             const builds = [
               {
-                // .NET 8's ACTool can't use the Xcode_16.0.app symlink (dotnet/macios#21762).
-                version: '8.0', sdk: '8.0.427', macos: 'macos-15', xcode: '16',
+                version: '8.0', sdk: '8.0.427', macos: 'macos-15', xcode: '16.4',
                 projects: [
                   { root: '8.0/MauiBlazorWeb/', path: '8.0/MauiBlazorWeb/MauiBlazorWeb.Maui/MauiBlazorWeb.Maui.csproj' }
                 ]
@@ -165,13 +164,6 @@ jobs:
       - name: Display Xcode version
         if: runner.os == 'macOS'
         run: xcodebuild -version
-
-      - name: Install iOS 18 simulator runtime for the .NET 8 asset compiler
-        if: runner.os == 'macOS' && matrix.sample.version == '8.0'
-        env:
-          # Xcode 16.0 can't select runtime download versions; native compilation still uses Xcode 16.
-          DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
-        run: xcodebuild -downloadPlatform iOS -buildVersion '18.0'
 
       - name: Install native workloads
         run: |
