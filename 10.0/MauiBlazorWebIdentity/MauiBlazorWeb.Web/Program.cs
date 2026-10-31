@@ -1,17 +1,21 @@
 using MauiBlazorWeb.Shared.Services;
+using MauiBlazorWeb.Web.Client;
 using MauiBlazorWeb.Web.Components;
 using MauiBlazorWeb.Web.Components.Account;
 using MauiBlazorWeb.Web.Data;
 using MauiBlazorWeb.Web.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents()
+    .AddAuthenticationStateSerialization();
 
 // Add device-specific services used by the MauiBlazorWeb.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
@@ -21,12 +25,13 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-// Ensure unauthenticated web clients redirect to login rather than receive 401.
-// Only DefaultChallengeScheme is set here; AddIdentityApiEndpoints sets DefaultScheme
-// to BearerAndApplicationScheme which handles both bearer tokens (MAUI) and cookies (web).
+// Ensure unauthenticated page requests redirect to login rather than receive 401.
+// Keep the template's external sign-in cookie. AddIdentityApiEndpoints sets DefaultScheme
+// to BearerAndApplicationScheme for bearer tokens (MAUI) and cookies (web).
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -54,6 +59,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseWebAssemblyDebugging();
     // Apply migrations & create database if needed at startup
     using (var scope = app.Services.CreateScope())
     {
@@ -78,18 +84,25 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
-    .AddAdditionalAssemblies(typeof(MauiBlazorWeb.Shared._Imports).Assembly);
+    .AddInteractiveWebAssemblyRenderMode()
+    .AddAdditionalAssemblies(typeof(MauiBlazorWeb.Web.Client._Imports).Assembly,
+        typeof(MauiBlazorWeb.Shared._Imports).Assembly);
 
 // Needed for external clients to log in
-app.MapGroup("/identity").MapIdentityApi<ApplicationUser>();
+app.MapGroup("/identity")
+    .MapIdentityApi<ApplicationUser>()
+    .WithMetadata(new SkipStatusCodePagesAttribute());
+
 // Needed for Identity Blazor components
 app.MapAdditionalIdentityEndpoints();
 
 // Add the weather API endpoint and require authorization
 app.MapGet("/api/weather", async (IWeatherService weatherService) =>
-{
-    var forecasts = await weatherService.GetWeatherForecastsAsync();
-    return Results.Ok(forecasts);
-}).RequireAuthorization();
+    {
+        var forecasts = await weatherService.GetWeatherForecastsAsync();
+        return TypedResults.Ok(forecasts);
+    })
+    .RequireAuthorization()
+    .WithMetadata(new SkipStatusCodePagesAttribute());
 
 app.Run();
