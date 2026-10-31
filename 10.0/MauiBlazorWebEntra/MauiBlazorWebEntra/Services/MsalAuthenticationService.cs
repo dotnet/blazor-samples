@@ -1,11 +1,12 @@
 using System.Security.Claims;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 
 namespace MauiBlazorWebEntra.Services;
 
 public sealed class MsalAuthenticationService(
-    IPublicClientApplication msalClient, ILogger<MsalAuthenticationService> logger) : IDisposable
+    IPublicClientApplication msalClient, IConfiguration configuration, ILogger<MsalAuthenticationService> logger) : IDisposable
 {
     private static readonly ClaimsPrincipal anonymousUser = new(new ClaimsIdentity());
     private readonly SemaphoreSlim sessionLock = new(1, 1);
@@ -65,6 +66,15 @@ public sealed class MsalAuthenticationService(
 
     private async Task<AuthenticationResult?> AcquireTokenAsync(bool interactive, CancellationToken cancellationToken)
     {
+        var scopes = configuration.GetRequiredSection("Entra:Scopes").GetChildren()
+            .Select(scope => scope.Value
+                ?? throw new InvalidOperationException($"Configuration '{scope.Path}' is missing."))
+            .ToArray();
+        if (scopes.Length == 0 || scopes.Any(string.IsNullOrWhiteSpace))
+        {
+            throw new InvalidOperationException("Configuration 'Entra:Scopes' must contain at least one non-empty API scope.");
+        }
+
         var account = (await msalClient.GetAccountsAsync()).FirstOrDefault();
         AuthenticationResult? result = null;
         string? claims = null;
@@ -73,7 +83,7 @@ public sealed class MsalAuthenticationService(
         {
             try
             {
-                result = await msalClient.AcquireTokenSilent(MsalConfig.Scopes, account)
+                result = await msalClient.AcquireTokenSilent(scopes, account)
                     .ExecuteAsync(cancellationToken);
             }
             catch (MsalUiRequiredException ex)
@@ -87,7 +97,7 @@ public sealed class MsalAuthenticationService(
         {
             result = await MainThread.InvokeOnMainThreadAsync(() =>
             {
-                var request = msalClient.AcquireTokenInteractive(MsalConfig.Scopes)
+                var request = msalClient.AcquireTokenInteractive(scopes)
                     .WithAccount(account)
                     .WithPlatformBrowser();
 

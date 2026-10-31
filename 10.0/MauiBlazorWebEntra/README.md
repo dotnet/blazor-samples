@@ -1,6 +1,6 @@
-# .NET MAUI Blazor Hybrid and Web App with Microsoft Entra External ID
+# .NET MAUI Blazor Hybrid and Web App with Microsoft Entra
 
-This .NET 10 sample signs customers in with [Microsoft Entra External ID](https://learn.microsoft.com/entra/external-id/customers/overview-customers-ciam), using the browser-hosted sign-up and sign-in flow. Home is public; Counter and Weather require sign-in.
+This .NET 10 sample supports Microsoft Entra External ID customer tenants or Microsoft Entra workforce tenants, using one configuration at startup. Home is public; Counter and Weather require sign-in.
 
 | Project | Purpose |
 | --- | --- |
@@ -13,26 +13,48 @@ This .NET 10 sample signs customers in with [Microsoft Entra External ID](https:
 
 **Native:** MSAL opens the system browser, acquires an API access token, and handles token caching and silent renewal. Bearer requests to `/api/weather` must have the `Weather.Read` delegated scope. ID tokens aren't API access tokens.
 
-## Configure Microsoft Entra External ID
+## Select a tenant type
 
-Use an **external tenant for customers**, not a workforce tenant or Azure AD B2C. Create a [sign-up and sign-in user flow](https://learn.microsoft.com/entra/external-id/customers/how-to-user-flow-sign-up-sign-in-customers), then register two applications with **Accounts in this organizational directory only** in that tenant and [associate both with the flow](https://learn.microsoft.com/entra/external-id/customers/how-to-user-flow-add-application).
+Select the configuration in `MauiBlazorWebEntra.Web/Program.cs`:
+
+```csharp
+var entraConfiguration = builder.Configuration.GetRequiredSection("EntraExternalId"); // Or "EntraWorkforceId".
+```
+
+Select the matching configuration in `MauiBlazorWebEntra/MauiProgram.cs`:
+
+```csharp
+builder.Configuration.AddInMemoryCollection(MsalClient.ExternalId); // Or MsalClient.WorkforceId.
+```
+
+External ID is the default. The native profile adds settings to the app's in-memory configuration; native authentication services read them through injected `IConfiguration`. Use the same tenant type in both apps, then rebuild/restart them. This is a startup choice, not simultaneous sign-in to two tenants. Browser cookies are isolated between profiles, and MSAL uses the selected application's token cache.
+
+## Configure the selected tenant
+
+| Profile | Web configuration section | Native configuration in `Services/MsalClient.cs` |
+| --- | --- | --- |
+| External ID | `EntraExternalId`, with instance `https://<tenant-subdomain>.ciamlogin.com/` | `ExternalIdClientId` and `ExternalId`: authority `https://<tenant-subdomain>.ciamlogin.com/<tenant-id>` |
+| Workforce | `EntraWorkforceId`, with instance `https://login.microsoftonline.com/` | `WorkforceIdClientId` and `WorkforceId`: authority `https://login.microsoftonline.com/<tenant-id>` |
+
+For External ID, use an **external tenant for customers**, not Azure AD B2C. Create a [sign-up and sign-in user flow](https://learn.microsoft.com/entra/external-id/customers/how-to-user-flow-sign-up-sign-in-customers) and [associate both applications with it](https://learn.microsoft.com/entra/external-id/customers/how-to-user-flow-add-application). Workforce tenants don't use that customer user flow.
+
+Register two applications with **Accounts in this organizational directory only** in the selected tenant:
 
 | Registration | Required configuration |
 | --- | --- |
 | Web app and API | **Web** redirect URIs `https://localhost:7257/signin-oidc` and `https://localhost:7257/signout-callback-oidc`. Create a server credential. Expose `api://<web-and-api-client-id>/Weather.Read` and set `api.requestedAccessTokenVersion` to `2` in the app manifest. |
 | Native public client | **Mobile and desktop applications** redirect URIs `msal<native-client-id>://auth` for Android/iOS/Mac Catalyst and `http://localhost` for Windows. Add the API's delegated `Weather.Read` permission and grant administrator consent. No native client secret or broker is used. |
 
-Set the following sample configuration:
-
-1. In `MauiBlazorWebEntra.Web/appsettings.json`, replace `AzureAd:Instance`, `TenantId`, and `ClientId` with the external tenant's `https://<tenant-subdomain>.ciamlogin.com/`, tenant ID, and **web/API** application ID.
-1. Store the **web app** client secret locally, never in source control:
+1. In `MauiBlazorWebEntra.Web/appsettings.json`, fill in the selected section's `Instance`, `TenantId`, and **web/API** `ClientId`.
+1. Store the **web app** client secret locally, never in source control. Use the selected section name:
 
    ```bash
-   dotnet user-secrets set "AzureAd:ClientSecret" "<client-secret>" --project MauiBlazorWebEntra.Web
+   dotnet user-secrets set "EntraExternalId:ClientSecret" "<client-secret>" --project MauiBlazorWebEntra.Web
    ```
 
-1. In `MauiBlazorWebEntra/MsalConfig.cs`, set `ClientId` to the **native** application ID, `Authority` to `https://<tenant-subdomain>.ciamlogin.com/<tenant-id>`, and `Scopes` to `["api://<web-and-api-client-id>/Weather.Read"]`. The `22222222-...` client ID is only a placeholder.
-1. In **both** `Platforms/iOS/Info.plist` and `Platforms/MacCatalyst/Info.plist`, replace the placeholder URL scheme with `msal<native-client-id>`. Android uses the constant from `MsalConfig.cs` automatically.
+   For workforce, use `EntraWorkforceId:ClientSecret` instead.
+1. In `MauiBlazorWebEntra/Services/MsalClient.cs`, set the selected profile's **native** client ID, authority, and scope `api://<web-and-api-client-id>/Weather.Read`. The `22222222-...` External ID and `44444444-...` workforce client IDs are placeholders.
+1. In **both** `Platforms/iOS/Info.plist` and `Platforms/MacCatalyst/Info.plist`, replace that profile's placeholder URL scheme with `msal<native-client-id>`. Both profiles' callbacks are registered so switching the selected configuration doesn't require changing the manifests again. Android uses the two constants from `MsalClient.cs` automatically.
 
 ## Run the sample
 
@@ -46,13 +68,14 @@ Install the [.NET 10 SDK and MAUI workload](https://learn.microsoft.com/dotnet/m
    ```
 
 1. Open `https://localhost:7257/` and log in. Counter and Weather become available. After WebAssembly downloads, reload and Home reports `WebAssembly`.
-1. Open `MauiBlazorWebEntra.sln` in your IDE and run the native project. Select **Log In** to use the same tenant's hosted account flow.
+1. Open `MauiBlazorWebEntra.sln` in your IDE and run the native project. Select **Log In** to use the selected tenant's hosted sign-in.
 
 ## Notes
 
 * **Backend address:** `MauiProgram.cs` uses `https://localhost:7257/`, or `https://10.0.2.2:7257/` for Android Debug builds. A physical device needs a reachable, trusted HTTPS address. The Debug-only local certificate exceptions apply to API calls, not to Microsoft Entra sign-in.
-* **Sign-out:** Web sign-out clears the app cookie and ends the Entra browser session. Native sign-out removes MSAL's cached accounts/tokens locally; it doesn't revoke issued tokens or clear the system browser's sign-in cookies.
+* **Sign-out:** Web sign-out clears the app cookie and ends the Entra browser session. Native sign-out removes the selected app's MSAL cached accounts/tokens locally; it doesn't revoke issued tokens or clear the system browser's sign-in cookies.
 * **Apple platforms:** UIKit scenes are configured for iOS and Mac Catalyst. MSAL's iOS keychain group and the Mac Catalyst cache require the included keychain entitlements and suitable signing/provisioning. Mac Catalyst uses the reference tutorial's `ASWebAuthenticationSession` adapter because MSAL.NET has no Mac Catalyst target.
+* **Workforce policies:** This sample uses browser sign-in without a broker. Organizations that require broker/device-compliance integration need additional platform setup.
 * This is a separate sample from `MauiBlazorWebIdentity`, with different app/project identities, server port, authentication cookie, and user-secrets ID. It has no local Identity database or account-management pages.
 
 ## References

@@ -49,7 +49,9 @@ namespace MauiBlazorWebEntra
             builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<IPublicClientApplication>(_ => MsalClient.Create());
+            builder.Configuration.AddInMemoryCollection(MsalClient.ExternalId); // Or MsalClient.WorkforceId.
+            builder.Services.AddSingleton<IPublicClientApplication>(services =>
+                MsalClient.Create(services.GetRequiredService<IConfiguration>()));
             builder.Services.AddSingleton<MsalAuthenticationService>();
 
             builder.Services.AddAuthorizationCore();

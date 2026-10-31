@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
@@ -26,11 +27,15 @@ var authentication = builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
 });
 
-authentication.AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
-authentication.AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+var entraConfiguration = builder.Configuration.GetRequiredSection("EntraExternalId"); // Or "EntraWorkforceId".
+authentication.AddMicrosoftIdentityWebApp(entraConfiguration);
+authentication.AddMicrosoftIdentityWebApi(entraConfiguration);
 
+// A cookie issued for one tenant profile must not authenticate the other.
+builder.Services.AddDataProtection()
+    .SetApplicationName($"MauiBlazorWebEntra.{entraConfiguration.Key}");
 builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme,
-    options => options.Cookie.Name = "MauiBlazorWebEntra.Auth");
+    options => options.Cookie.Name = $"MauiBlazorWebEntra.{entraConfiguration.Key}");
 
 builder.Services.Configure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {

@@ -9,7 +9,7 @@
 
 <h1>Log in</h1>
 
-<p>Sign in or create an account with Microsoft Entra External ID in your browser.</p>
+<p>Sign in to your configured Microsoft Entra tenant in your browser.</p>
 
 @if (errorMessage is not null)
 {
@@ -17,7 +17,7 @@
 }
 
 <button class="btn btn-primary" @onclick="SignIn" disabled="@isSigningIn">
-    Sign in with Microsoft Entra External ID
+    Sign in with Microsoft Entra
 </button>
 
 @code {
