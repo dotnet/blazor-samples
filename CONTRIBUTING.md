@@ -22,6 +22,8 @@ The **Snippets 5000** workflow runs for pull requests that target `main`. It use
 
 Review compilation errors in the workflow logs and fix failures in the affected samples before merging. The workflow runs on Windows with the .NET 11 preview SDK and the .NET 10 SDK and runtime.
 
+For .NET MAUI Blazor Hybrid solutions, a `snippets.5000.json` file beside the solution uses the `custom` host to build the web project instead of the full multi-platform solution. This also compiles the referenced shared Razor class library and any hosted WebAssembly client without requiring native MAUI workloads on the runner. This check doesn't validate native apps. Validate native-only changes separately with the appropriate platform-specific MAUI workloads and tooling.
+
 To rerun the check manually, select **Actions** > **Snippets 5000** > **Run workflow** and enter the pull request number. The workflow checks out that pull request's merge ref and builds its affected samples.
 
 ## Related content
