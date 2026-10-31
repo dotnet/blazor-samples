@@ -46,7 +46,8 @@ jobs:
             const ciChanged = paths.some(path => ['.github/workflows/snippets5000.yml', '.github/maui-ci.targets'].includes(path));
             const builds = [
               {
-                version: '8.0', sdk: '8.0.427', macos: 'macos-15', xcode: '16.0',
+                // .NET 8's ACTool can't use the Xcode_16.0.app symlink (dotnet/macios#21762).
+                version: '8.0', sdk: '8.0.427', macos: 'macos-15', xcode: '16',
                 projects: [
                   { root: '8.0/MauiBlazorWeb/', path: '8.0/MauiBlazorWeb/MauiBlazorWeb.Maui/MauiBlazorWeb.Maui.csproj' }
                 ]
