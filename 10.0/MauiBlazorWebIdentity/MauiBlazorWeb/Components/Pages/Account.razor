@@ -1,0 +1,69 @@
+@page "/account"
+@attribute [Authorize]
+@inject AccountClient AccountClient
+@inject MauiAuthenticationStateProvider Authentication
+@inject NavigationManager Navigation
+
+<PageTitle>Account</PageTitle>
+<h1>Account</h1>
+@if (message is not null) { <div class="alert @alertClass" role="alert" data-test="account-result">@message</div> }
+@if (info is null) { <p>Loading account information…</p> }
+else {
+    <section class="mb-4"><h2>Profile</h2>
+        <p data-test="account-email"><strong>Email:</strong> @info.Email @if (info.IsEmailConfirmed) { <span class="text-success">(confirmed)</span> } else { <button class="btn btn-link p-0" @onclick="ResendAsync">Resend confirmation</button> }</p>
+        <div class="row g-2"><div class="col-md-5"><InputText @bind-Value="newEmail" class="form-control" placeholder="New email" data-test="email-input" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangeEmailAsync" data-test="email-save">Change email</button></div></div>
+        <div class="row g-2 mt-2"><div class="col-md-5"><InputText @bind-Value="phone" class="form-control" placeholder="Phone number" data-test="phone-input" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangePhoneAsync" data-test="phone-save">Save phone</button></div></div>
+        <div class="row g-2 mt-2"><div class="col-md-4"><InputText @bind-Value="oldPassword" type="password" class="form-control" placeholder="Current password" data-test="password-current-input" /></div><div class="col-md-4"><InputText @bind-Value="newPassword" type="password" class="form-control" placeholder="New password" data-test="password-new-input" /></div><div class="col-auto"><button class="btn btn-outline-primary" @onclick="ChangePasswordAsync" data-test="password-save">Change password</button></div></div>
+    </section>
+    <section class="mb-4"><h2>Two-factor authentication</h2>
+        <p>Enabled: @(twoFactor?.IsTwoFactorEnabled == true ? "Yes" : "No") · Authenticator configured: @(twoFactor?.HasAuthenticator == true ? "Yes" : "No") · Recovery codes remaining: @twoFactor?.RecoveryCodesLeft</p>
+        <button class="btn btn-outline-primary mb-2" @onclick="BeginAuthenticatorSetupAsync">Show authenticator setup key</button>
+        @if (sharedKey is not null) { <p><strong>Authenticator setup key:</strong> <code>@sharedKey</code></p> }
+        <p class="small text-muted">To enable two-factor authentication, enter a valid code from the authenticator configured for this account.</p>
+        <div class="row g-2 mb-2"><div class="col-md-4"><InputText @bind-Value="twoFactorCode" class="form-control" autocomplete="one-time-code" placeholder="Authenticator code" /></div></div>
+        <button class="btn btn-outline-primary me-2" @onclick="() => TwoFactorAsync(true, false, false, false)">Enable</button>
+        <button class="btn btn-outline-secondary me-2" @onclick="() => TwoFactorAsync(false, false, false, false)">Disable</button>
+        <button class="btn btn-outline-secondary me-2" @onclick="() => TwoFactorAsync(false, true, false, false)">Reset authenticator</button>
+        <button class="btn btn-outline-secondary me-2" @onclick="() => TwoFactorAsync(false, false, true, false)">Generate recovery codes</button>
+        <button class="btn btn-outline-secondary" @onclick="() => TwoFactorAsync(false, false, false, true)">Forget this device</button>
+        @if (recoveryCodes is not null) { <p class="mt-2"><strong>Save these recovery codes now:</strong></p><pre class="border rounded p-2">@string.Join(Environment.NewLine, recoveryCodes)</pre> }
+    </section>
+    <section class="mb-4"><h2>Passkeys</h2>
+        <p class="text-muted">Native WebAuthn ceremony support is coming in .NET 11. The raw server begin response is available for preview only.</p>
+        <button class="btn btn-outline-primary mb-2" @onclick="PreviewPasskeyAsync">Preview registration begin JSON</button>
+        @if (passkeyPreview is not null) { <pre class="border rounded p-2 text-break">@passkeyPreview</pre> }
+        @foreach (var passkey in passkeys) { <div class="mb-2">@passkey.Name <small class="text-muted">(@passkey.CreatedAt.LocalDateTime.ToShortDateString())</small> <button class="btn btn-sm btn-outline-danger" @onclick="() => DeletePasskeyAsync(passkey.CredentialId)">Remove</button></div> }
+    </section>
+    <section class="mb-4"><h2>External sign-in providers</h2>
+        @if (externalLogins.Length == 0) { <p>No external providers are linked.</p> }
+        @foreach (var login in externalLogins) { <div class="mb-2">@login.DisplayName ?? login.Provider <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteProviderAsync(login.Provider)">Unlink</button></div> }
+    </section>
+    <section class="mb-4"><h2>Personal data</h2>
+        <button class="btn btn-outline-secondary me-2" @onclick="LoadPersonalDataAsync" data-test="personal-data-load">View personal data</button>
+        @if (personalData is not null) { <dl data-test="personal-data"><dt>Email</dt><dd>@personalData.Email</dd><dt>Phone</dt><dd>@personalData.PhoneNumber</dd></dl> }
+    </section>
+    <section><h2>Sessions and account</h2>
+        <button class="btn btn-outline-danger me-2" @onclick="LogoutAllAsync" data-test="logout-all">Log out all devices</button>
+        <div class="input-group mt-3 col-md-6"><InputText @bind-Value="deletePassword" type="password" class="form-control" placeholder="Current password to delete account" data-test="delete-password-input" /><button class="btn btn-danger" @onclick="DeleteAccountAsync" data-test="delete-account">Delete account</button></div>
+    </section>
+}
+
+@code {
+    private AccountInfo? info; private TwoFactorStatus? twoFactor; private Passkey[] passkeys = []; private ExternalLogin[] externalLogins = [];
+    private PersonalData? personalData; private string? passkeyPreview, message, newEmail, phone, oldPassword, newPassword, deletePassword, twoFactorCode, sharedKey; private string[]? recoveryCodes; private string alertClass = "alert-info";
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+    private async Task ReloadAsync() { var a = await AccountClient.GetInfoAsync(); if (!a.Succeeded) { Set(a.WithoutValue()); return; } info = a.Value; phone = info?.PhoneNumber; var t = await AccountClient.GetTwoFactorAsync(); twoFactor = t.Value; var p = await AccountClient.GetPasskeysAsync(); passkeys = p.Value ?? []; var e = await AccountClient.GetExternalLoginsAsync(); externalLogins = e.Value ?? []; }
+    private async Task ResendAsync() { if (info is not null) Set(await AccountClient.ResendConfirmationAsync(info.Email ?? "")); }
+    private async Task ChangeEmailAsync() { Set(await AccountClient.UpdateEmailAsync(newEmail ?? "")); await ReloadAsync(); }
+    private async Task ChangePhoneAsync() { Set(await AccountClient.UpdatePhoneAsync(phone ?? "")); await ReloadAsync(); }
+    private async Task ChangePasswordAsync() { Set(await AccountClient.UpdatePasswordAsync(oldPassword ?? "", newPassword ?? "")); oldPassword = newPassword = null; await ReloadAsync(); }
+    private async Task BeginAuthenticatorSetupAsync() { var result = await AccountClient.BeginAuthenticatorSetupAsync(); Set(result.WithoutValue()); if (result.Succeeded) sharedKey = result.Value?.SharedKey; }
+    private async Task TwoFactorAsync(bool enable, bool resetKey, bool codes, bool forget) { var result = await AccountClient.ConfigureTwoFactorAsync(enable, resetKey, codes, forget, twoFactorCode); Set(result.WithoutValue()); recoveryCodes = result.Value?.RecoveryCodes; twoFactorCode = null; await ReloadAsync(); }
+    private async Task PreviewPasskeyAsync() { var result = await AccountClient.BeginPasskeyRegistrationAsync(); if (result.Succeeded) passkeyPreview = result.Value; else Set(result.WithoutValue()); }
+    private async Task DeletePasskeyAsync(string id) { Set(await AccountClient.DeletePasskeyAsync(id)); await ReloadAsync(); }
+    private async Task DeleteProviderAsync(string provider) { Set(await AccountClient.DeleteExternalLoginAsync(provider)); await ReloadAsync(); }
+    private async Task LoadPersonalDataAsync() { var result = await AccountClient.GetPersonalDataAsync(); if (result.Succeeded) personalData = result.Value; else Set(result.WithoutValue()); }
+    private async Task LogoutAllAsync() { var result = await AccountClient.LogoutAllAsync(); Set(result); if (result.Succeeded) { await Authentication.LogoutAsync(); Navigation.NavigateTo("login"); } }
+    private async Task DeleteAccountAsync() { var result = await AccountClient.DeleteAccountAsync(deletePassword ?? ""); Set(result); if (result.Succeeded) { await Authentication.LogoutAsync(); Navigation.NavigateTo("register"); } }
+    private void Set(ApiResult result) { alertClass = result.Succeeded ? "alert-success" : "alert-danger"; message = result.Succeeded ? "The account was updated." : result.Error; }
+}
