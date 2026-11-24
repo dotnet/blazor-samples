@@ -18,17 +18,19 @@ namespace MauiBlazorWeb.Web.Components.Account
         [DoesNotReturn]
         public void RedirectTo(string? uri)
         {
-            uri ??= "";
-
-            // Prevent open redirects.
-            if (!Uri.IsWellFormedUriString(uri, UriKind.Relative))
+            // The URI often comes from a "returnUrl" query string parameter, which anyone can set in a link to the app.
+            // To prevent open redirects, resolve it to an absolute URI and only use it if it's within the app.
+            // Appending "/" to the path also accepts the app's root URI without a trailing slash, such as "/app?page=2".
+            var baseUri = new Uri(navigationManager.BaseUri);
+            if (!Uri.TryCreate(baseUri, uri, out var redirectUri)
+                || !(redirectUri.GetLeftPart(UriPartial.Path) + "/").StartsWith(baseUri.AbsoluteUri, StringComparison.Ordinal))
             {
-                uri = navigationManager.ToBaseRelativePath(uri);
+                redirectUri = baseUri;
             }
 
             // During static rendering, NavigateTo throws a NavigationException which is handled by the framework as a redirect.
             // So as long as this is called from a statically rendered Identity component, the InvalidOperationException is never thrown.
-            navigationManager.NavigateTo(uri);
+            navigationManager.NavigateTo(redirectUri.AbsoluteUri);
             throw new InvalidOperationException($"{nameof(IdentityRedirectManager)} can only be used during static rendering.");
         }
 
