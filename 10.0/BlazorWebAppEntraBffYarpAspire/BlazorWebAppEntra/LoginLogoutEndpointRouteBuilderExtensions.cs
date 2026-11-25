@@ -11,37 +11,30 @@ internal static class LoginLogoutEndpointRouteBuilderExtensions
     {
         var group = endpoints.MapGroup("");
 
-        group.MapGet("/login", (string? returnUrl) => TypedResults.Challenge(GetAuthProperties(returnUrl)))
+        group.MapGet("/login", (HttpRequest request, string? returnUrl) => TypedResults.Challenge(GetAuthProperties(request, returnUrl)))
             .AllowAnonymous();
 
         // Sign out of the Cookie and OIDC handlers. If you do not sign out with the OIDC handler,
         // the user will automatically be signed back in the next time they visit a page that requires authentication
         // without being able to choose another account.
-        group.MapPost("/logout", ([FromForm] string? returnUrl) => TypedResults.SignOut(GetAuthProperties(returnUrl),
+        group.MapPost("/logout", (HttpRequest request, [FromForm] string? returnUrl) => TypedResults.SignOut(GetAuthProperties(request, returnUrl),
             [CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme]));
 
         return group;
     }
 
-    private static AuthenticationProperties GetAuthProperties(string? returnUrl)
+    private static AuthenticationProperties GetAuthProperties(HttpRequest request, string? returnUrl)
     {
-        // TODO: Use HttpContext.Request.PathBase instead.
-        const string pathBase = "/";
-
-        // Prevent open redirects.
-        if (string.IsNullOrEmpty(returnUrl))
+        // The return URL comes from the query string or a form field, which anyone can set.
+        // To prevent open redirects, resolve it to an absolute URI and only use it if it's within the app.
+        // Appending "/" to the path also accepts the app's root URI without a trailing slash, such as "/app?page=2".
+        var baseUri = new Uri($"{request.Scheme}://{request.Host}{request.PathBase}/");
+        if (!Uri.TryCreate(baseUri, returnUrl, out var redirectUri)
+            || !(redirectUri.GetLeftPart(UriPartial.Path) + "/").StartsWith(baseUri.AbsoluteUri, StringComparison.Ordinal))
         {
-            returnUrl = pathBase;
-        }
-        else if (!Uri.IsWellFormedUriString(returnUrl, UriKind.Relative))
-        {
-            returnUrl = new Uri(returnUrl, UriKind.Absolute).PathAndQuery;
-        }
-        else if (returnUrl[0] != '/')
-        {
-            returnUrl = $"{pathBase}{returnUrl}";
+            redirectUri = baseUri;
         }
 
-        return new AuthenticationProperties { RedirectUri = returnUrl };
+        return new AuthenticationProperties { RedirectUri = redirectUri.AbsoluteUri };
     }
 }
