@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <UserSecretsId>MauiBlazorWebEntra-7c75d5cc-85ab-4aad-b362-d2386a1a165f</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.14" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="4.16.1" />
+    <!-- Override the identity library's vulnerable transitive PKCS version. -->
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MauiBlazorWebEntra.Web.Client\MauiBlazorWebEntra.Web.Client.csproj" />
+    <ProjectReference Include="..\MauiBlazorWebEntra.Shared\MauiBlazorWebEntra.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
