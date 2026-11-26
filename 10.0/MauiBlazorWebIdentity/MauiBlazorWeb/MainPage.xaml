@@ -7,7 +7,9 @@
              x:Class="MauiBlazorWeb.MainPage"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
+    <BlazorWebView x:Name="blazorWebView"
+                   AutomationId="IdentityBlazorWebView"
+                   HostPage="wwwroot/index.html">
         <BlazorWebView.RootComponents>
             <RootComponent Selector="#app" ComponentType="{x:Type route:Routes}" />
         </BlazorWebView.RootComponents>

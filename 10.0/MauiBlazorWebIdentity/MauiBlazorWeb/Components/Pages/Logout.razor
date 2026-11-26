@@ -4,9 +4,9 @@
 
 <div class="loader loader-bouncing"><span>Redirecting...</span></div>
 @code{
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        AuthStateProvider.Logout();
+        await AuthStateProvider.LogoutAsync();
         navigationManager.NavigateTo("/login");
     }
 }
